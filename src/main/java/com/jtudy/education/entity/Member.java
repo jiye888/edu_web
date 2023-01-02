@@ -6,12 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
-@EntityListeners({AuditingEntityListener.class})
 public class Member {
 
     @Id
@@ -37,28 +33,35 @@ public class Member {
     @Column(nullable = false)
     private String name;
 
-    private LocalDateTime createdAt;
-
+    @Column
     private String address;
 
-    @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY, orphanRemoval = true)
-    @Builder.Default
-    private List<Academy> managedAcademy = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
-    @Builder.Default
-    private List<AcademyMember> academyMember = new ArrayList<>();
-
-    @OneToMany(mappedBy = "writer", fetch = FetchType.LAZY, orphanRemoval = true)
-    @Builder.Default
-    private List<Review> review = new ArrayList<>();
-
+    @OneToMany(mappedBy = "member")
+    private List<AcademyMember> academyMember;
+/*
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "academy_member")
+    private SubjectClass academyMember;
+ */
     @Convert(converter = RolesConverter.class)
     @Builder.Default
     private List<Roles> rolesList = new ArrayList<>();
 
-    public void updateMember(String password, String name, String address) {
-        this.password = password;
+    /*
+    public MemberDTO toDTO(Member member) {
+        MemberDTO memberDTO = MemberDTO.builder()
+                .memNum(member.getMemNum())
+                .email(member.getEmail())
+                .name(member.getName())
+                .address(member.getAddress())
+                .build();
+
+        return memberDTO;
+    }
+     */
+
+    public void updateMember(String password, String name, String address, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
         this.name = name;
         this.address = address;
     }
@@ -69,15 +72,6 @@ public class Member {
 
     public void removeRoles(Roles roles) {
         this.rolesList.remove(roles);
-    }
-
-    public AcademyMember getAcademyMemberByAcademy(Academy academy) {
-        for(AcademyMember am : academyMember) {
-            if (am.getAcademy() == academy) {
-                return am;
-            }
-        }
-        return null;
     }
 
 }

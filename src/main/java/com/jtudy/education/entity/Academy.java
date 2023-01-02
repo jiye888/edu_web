@@ -30,45 +30,27 @@ public class Academy extends BaseEntity {
     @Convert(converter = SubjectConverter.class)
     private EnumSet<Subject> subject;
 
-    @ManyToOne
-    private Member manager;
-
+    @Column
     private String location;
 
-    private String introduction;
-
-    @OneToMany(mappedBy = "academy", orphanRemoval = true)
+    @OneToMany(mappedBy = "academy")
     @Builder.Default
     private List<AcademyMember> academyMember = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "academy")
+    @OneToMany
     @Builder.Default
     private List<Review> review = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "academy")
-    @Builder.Default
-    private List<Notice> notice = new ArrayList<>();
+    //notice도 ONETOMANY로 불러와야 하는지?
 
-    @OneToOne
-    private Image image;
+    @Column
+    private Integer grade;
 
-    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location, String introduction) {
+    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
         this.acaName = acaName;
         this.subject = subject;
         this.location = location;
-        this.introduction = introduction;
     }
 
-    public void removeNotices() {
-        this.notice = null;
-    }
-
-    public void removeReviews() {
-        this.review = null;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
 
 }

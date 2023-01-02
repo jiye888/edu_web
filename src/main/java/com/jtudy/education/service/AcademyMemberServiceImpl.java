@@ -1,86 +1,75 @@
 package com.jtudy.education.service;
 
-import com.jtudy.education.config.exception.CustomException;
-import com.jtudy.education.config.exception.ExceptionCode;
-import com.jtudy.education.constant.Roles;
+import com.jtudy.education.DTO.AcademyDTO;
+import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.AcademyMemberRepository;
-import com.jtudy.education.repository.AcademyRepository;
-import com.jtudy.education.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
-@Transactional
 @Service
+@Transactional
 @RequiredArgsConstructor
-public class AcademyMemberServiceImpl implements AcademyMemberService {
+public class AcademyMemberServiceImpl {
 
-    private final AcademyRepository academyRepository;
-    private final MemberRepository memberRepository;
     private final AcademyMemberRepository academyMemberRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(AcademyMemberServiceImpl.class);
+    /*implements AcademyMemberService {
+
+    private final MemberRepository memberRepository;
 
     @Override
-    public Long join(Long memNum, Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        Member member = memberRepository.findByMemNum(memNum);
-        AcademyMember academyMember = AcademyMember.builder()
-                .academy(academy)
-                .member(member)
-                .build();
-        if(!isPresent(memNum, acaNum)) {
-            academyMemberRepository.save(academyMember);
-            if (!member.getRolesList().contains(Roles.STUDENT)) {
-                member.addRoles(Roles.STUDENT);
-            }
-            memberRepository.save(member);
-            return academyMember.getAmNum();
-        } else {
-            return getOne(memNum, acaNum);
-        }
-    }
-
-    @Override
-    public void withdraw(Long memNum, Long acaNum) {
-        Member member = memberRepository.findByMemNum(memNum);
-        if (isPresent(memNum, acaNum)) {
-            Long am = getOne(memNum, acaNum);
-            academyMemberRepository.deleteById(am);
-            if (academyMemberRepository.findByMember(member) == null) {
-                member.removeRoles(Roles.STUDENT);
-            }
-        }
+    @Transactional(readOnly = true)
+    public Page<AcademyMemberDTO> getList() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "amNum"));
+        Page<SubjectClass> academyMember = academyMemberRepository.findAllPaging(pageable);
+        Page<AcademyMemberDTO> academyMemberDTO = academyMember.map(e -> entityToDTO(e));
+        return academyMemberDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Long getOne(Long memNum, Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        Member member = memberRepository.findByMemNum(memNum);
-        Optional<AcademyMember> am = academyMemberRepository.findByAcademyAndMember(academy, member);
-        if (am.isPresent()) {
-            AcademyMember academyMember = am.get();
-            return academyMember.getAmNum();
-        } else {
-            throw new CustomException(ExceptionCode.NOT_JOINED);
-        }
+    public AcademyMemberDTO get(Long amNum) {
+        SubjectClass academyMember = academyMemberRepository.findByAmNum(amNum);
+        AcademyMemberDTO academyMemberDTO = entityToDTO(academyMember);
+        return academyMemberDTO;
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public boolean isPresent(Long memNum, Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        Member member = memberRepository.findByMemNum(memNum);
-        Optional<AcademyMember> am = academyMemberRepository.findByAcademyAndMember(academy, member);
-        return am.isPresent();
+    public Long register(AcademyMemberDTO academyMemberDTO) {
+        SubjectClass academyMember = dtoToEntity(academyMemberDTO);
+        academyMemberRepository.save(academyMember);
+        return academyMember.getAmNum();
     }
+
+    public Long addMember(AcademyMemberDTO academyMemberDTO, MemberDTO memberDTO) {
+        SubjectClass academyMember = academyMemberRepository.getReferenceByAmNum(academyMemberDTO.getAmNum());
+        Member member = memberRepository.findByMemNum(memberDTO.getMemNum());
+        academyMember.addMember(member);
+        return academyMember.getAmNum();
+    }
+
+    public Long removeMember(Long amNum, Long memNum) {
+        //AcademyMember academyMember = academyMemberRepository.getReferenceByAmNum(academyMemberDTO.getAmNum());
+        SubjectClass academyMember = academyMemberRepository.findByAmNum(amNum);
+        //Member member = memberRepository.findByMemNum(memberDTO.getMemNum());
+        Member member = memberRepository.findByMemNum(memNum);
+        if (!academyMember.getMembers().isEmpty()){
+            academyMember.removeMember(member);
+        }
+        return academyMember.getAmNum();
+    }
+
+    @Override
+    public void delete(Long amNum) {
+        academyMemberRepository.deleteById(amNum);
+    }
+
+ */
 
 }

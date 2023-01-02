@@ -1,88 +1,10 @@
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/main}">
-<meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
 
-    <div layout:fragment="content">
-
-        <div class="login-box1">
-            <div class="login-box2">
-                <h3 class="custom-text font-bold login-logo">Login</h3>
-                <label class="custom-text" th:for="email">이메일 주소</label>
-                <input type="email" class="form-control" id="email" name="email">
-
-                <label class="custom-text" th:for="password">비밀번호</label>
-                <input type="password" class="form-control" name="password" id="password">
-
-                <div class="margin-top20">
-                    <button type="button" class="btn custom-button-mint" id="loginBtn">로그인</button>
-                    <button type="button" class="btn custom-button-mint" onclick="location.href='/member/join';">회원 가입</button>
-                </div>
-            </div>
-        </div>
-
-        <script th:inline="javascript">
-
-        $(function() {
-            $('#loginBtn').on('click', function() {
-                login();
-            });
-        });
-
-        function login() {
-            var email = $('#email').val();
-            var password = $('#password').val();
-
-            if (validate(email, password) == true){
-                const path = '/member/loginCheck';
-                const json = {
-                    "email": email,
-                    "password": password,
-                };
-                $.ajax({
-                    url: path,
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(json),
-                    success: function(response) {
-                        var token = response;
-                        if (token != null) {
-                            localStorage.setItem("jwt", token);
-                            $.ajax({
-                                url: "/academy/main",
-                                type: "GET",
-                                success: function() {
-                                    history.back();
-                                },
-                                error: function(xhr) {
-                                    jwtFilter();
-                                    console.log(xhr.responseText);
-                                }
-                            });
-                        }
-                    },
-                    error: function(xhr) {
-                        jwtFilter();
-                        alert("아이디나 비밀번호를 다시 확인해주세요.");
-                        console.log(xhr.responseText);
-                    },
-                });
-            }
-        }
-
-        function validate(email, password){
-            if (!email) {
-                alert('아이디를 입력해주세요');
-                return false;
-            }
-            if (!password ) {
-                alert('패스워드를 입력해주세요');
-                return false;
-            }
-            return true;
-        }
-
-    </script>
-    </div>
-
+</body>
 </html>

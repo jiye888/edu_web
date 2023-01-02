@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @Data
 @Builder
@@ -15,14 +13,10 @@ import java.util.Map;
 @NoArgsConstructor
 public class NoticeFormDTO {
 
-    private Long number;
-
-    @NotNull
-    private Long academy;
-
-    @NotBlank(message = "제목을 입력해주세요.")
+    @NotBlank
     private String title;
 
+    @NotBlank
     private String content;
 
 }
