@@ -1,0 +1,56 @@
+package com.jtudy.education.entity;
+
+import com.jtudy.education.constant.Subject;
+import com.jtudy.education.constant.SubjectConverter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Builder
+public class Academy extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "aca_num")
+    private Long acaNum;
+
+    @Column(name = "aca_name")
+    private String acaName;
+
+    @Convert(converter = SubjectConverter.class)
+    private EnumSet<Subject> subject;
+
+    @Column
+    private String location;
+
+    @OneToMany(mappedBy = "academy")
+    @Builder.Default
+    private List<AcademyMember> academyMember = new ArrayList<>();
+
+    @OneToMany
+    @Builder.Default
+    private List<Review> review = new ArrayList<>();
+
+    //notice도 ONETOMANY로 불러와야 하는지?
+
+    @Column
+    private Integer grade;
+
+    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
+        this.acaName = acaName;
+        this.subject = subject;
+        this.location = location;
+    }
+
+
+}
