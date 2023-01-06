@@ -87,7 +87,7 @@ class AcademyRepositoryTest {
         Academy academyNew = (Academy) academyList[0];
         System.out.println(Arrays.toString(academyList));
         System.out.println(academyNew);
-        
+
  */
     }
 
