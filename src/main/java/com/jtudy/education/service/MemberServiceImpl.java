@@ -93,7 +93,7 @@ public class MemberServiceImpl implements UserDetailsService {
  */
         memberRepository.deleteById(memNum);
     }
-
+/*
     public String login(LoginFormDTO member) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -105,6 +105,8 @@ public class MemberServiceImpl implements UserDetailsService {
         return jwtTokenProvider.createToken(member.getEmail(), account.getRolesList());
 
     }
+
+ */
 
 
     public Page<MemberDTO> getMembers(Academy academy) {

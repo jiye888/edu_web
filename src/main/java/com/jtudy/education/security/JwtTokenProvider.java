@@ -10,6 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.keygen.KeyGenerators;
+import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -27,23 +29,30 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-
-    private Long tokenValidTime = 60 * 60 * 1000L;
+/*
+    private Long tokenValidTime = 12 * 60 * 60 * 1000L; // 12시간
 
     private final UserDetailsService userDetailsService;
 
+    StringKeyGenerator keyGenerator = KeyGenerators.string();
+    String secretKey = keyGenerator.generateKey();
+
+/*
     private static SecretKey getSecureRandomKey(String cipher, int keySize) {
         SecureRandom secureRandom = new SecureRandom();
         byte[] randomKeyBytes = new byte[keySize];
         secureRandom.nextBytes(randomKeyBytes);
         return new SecretKeySpec(randomKeyBytes, cipher);
-    }
 
+    }
     SecretKey secretKey = getSecureRandomKey("AES", 8);
     String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+ */
+    /*
 
     @PostConstruct
     protected void init() {
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
     public String createToken(String email, List<Roles> roles) {
@@ -54,7 +63,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
-                .signWith(SignatureAlgorithm.HS256, encodedKey)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
@@ -75,8 +84,11 @@ public class JwtTokenProvider {
             return false;
         }
     }
+    //Jws? Jwts?
 
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader("X-AUTH-TOKEN");
     }
+    // 순환 참조 오류 발생하므로 UserDetailsService와 MemberService 분리해야.
+     */
 }

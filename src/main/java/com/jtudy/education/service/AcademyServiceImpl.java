@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,9 +24,9 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public Page<AcademyDTO> getAll() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        Page<Academy> academy = academyRepository.findAll(pageable);
-        Page<AcademyDTO> academyDTO = academy.map(e -> entityToDTO(e));
-        return academyDTO;
+        List<AcademyDTO> academy = academyRepository.getAcademyWithReview();
+        Page<AcademyDTO> academyPage = new PageImpl<>(academy, pageable, academy.size());
+        return academyPage;
     }
 
     @Override

@@ -27,12 +27,12 @@ import java.util.Map;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-
+/*
     private final MemberServiceImpl memberService;
 
     @GetMapping
     public String main() {
-        return "/login";
+        return "/member/login";
     }
 
     @GetMapping("/join")
@@ -70,7 +70,7 @@ public class MemberController {
         return "redirect:/main";
     }
  */
-
+/*
     @GetMapping("/login")
     public String login(Model model) {
         model.addAttribute("member", new MemberFormDTO());
@@ -80,7 +80,9 @@ public class MemberController {
     @PostMapping("/login")
     public String login(@RequestBody LoginFormDTO member) {
         memberService.login(member);
-        return "redirect:/"
+        return "redirect:/main";
     }
+
+ */
 
 }

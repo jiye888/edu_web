@@ -16,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         //extends GenericFilterBean {
-
+/*
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -30,4 +30,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         chain.doFilter(request, response);
     }
+
+ */
 }

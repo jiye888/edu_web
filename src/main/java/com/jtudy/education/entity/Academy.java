@@ -43,9 +43,6 @@ public class Academy extends BaseEntity {
 
     //notice도 ONETOMANY로 불러와야 하는지?
 
-    @Column
-    private Integer grade;
-
     public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
         this.acaName = acaName;
         this.subject = subject;
