@@ -2,11 +2,13 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.service.AcademyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +66,12 @@ public class AcademyController {
     @PostMapping("/delete")
     public String delete(Long acaNum) {
         academyService.delete(acaNum);
+        return "redirect:/academy/list";
+    }
+
+    @PostMapping("/join")
+    public String join(@AuthenticationPrincipal Member member) {
+        //academyService에 join 생성
         return "redirect:/academy/list";
     }
 }

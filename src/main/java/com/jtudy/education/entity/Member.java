@@ -20,8 +20,8 @@ import java.util.List;
 @Getter
 public class Member {
 
-    //@Autowired
-    //private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,7 @@
 package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.MemberDTO;
+import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.security.SecurityConfig;
 import com.jtudy.education.service.MemberServiceImpl;
 import com.jtudy.education.service.UserDetailsServiceImpl;
@@ -35,12 +36,12 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(Model model, @Valid MemberDTO memberDTO, BindingResult bindingResult, PasswordEncoder passwordEncoder) {
+    public String join(Model model, @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, PasswordEncoder passwordEncoder) {
         if (bindingResult.hasErrors()) {
             return "/member/join";
         }
         try {
-            memberService.createMember(memberDTO, passwordEncoder);
+            memberService.createMember(memberFormDTO, passwordEncoder);
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "/member/join";

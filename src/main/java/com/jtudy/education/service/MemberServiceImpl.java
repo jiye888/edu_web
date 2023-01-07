@@ -43,12 +43,12 @@ public class MemberServiceImpl {
         return memberDTO;
     }
 
-    public Member createMember(MemberDTO memberDTO, PasswordEncoder passwordEncoder) {
+    public Member createMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
         Member member = Member.builder()
-                .email(memberDTO.getEmail())
-                //.password(passwordEncoder.encode(memberDTO.getPassword()))
-                .name(memberDTO.getName())
-                .address(memberDTO.getAddress())
+                .email(memberFormDTO.getEmail())
+                .password(passwordEncoder.encode(memberFormDTO.getPassword()))
+                .name(memberFormDTO.getName())
+                .address(memberFormDTO.getAddress())
                 .build();
 
         member.addRoles(Roles.USER);
