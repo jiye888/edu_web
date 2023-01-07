@@ -26,7 +26,7 @@ public class Notice extends BaseEntity {
     @Size(min = 20)
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Academy academy;
 
     public void changeNotice(String title, String content) {

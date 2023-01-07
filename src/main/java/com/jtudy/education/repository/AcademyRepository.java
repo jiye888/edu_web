@@ -18,7 +18,13 @@ public interface AcademyRepository extends JpaRepository<Academy, Long> {
     Academy findByAcaNum(Long acaNum);
 
     @Query("select new com.jtudy.education.DTO.AcademyDTO(a, avg(r.grade), count(r)) from Academy a left outer join Review r on r.academy = a group by a")
-    List<AcademyDTO> getAcademyWithReview();
+    List<AcademyDTO> getAcademyWithReviewInfo();
+
+    //@Query("select a, n from Academy a left outer join Notice n on n.academy = a where a.acaNum = :acaNum")
+    //Page<Academy> getWithNotice(Long acaNum);
+
+    //@Query("select a, r from Academy a left outer join Review r on r.academy = a where a.acaNum = :acaNum")
+    //Page<Academy> getAcademyWithReview(Long acaNum);
 
     Page<Academy> findByAcaNameContaining(String keyword, Pageable pageable);
 

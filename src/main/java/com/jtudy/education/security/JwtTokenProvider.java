@@ -1,6 +1,7 @@
 package com.jtudy.education.security;
 
 import com.jtudy.education.constant.Roles;
+import com.jtudy.education.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -29,10 +30,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-/*
+
     private Long tokenValidTime = 12 * 60 * 60 * 1000L; // 12시간
 
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     StringKeyGenerator keyGenerator = KeyGenerators.string();
     String secretKey = keyGenerator.generateKey();
@@ -48,7 +49,6 @@ public class JwtTokenProvider {
     SecretKey secretKey = getSecureRandomKey("AES", 8);
     String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
  */
-    /*
 
     @PostConstruct
     protected void init() {
@@ -89,6 +89,5 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader("X-AUTH-TOKEN");
     }
-    // 순환 참조 오류 발생하므로 UserDetailsService와 MemberService 분리해야.
-     */
+
 }

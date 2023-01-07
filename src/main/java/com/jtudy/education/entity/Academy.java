@@ -33,15 +33,17 @@ public class Academy extends BaseEntity {
     @Column
     private String location;
 
-    @OneToMany(mappedBy = "academy")
+    @OneToMany(mappedBy = "academy", orphanRemoval = true)
     @Builder.Default
     private List<AcademyMember> academyMember = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
     private List<Review> review = new ArrayList<>();
 
-    //notice도 ONETOMANY로 불러와야 하는지?
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private  List<Notice> notice = new ArrayList<>();
 
     public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
         this.acaName = acaName;

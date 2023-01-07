@@ -130,7 +130,7 @@ class AcademyServiceImplTest {
 
     @Test
     public void showReview() {
-        List<AcademyDTO> listA = academyRepository.getAcademyWithReview();
+        List<AcademyDTO> listA = academyRepository.getAcademyWithReviewInfo();
         logger.info("*********"+listA);
         //logger.info(listA.get(1));
         //logger.info(listA.get(2).getGrade());

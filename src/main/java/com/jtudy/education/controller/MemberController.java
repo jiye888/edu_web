@@ -1,34 +1,27 @@
 package com.jtudy.education.controller;
 
-import com.jtudy.education.DTO.LoginFormDTO;
 import com.jtudy.education.DTO.MemberDTO;
-import com.jtudy.education.DTO.MemberFormDTO;
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.security.JwtTokenProvider;
-import com.jtudy.education.security.SecurityMember;
+import com.jtudy.education.security.SecurityConfig;
 import com.jtudy.education.service.MemberServiceImpl;
+import com.jtudy.education.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import sun.security.util.Password;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-/*
     private final MemberServiceImpl memberService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String main() {
@@ -60,7 +53,6 @@ public class MemberController {
         memberService.withdraw(memNum);
         return "redirect:/main";
     }
-/*
     @GetMapping("check")
     public String loginCheck(BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
@@ -69,20 +61,16 @@ public class MemberController {
         }
         return "redirect:/main";
     }
- */
-/*
+
     @GetMapping("/login")
     public String login(Model model) {
-        model.addAttribute("member", new MemberFormDTO());
         return "/member/login";
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginFormDTO member) {
-        memberService.login(member);
+    public String login(String email, String password) {
+        memberService.login(email, password);
         return "redirect:/main";
     }
-
- */
 
 }

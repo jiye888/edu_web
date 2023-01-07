@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
@@ -18,6 +19,9 @@ import java.util.List;
 @Builder
 @Getter
 public class Member {
+
+    //@Autowired
+    //private PasswordEncoder passwordEncoder;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,29 +40,15 @@ public class Member {
     @Column
     private String address;
 
-    @OneToMany(mappedBy = "member")
-    private List<AcademyMember> academyMember;
-/*
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "academy_member")
-    private SubjectClass academyMember;
- */
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<AcademyMember> academyMember = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
     @Convert(converter = RolesConverter.class)
     @Builder.Default
     private List<Roles> rolesList = new ArrayList<>();
-
-    /*
-    public MemberDTO toDTO(Member member) {
-        MemberDTO memberDTO = MemberDTO.builder()
-                .memNum(member.getMemNum())
-                .email(member.getEmail())
-                .name(member.getName())
-                .address(member.getAddress())
-                .build();
-
-        return memberDTO;
-    }
-     */
 
     public void updateMember(String password, String name, String address, PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);

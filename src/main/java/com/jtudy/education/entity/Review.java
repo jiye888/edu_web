@@ -26,10 +26,10 @@ public class Review extends BaseEntity {
     @Column
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Academy academy;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member writer;
 
     private Integer grade;

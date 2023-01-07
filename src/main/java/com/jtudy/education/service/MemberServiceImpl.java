@@ -1,7 +1,7 @@
 package com.jtudy.education.service;
 
-import com.jtudy.education.DTO.LoginFormDTO;
 import com.jtudy.education.DTO.MemberDTO;
+import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
@@ -9,39 +9,28 @@ import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements UserDetailsService {
+public class MemberServiceImpl {
 
     private final MemberRepository memberRepository;
+    private final UserDetailsServiceImpl userDetailsService;
     private final AcademyMemberRepository academyMemberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email);
-        if (member == null) {
-            throw new UsernameNotFoundException("<" + email + "> 사용자를 찾을 수 없습니다.");
-        }
-        SecurityMember securityMember = new SecurityMember(member);
-        return securityMember;
-    }
 
     public MemberDTO entityToDTO(Member member) {
         MemberDTO memberDTO = MemberDTO.builder()
@@ -67,9 +56,9 @@ public class MemberServiceImpl implements UserDetailsService {
         return member;
     }
 
-    public Long updateMember(MemberDTO memberDTO, PasswordEncoder passwordEncoder) {
-        Member member = memberRepository.findByEmail(memberDTO.getEmail());
-        //member.updateMember(memberDTO.getPassword(), memberDTO.getName(), memberDTO.getAddress(), passwordEncoder);
+    public Long updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+        Member member = memberRepository.findByEmail(memberFormDTO.getEmail());
+        member.updateMember(memberFormDTO.getPassword(), memberFormDTO.getName(), memberFormDTO.getAddress(), passwordEncoder);
         return member.getMemNum();
     }
 
@@ -93,22 +82,18 @@ public class MemberServiceImpl implements UserDetailsService {
  */
         memberRepository.deleteById(memNum);
     }
-/*
-    public String login(LoginFormDTO member) {
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        UserDetails user = loadUserByUsername(member.getEmail());
+    public String login(String email, String password) {
+
+        UserDetails user = userDetailsService.loadUserByUsername(email);
         Member account = memberRepository.findByEmail(user.getUsername());
-        if (!passwordEncoder.matches(member.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("잘못된 아이디, 또는 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(member.getEmail(), account.getRolesList());
+        return jwtTokenProvider.createToken(email, account.getRolesList());
 
     }
-
- */
-
-
+    
     public Page<MemberDTO> getMembers(Academy academy) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Member> memberList = academyMemberRepository.findByAcademy(academy);
@@ -116,6 +101,18 @@ public class MemberServiceImpl implements UserDetailsService {
         PageImpl page = new PageImpl(memberList, pageable, memberList.size());
         return page;
     }
+    
+    public void managerAuth(Long memNum) {
+        Member member = memberRepository.findByMemNum(memNum);
+        member.addRoles(Roles.MANAGER);
+    }
+    // 먼저 manager로 처리가 되어야 academy create 가능
+    
+    public void studentAuth(Long memNum) {
+        Member member = memberRepository.findByMemNum(memNum);
+        member.addRoles(Roles.STUDENT);
+    }
+    // academy join 시에 student role 없으면 추가
 
 }
 

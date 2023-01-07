@@ -1,7 +1,6 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ReviewDTO;
-import com.jtudy.education.entity.SubjectClass;
 import com.jtudy.education.entity.Review;
 import org.springframework.data.domain.Page;
 
@@ -18,10 +17,6 @@ public interface ReviewService {
     void delete(Long revNum);
 
     default Review dtoToEntity(ReviewDTO reviewDTO) {
-        SubjectClass academyMember = SubjectClass.builder()
-                .amNum(reviewDTO.getAmNum())
-                .build();
-
         Review review = Review.builder()
                 .revNum(reviewDTO.getRevNum())
                 .title(reviewDTO.getTitle())
