@@ -1,6 +1,15 @@
 package com.jtudy.education.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -13,10 +22,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+//@Configuration
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-        //extends GenericFilterBean {
-/*
+
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -31,5 +40,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         chain.doFilter(request, response);
     }
 
- */
+    @Bean
+    public JwtAuthenticationFilter getFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtTokenProvider);
+        AuthenticationManager authenticationManager = getAuthenticationManager();
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
+import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import org.springframework.data.domain.Page;
@@ -13,9 +14,9 @@ public interface AcademyService {
 
     Page<AcademyDTO> getAcademies(Member member);
 
-    Long register(AcademyDTO academyDTO);
+    Long register(AcademyFormDTO academyFormDTO);
 
-    Long update(AcademyDTO academyDTO);
+    Long update(AcademyFormDTO academyFormDTO);
 
     void delete(Long acaNum);
 
@@ -33,6 +34,16 @@ public interface AcademyService {
                 .acaName(academyDTO.getAcaName())
                 .subject(academyDTO.getSubject())
                 .location(academyDTO.getLocation())
+                .build();
+
+        return academy;
+    }
+
+    default Academy formToEntity(AcademyFormDTO academyFormDTO) {
+        Academy academy = Academy.builder()
+                .acaName(academyFormDTO.getAcaName())
+                .subject(academyFormDTO.getSubject())
+                .location(academyFormDTO.getLocation())
                 .build();
 
         return academy;

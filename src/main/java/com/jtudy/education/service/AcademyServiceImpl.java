@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
+import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.*;
@@ -46,17 +47,17 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
-    public Long register(AcademyDTO academyDTO) {
-        Academy academy = dtoToEntity(academyDTO);
+    public Long register(AcademyFormDTO academyFormDTO) {
+        Academy academy = formToEntity(academyFormDTO);
         academyRepository.save(academy);
         return academy.getAcaNum();
     }
 
     @Override
-    public Long update(AcademyDTO academyDTO) {
-        Academy academy = academyRepository.findByAcaNum(academyDTO.getAcaNum());
-        academy.changeAcademy(academyDTO.getAcaName(), academyDTO.getSubject(),
-                academyDTO.getLocation());
+    public Long update(AcademyFormDTO academyFormDTO) {
+        Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
+        academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
+                academyFormDTO.getLocation());
         academyRepository.save(academy);
         return academy.getAcaNum();
     }

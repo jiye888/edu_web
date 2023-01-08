@@ -32,21 +32,23 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    //private final JwtAuthenticationFilter jwtAuthenticationFilter;
+ /*
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
     // spring security의 인증 처리
 
+  */
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, TokenService tokenService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtTokenProvider jwtTokenProvider) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/academy/register").hasRole("ROLE_MANAGER")
-                .antMatchers("/review/**").hasRole("ROLE_USER")
-                .antMatchers("/member/update").hasRole("ROLE_USER")
+                .antMatchers("/academy/register").hasRole("MANAGER")
+                .antMatchers("/review/**").hasRole("USER")
+                .antMatchers("/member/update").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()
@@ -63,10 +65,10 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .and()
                 .exceptionHandling().accessDeniedPage("/member/denied")
-                //.accessDeniedHandler(accessDeniedHandler())
-                //.authenticationEntryPoint(authenticationEntryPoint())
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(authenticationEntryPoint());
+                //.and()
+                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

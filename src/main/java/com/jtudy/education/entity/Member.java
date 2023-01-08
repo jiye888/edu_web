@@ -20,9 +20,6 @@ import java.util.List;
 @Getter
 public class Member {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mem_num")
@@ -41,10 +38,12 @@ public class Member {
     private String address;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
     private List<AcademyMember> academyMember = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+    @OneToMany(mappedBy = "writer", fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private List<Review> review = new ArrayList<>();
 
     @Convert(converter = RolesConverter.class)
     @Builder.Default

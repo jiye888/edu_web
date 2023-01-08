@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.NoticeDTO;
+import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Notice;
@@ -15,9 +16,9 @@ public interface NoticeService {
 
     NoticeDTO getOne(Long notNum);
 
-    Long register(NoticeDTO noticeDTO);
+    Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 
-    Long update(NoticeDTO noticeDTO);
+    Long update(NoticeFormDTO noticeFormDTO);
 
     void delete(Long notNum);
 
@@ -30,6 +31,21 @@ public interface NoticeService {
                 .notNum(noticeDTO.getNotNum())
                 .title(noticeDTO.getTitle())
                 .content(noticeDTO.getContent())
+                .academy(academy)
+                .build();
+
+        return notice;
+    }
+
+    default Notice formToEntity(NoticeFormDTO noticeFormDTO) {
+        Academy academy = Academy.builder()
+                .acaNum(noticeFormDTO.getAcaNum())
+                .build();
+
+        Notice notice = Notice.builder()
+                .academy(academy)
+                .content(noticeFormDTO.getContent())
+                .title(noticeFormDTO.getTitle())
                 .build();
 
         return notice;

@@ -20,6 +20,7 @@ import javax.validation.Valid;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
+
     private final MemberServiceImpl memberService;
     private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder passwordEncoder;
@@ -31,7 +32,7 @@ public class MemberController {
 
     @GetMapping("/join")
     public String join(Model model) {
-        model.addAttribute("member", new MemberDTO());
+        model.addAttribute("member", new MemberFormDTO());
         return "/member/join";
     }
 
@@ -41,7 +42,7 @@ public class MemberController {
             return "/member/join";
         }
         try {
-            memberService.createMember(memberFormDTO, passwordEncoder);
+            memberService.createMember(memberFormDTO);
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
             return "/member/join";
@@ -69,8 +70,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(String email, String password) {
-        memberService.login(email, password);
+    public String login(String email, String password, PasswordEncoder passwordEncoder) {
+        memberService.login(email, password, passwordEncoder);
         return "redirect:/main";
     }
 

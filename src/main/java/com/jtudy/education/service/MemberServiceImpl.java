@@ -9,6 +9,7 @@ import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,27 +24,16 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl {
+public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final UserDetailsServiceImpl userDetailsService;
     private final AcademyMemberRepository academyMemberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    private final JwtTokenProvider jwtTokenProvider;
-
-    public MemberDTO entityToDTO(Member member) {
-        MemberDTO memberDTO = MemberDTO.builder()
-                .memNum(member.getMemNum())
-                .email(member.getEmail())
-                .name(member.getName())
-                .address(member.getAddress())
-                .build();
-
-        return memberDTO;
-    }
-
-    public Member createMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+    @Override
+    public Member createMember(MemberFormDTO memberFormDTO) {
         Member member = Member.builder()
                 .email(memberFormDTO.getEmail())
                 .password(passwordEncoder.encode(memberFormDTO.getPassword()))
@@ -56,34 +46,22 @@ public class MemberServiceImpl {
         return member;
     }
 
-    public Long updateMember(MemberFormDTO memberFormDTO, PasswordEncoder passwordEncoder) {
+    @Override
+    public Long updateMember(MemberFormDTO memberFormDTO) {
         Member member = memberRepository.findByEmail(memberFormDTO.getEmail());
         member.updateMember(memberFormDTO.getPassword(), memberFormDTO.getName(), memberFormDTO.getAddress(), passwordEncoder);
         return member.getMemNum();
     }
 
+    @Override
     public void withdraw(Long memNum) {
         Member member = memberRepository.findByMemNum(memNum);
         SecurityMember securityMember = new SecurityMember(member);
-/*
-        if (securityMember.getRolesList().contains("MANAGER")) {
-            List<Academy> academy = academyRepository.findByManager(member);
-            for (Academy aca : academy) {
-                noticeRepository.deleteByAcademy(aca);
-                academyRepository.delete(aca);
-            }
-        } else if (securityMember.getRolesList().contains("STUDENT")){
-            reviewRepository.deleteByWriter(member);
-            List<AcademyMember> academyMember = academyMemberRepository.findByMembersContains(memNum);
-            for (AcademyMember am : academyMember) {
-                am.removeMember(member);
-            }
-        }
- */
         memberRepository.deleteById(memNum);
     }
 
-    public String login(String email, String password) {
+    @Override
+    public String login(String email, String password, PasswordEncoder passwordEncoder) {
 
         UserDetails user = userDetailsService.loadUserByUsername(email);
         Member account = memberRepository.findByEmail(user.getUsername());
@@ -93,7 +71,8 @@ public class MemberServiceImpl {
         return jwtTokenProvider.createToken(email, account.getRolesList());
 
     }
-    
+
+    @Override
     public Page<MemberDTO> getMembers(Academy academy) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Member> memberList = academyMemberRepository.findByAcademy(academy);

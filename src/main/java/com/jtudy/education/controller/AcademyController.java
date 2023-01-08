@@ -1,6 +1,7 @@
 package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AcademyDTO;
+import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.service.AcademyService;
@@ -32,14 +33,14 @@ public class AcademyController {
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("academy", new AcademyDTO());
+        model.addAttribute("academy", new AcademyFormDTO());
         return "/academy/academyForm";
         //academyForm이라는 view page 만들기. academy 등록에 필요한 양식들 존재.
     }
 
     @PostMapping("/register")
-    public String register(Model model, AcademyDTO academyDTO, RedirectAttributes redirectAttributes) {
-        Long acaNum = academyService.register(academyDTO);
+    public String register(AcademyFormDTO academyFormDTO, RedirectAttributes redirectAttributes) {
+        Long acaNum = academyService.register(academyFormDTO);
         redirectAttributes.addFlashAttribute("message", acaNum);
         return "redirect:/academy/list";
     }
@@ -58,8 +59,8 @@ public class AcademyController {
     }
 
     @PostMapping("/modify/{acaNum}")
-    public String modify(AcademyDTO academyDTO) {
-        academyService.update(academyDTO);
+    public String modify(AcademyFormDTO academyFormDTO) {
+        academyService.update(academyFormDTO);
         return "redirect:/academy/list";
     }
 

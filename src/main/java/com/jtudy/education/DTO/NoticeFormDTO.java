@@ -13,6 +13,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class NoticeFormDTO {
 
+    private Long notNum;
+
+    private Long acaNum;
+
     @NotBlank
     private String title;
 

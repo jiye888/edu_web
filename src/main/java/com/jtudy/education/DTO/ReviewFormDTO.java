@@ -14,6 +14,12 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ReviewFormDTO {
 
+    private Long revNum;
+
+    private Long acaNum;
+
+    private Long memNum;
+
     @NotBlank
     private String title;
 

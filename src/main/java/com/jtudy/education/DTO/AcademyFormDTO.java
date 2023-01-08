@@ -17,6 +17,8 @@ import java.util.EnumSet;
 @Validated
 public class AcademyFormDTO {
 
+    private Long acaNum;
+
     @NotBlank
     private String acaName;
 
