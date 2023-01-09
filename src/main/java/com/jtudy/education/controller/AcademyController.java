@@ -6,6 +6,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.service.AcademyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +28,8 @@ public class AcademyController {
 
     @GetMapping("/list")
     public void list(Model model) {
-        academyService.getAll();
+        Page<AcademyDTO> academyDTO = academyService.getAll();
+        model.addAttribute("academy", academyDTO);
         //model.addAttribute("list", academyService.getList(AcademyDTO, pageable));
     }
 

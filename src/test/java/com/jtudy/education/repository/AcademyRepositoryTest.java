@@ -36,6 +36,9 @@ class AcademyRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private AcademyMemberRepository academyMemberRepository;
+
     private final Logger logger = LogManager.getLogger(AcademyRepositoryTest.class);
 
     @Test
@@ -59,8 +62,10 @@ class AcademyRepositoryTest {
                 .member(member)
                 .build();
 
-        //academyRepository.save(academy);
-        //memberRepository.save(member);
+        academyRepository.deleteById(Long.parseLong("1"));
+        academyRepository.save(academy);
+        memberRepository.save(member);
+        academyMemberRepository.save(academyMember);
         Academy result = academyRepository.findByAcaNum(Long.parseLong("1"));
         assertEquals(result.getAcaNum(), Long.parseLong("1"));
         Page<Academy> location = academyRepository.findByLocationContaining("Seoul", Pageable.unpaged());
