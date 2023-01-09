@@ -1,6 +1,8 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.NoticeDTO;
+import com.jtudy.education.DTO.NoticeFormDTO;
+import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.NoticeRepository;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class NoticeServiceImpl implements NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final AcademyRepository academyRepository;
 
     @Override
     public Page<NoticeDTO> getAll() {
@@ -36,16 +39,17 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Long register(NoticeDTO noticeDTO) {
-        Notice notice = dtoToEntity(noticeDTO);
+    public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        Notice notice = formToEntity(noticeFormDTO); // parameter에 academy 추가
         noticeRepository.save(notice);
         return notice.getNotNum();
     }
 
     @Override
-    public Long update(NoticeDTO noticeDTO) {
-        Notice notice = noticeRepository.getReferenceById(noticeDTO.getNotNum());
-        notice.changeNotice(noticeDTO.getTitle(), noticeDTO.getContent());
+    public Long update(NoticeFormDTO noticeFormDTO) {
+        Notice notice = noticeRepository.getReferenceById(noticeFormDTO.getNotNum());
+        notice.changeNotice(noticeFormDTO.getTitle(), noticeFormDTO.getContent());
         noticeRepository.save(notice);
         return notice.getNotNum();
     }

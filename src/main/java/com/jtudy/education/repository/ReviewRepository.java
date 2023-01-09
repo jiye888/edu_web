@@ -11,5 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findAll(Pageable pageable);
+    Review findByRevNum(Long revNum);
 
 }
