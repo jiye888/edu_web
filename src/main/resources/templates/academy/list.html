@@ -8,7 +8,6 @@
     <h3 align="center">Academy</h3>
     <div th:if = "${!academy.isEmpty()}">
         <button type="button" class="register" th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>
-
         <table class="table table-borderless">
             <thead align="center">
             <tr>
@@ -20,7 +19,7 @@
             </thead>
             <tbody>
             <tr th:each="academy : ${academy}">
-                <td style="width:50%" align="center"><a th:text="${academy.acaName}" th:href="@{/academy/?number={number}(number=${academy.acaNum})}">학원 이름</a></td>
+                <td style="width:50%" align="center"><a th:text="${academy.acaName}" th:href="@{/academy/read?number={number}(number=${academy.acaNum})}">학원 이름</a></td>
                 <td><span th:text="${academy.grade}">평점</span></td>
                 <td><span th:text="${academy.location}">학원 위치</span></td>
                 <td><span th:text="${academy.subject}">수강 과목</span></td>

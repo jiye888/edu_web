@@ -41,7 +41,7 @@ public class AcademyController {
         return "/academy/registerForm";
         //academyForm이라는 view page 만들기. academy 등록에 필요한 양식들 존재.
     }
-    //#
+
     @PostMapping("/register")
     public String register(@Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         System.out.println(academyFormDTO);
@@ -50,7 +50,7 @@ public class AcademyController {
         return "redirect:/academy/list";
     }
 
-    @GetMapping("/")
+    @GetMapping("/read")
     public void academy(@RequestParam(value = "number") Long acaNum, Model model) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         model.addAttribute("academy", academyDTO);
@@ -67,14 +67,14 @@ public class AcademyController {
     public String modify(@Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("msg", "모든 항목을 입력해주세요.");
-            return "/academy/academyForm";
+            return "/academy/modifyForm";
         }
         academyService.update(academyFormDTO);
         return "redirect:/academy/list";
     }
-    //#
-    @PostMapping("/delete")
-    public String delete(Long acaNum) {
+
+    @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    public String delete(@RequestParam(value = "number") Long acaNum) {
         academyService.delete(acaNum);
         return "redirect:/academy/list";
     }
