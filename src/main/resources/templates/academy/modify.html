@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
 <body>
+<div layout:fragment="content">
+    <h3>Modify</h3>
+    <span th:text="${academy.acaNum}"></span>
+    <input type="hidden" id="acaNum" name="acaNum">
 
+</div>
 </body>
 </html>

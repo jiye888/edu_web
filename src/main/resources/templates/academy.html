@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    학원명:
+    <span th:text="${academy.acaName}">학원 이름</span><br>
+    수강 과목:
+    <div th:each="subject : ${academy.subject}">
+        <span th:each="sub : ${subject}" th:if="${subject == subject}">
+                <span th:text="${sub.description}" class="form-check-label"></span>
+        </span>
+    </div>
+    학원 위치:
+    <span th:text="${academy.location}">학원 위치</span><br>
+    <input type="hidden" id="acaNum" name="acaNum">
+
+    <button type="button" class="modify" th:onclick="'location.href=\''+@{/academy/modify?number={number}(number=${academy.acaNum})}+'\';'">수정하기</button>
+</div>
+</body>
+<!--
+<script th:inline="javascript">
+
+    var number = [[${academy.acaNum}]]
+
+    $('.modify').on("click", function() {
+            location.href="/academy/modify?"+number;
+    });
+</script>
+-->
+</html>

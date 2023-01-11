@@ -5,13 +5,14 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>Academy</h3>
+    <h3 align="center">Academy</h3>
     <div th:if = "${!academy.isEmpty()}">
+        <button type="button" class="register" th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>
 
         <table class="table table-borderless">
-            <thead>
+            <thead align="center">
             <tr>
-                <th scope="col">학원 이름</th>
+                <th scope="col" style="width:50%">학원 이름</th>
                 <th scope="col">학원 위치</th>
                 <th scope="col">수강 과목</th>
                 <th scope="col">평점</th>
@@ -19,10 +20,10 @@
             </thead>
             <tbody>
             <tr th:each="academy : ${academy}">
-                <td><span th:text="${academy.acaName}">학원 이름</span></td>
+                <td style="width:50%" align="center"><a th:text="${academy.acaName}" th:href="@{/academy/?number={number}(number=${academy.acaNum})}">학원 이름</a></td>
+                <td><span th:text="${academy.grade}">평점</span></td>
                 <td><span th:text="${academy.location}">학원 위치</span></td>
                 <td><span th:text="${academy.subject}">수강 과목</span></td>
-                <td><span th:text="${academy.grade}">평점</span></td>
             </tr>
             </tbody>
         </table>
@@ -70,4 +71,13 @@
     </div>
 </div>
 </body>
+<!--
+<script th:inline="javascript">
+    var name = [[${academy.acaName}]]
+    var number = [[${academy.acaNum}]]
+    $(".academy_name").on("click", function(){
+        location.href="/academy/"+number;
+    });
+</script>
+-->
 </html>

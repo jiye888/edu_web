@@ -41,14 +41,13 @@ public class SecurityConfig {
     // spring security의 인증 처리
 
   */
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtTokenProvider jwtTokenProvider) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/academy/register").hasRole("MANAGER")
-                .antMatchers("/review/**").hasRole("USER")
-                .antMatchers("/member/update").hasRole("USER")
+                //.antMatchers("/academy/register").hasRole("MANAGER")
+                //.antMatchers("/review/**").hasRole("USER")
+                //.antMatchers("/member/update").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()

@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
 <body>
+    <div layout:fragment="content">
+        <h3>수정 화면</h3>
+        <form action="./modify" method="post" th:object="${academy}">
 
+            <input type="hidden" th:field="*{acaNum}" th:value="${academy.acaNum}">
+            학원 이름<input type="text" th:field="*{acaName}"><br>
+            학원 위치<input type="text" th:field="*{location}"><br>
+            수강 과목<br>
+            <div th:each="sub : ${subject}" class="form-check form-check line">
+                <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="form-check-input">
+                <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
+            </div>
+
+            <input type="submit" value="등록">
+        </form>
+    </div>
 </body>
 </html>
