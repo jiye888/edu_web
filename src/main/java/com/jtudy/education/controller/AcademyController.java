@@ -80,7 +80,7 @@ public class AcademyController {
     }
     //#
     @PostMapping("/join")
-    public String join(@AuthenticationPrincipal Member member) {
+    public String join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal Member member) {
         //academyService에 join 생성
         return "redirect:/academy/list";
     }
