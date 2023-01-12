@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface MemberService {
 
+    public MemberDTO getOne(Long memNum);
+
     public Long createMember(MemberFormDTO memberFormDTO);
 
     public Long updateMember(MemberFormDTO memberFormDTO);

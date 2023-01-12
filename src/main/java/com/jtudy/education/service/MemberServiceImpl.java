@@ -33,6 +33,13 @@ public class MemberServiceImpl implements MemberService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    public MemberDTO getOne(Long memNum) {
+        Member member = memberRepository.findByMemNum(memNum);
+        MemberDTO memberDTO = entityToDTO(member);
+        return memberDTO;
+    }
+
+    @Override
     public Long createMember(MemberFormDTO memberFormDTO) {
         Member member = Member.builder()
                 .email(memberFormDTO.getEmail())

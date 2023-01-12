@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 
@@ -33,7 +34,7 @@ public class MemberController {
     @GetMapping("/join")
     public String join(Model model) {
         model.addAttribute("member", new MemberFormDTO());
-        return "/member/memberForm";
+        return "/member/registerForm";
     }
 
     @PostMapping("/join")
@@ -47,17 +48,34 @@ public class MemberController {
             memberService.createMember(memberFormDTO);
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
-            return "/member/memberForm";
+            return "/member/registerForm";
         }
+        return "redirect:/member/login";
+    }
+
+    @GetMapping("/modify")
+    public String modify(@RequestParam(value = "id") Long memNum, Model model) {
+        MemberDTO memberDTO = memberService.getOne(memNum);
+        model.addAttribute("member", memberDTO);
+        return "/member/modifyForm";
+    }
+
+    @PostMapping("/modify")
+    public String modify(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("msg", "모든 항목을 입력해주세요.");
+            return "/member/modifyForm";
+        }
+        memberService.updateMember(memberFormDTO);
         return "redirect:/academy/main";
-        //return "redirect:/member/login";
     }
 
     @PostMapping("/withdraw")
     public String withdraw(Long memNum) {
         memberService.withdraw(memNum);
-        return "redirect:/main";
+        return "redirect:/academy/main";
     }
+
     @GetMapping("check")
     public String loginCheck(BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
