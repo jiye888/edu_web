@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         chain.doFilter(request, response);
     }
-
+/*
     @Bean
     public JwtAuthenticationFilter getFilter() throws Exception {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtTokenProvider);
@@ -47,5 +47,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         filter.setAuthenticationManager(authenticationManager);
         return filter;
     }
-
+*/
 }

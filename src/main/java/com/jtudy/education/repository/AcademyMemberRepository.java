@@ -13,4 +13,6 @@ public interface AcademyMemberRepository extends JpaRepository<AcademyMember, Lo
 
     List<Academy> findByMember(Member member);
     List<Member> findByAcademy(Academy academy);
+    AcademyMember findByAcademyAndMember(Academy academy, Member member);
+
 }

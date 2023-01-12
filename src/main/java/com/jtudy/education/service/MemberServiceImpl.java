@@ -33,17 +33,23 @@ public class MemberServiceImpl implements MemberService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Member createMember(MemberFormDTO memberFormDTO) {
+    public Long createMember(MemberFormDTO memberFormDTO) {
         Member member = Member.builder()
                 .email(memberFormDTO.getEmail())
                 .password(passwordEncoder.encode(memberFormDTO.getPassword()))
                 .name(memberFormDTO.getName())
                 .address(memberFormDTO.getAddress())
                 .build();
-
         member.addRoles(Roles.USER);
-
-        return member;
+        try{
+            if(memberRepository.existsByEmail(member.getEmail())) {
+                throw new Exception("사용중인 이메일입니다.");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        memberRepository.save(member);
+        return member.getMemNum();
     }
 
     @Override
@@ -55,20 +61,19 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void withdraw(Long memNum) {
-        Member member = memberRepository.findByMemNum(memNum);
-        SecurityMember securityMember = new SecurityMember(member);
+        //Member member = memberRepository.findByMemNum(memNum);
         memberRepository.deleteById(memNum);
     }
 
     @Override
-    public String login(String email, String password, PasswordEncoder passwordEncoder) {
+    public String login(String email, String password) {
 
         UserDetails user = userDetailsService.loadUserByUsername(email);
-        Member account = memberRepository.findByEmail(user.getUsername());
+        Member member = memberRepository.findByEmail(user.getUsername());
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("잘못된 아이디, 또는 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(email, account.getRolesList());
+        return jwtTokenProvider.createToken(email, member.getRolesList());
 
     }
 
@@ -76,22 +81,10 @@ public class MemberServiceImpl implements MemberService{
     public Page<MemberDTO> getMembers(Academy academy) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Member> memberList = academyMemberRepository.findByAcademy(academy);
-        memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-        PageImpl page = new PageImpl(memberList, pageable, memberList.size());
+        List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+        PageImpl<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
         return page;
     }
-    
-    public void managerAuth(Long memNum) {
-        Member member = memberRepository.findByMemNum(memNum);
-        member.addRoles(Roles.MANAGER);
-    }
-    // 먼저 manager로 처리가 되어야 academy create 가능
-    
-    public void studentAuth(Long memNum) {
-        Member member = memberRepository.findByMemNum(memNum);
-        member.addRoles(Roles.STUDENT);
-    }
-    // academy join 시에 student role 없으면 추가
 
 }
 

@@ -32,7 +32,7 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private Long tokenValidTime = 12 * 60 * 60 * 1000L; // 12시간
+    private Long tokenValidTime = 6 * 60 * 60 * 1000L; // 6시간
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -77,9 +77,9 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public boolean validateToken(String jwtToken) {
+    public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;

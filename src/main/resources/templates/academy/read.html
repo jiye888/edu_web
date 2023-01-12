@@ -19,6 +19,8 @@
 
     <button type="button" class="modify" th:onclick="'location.href=\''+@{/academy/modify?number={number}(number=${academy.acaNum})}+'\';'">수정하기</button>
     <button type="button" class="delete" th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>
+    <button type="button" class="join" th:onclick="'location.href=\''+@{/academy/join?number={number}(number=${academy.acaNum})}+'\';'">수강 신청</button>
+    <button type="button" class="withdraw" th:onclick="'location.href=\''+@{/academy/withdraw?number={number}(number=${academy.acaNum})}+'\';">수강 취소</button>
 </div>
 </body>
 <!--

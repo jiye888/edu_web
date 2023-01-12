@@ -33,21 +33,24 @@ public class MemberController {
     @GetMapping("/join")
     public String join(Model model) {
         model.addAttribute("member", new MemberFormDTO());
-        return "/member/join";
+        return "/member/memberForm";
     }
 
     @PostMapping("/join")
-    public String join(Model model, @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, PasswordEncoder passwordEncoder) {
+    public String join(Model model, @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
+        /*
         if (bindingResult.hasErrors()) {
-            return "/member/join";
+            return "/member/memberForm";
         }
+         */
         try {
             memberService.createMember(memberFormDTO);
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
-            return "/member/join";
+            return "/member/memberForm";
         }
-        return "redirect:/member/login";
+        return "redirect:/academy/main";
+        //return "redirect:/member/login";
     }
 
     @PostMapping("/withdraw")
@@ -70,8 +73,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(String email, String password, PasswordEncoder passwordEncoder) {
-        memberService.login(email, password, passwordEncoder);
+    public String login(String email, String password) {
+        memberService.login(email, password);
         return "redirect:/main";
     }
 

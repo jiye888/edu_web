@@ -10,13 +10,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface MemberService {
 
-    public Member createMember(MemberFormDTO memberFormDTO);
+    public Long createMember(MemberFormDTO memberFormDTO);
 
     public Long updateMember(MemberFormDTO memberFormDTO);
 
     public void withdraw(Long memNum);
 
-    public String login(String email, String password, PasswordEncoder passwordEncoder);
+    public String login(String email, String password);
 
     public Page<MemberDTO> getMembers(Academy academy);
 

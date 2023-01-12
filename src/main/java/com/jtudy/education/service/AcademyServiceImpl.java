@@ -2,12 +2,14 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,13 +86,4 @@ public class AcademyServiceImpl implements AcademyService{
         return academyDTO;
     }
 
-    public Long join(Member member, Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        AcademyMember academyMember = AcademyMember.builder()
-                .academy(academy)
-                .member(member)
-                .build();
-        academyMemberRepository.save(academyMember);
-        return academyMember.getAmNum();
-    }
 }

@@ -22,6 +22,7 @@ public interface AcademyService {
 
     Page<AcademyDTO> search(String category, String keyword);
 
+
     default Academy dtoToEntity(AcademyDTO academyDTO) {
         /*
         AcademyMember academyMember = AcademyMember.builder()

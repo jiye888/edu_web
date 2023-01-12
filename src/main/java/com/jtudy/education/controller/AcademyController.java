@@ -4,6 +4,7 @@ import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.AcademyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,15 @@ import javax.validation.Valid;
 public class AcademyController {
 
     private final AcademyService academyService;
+    private final AcademyMemberService academyMemberService;
 
     @ModelAttribute("subject")
     public Subject[] subject() {
         return Subject.values();
+    }
+
+    @GetMapping("/main")
+    public void main(Model model) {
     }
 
     @GetMapping("/list")
@@ -79,9 +85,15 @@ public class AcademyController {
         return "redirect:/academy/list";
     }
     //#
-    @PostMapping("/join")
+    @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
     public String join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal Member member) {
-        //academyService에 join 생성
+        academyMemberService.join(member.getMemNum(), acaNum);
+        return "redirect:/academy/list";
+    }
+    //#
+    @RequestMapping(value = "/withdrawal", method = {RequestMethod.GET, RequestMethod.POST})
+    public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal Member member) {
+        academyMemberService.withdraw(member.getMemNum(), acaNum);
         return "redirect:/academy/list";
     }
 }
