@@ -12,6 +12,8 @@ public interface MemberService {
 
     public MemberDTO getOne(Long memNum);
 
+    public Member findOne(String email);
+
     public Long createMember(MemberFormDTO memberFormDTO);
 
     public Long updateMember(MemberFormDTO memberFormDTO);
@@ -21,6 +23,10 @@ public interface MemberService {
     public String login(String email, String password);
 
     public Page<MemberDTO> getMembers(Academy academy);
+
+    public void requestManagerAuth(Long memNum);
+
+    public void acceptManagerAuth(Long memNum);
 
     default MemberDTO entityToDTO(Member member) {
         MemberDTO memberDTO = MemberDTO.builder()

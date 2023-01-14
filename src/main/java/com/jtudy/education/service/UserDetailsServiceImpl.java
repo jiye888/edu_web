@@ -17,12 +17,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public SecurityMember loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email);
         if (member == null) {
             throw new UsernameNotFoundException("<" + email + "> 사용자를 찾을 수 없습니다.");
         }
         SecurityMember securityMember = new SecurityMember(member);
+        System.out.println(securityMember);
         return securityMember;
     }
 

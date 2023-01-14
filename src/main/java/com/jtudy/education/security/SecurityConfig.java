@@ -2,12 +2,14 @@ package com.jtudy.education.security;
 
 import com.jtudy.education.constant.Roles;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,15 +34,15 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    //private final JwtAuthenticationFilter jwtAuthenticationFilter;
- /*
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
     // spring security의 인증 처리
 
-  */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtTokenProvider jwtTokenProvider) throws Exception {
         httpSecurity.csrf().disable()
@@ -65,9 +67,9 @@ public class SecurityConfig {
                 .and()
                 .exceptionHandling().accessDeniedPage("/member/denied")
                 .accessDeniedHandler(accessDeniedHandler())
-                .authenticationEntryPoint(authenticationEntryPoint());
-                //.and()
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationEntryPoint(authenticationEntryPoint())
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
@@ -103,5 +105,16 @@ public class SecurityConfig {
             response.getWriter().close();
         };
     }
+/*
+    @Bean
+    public JwtAuthenticationFilter getFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtTokenProvider);
+        AuthenticationManager authenticationManager = getAuthenticationManager(new AuthenticationConfiguration());
+        filter.setAuthenticationManager(authenticationManager);
+        return filter;
+    }
+
+ */
+
 
 }

@@ -18,17 +18,17 @@ import javax.validation.constraints.Size;
 public class MemberFormDTO {
 
     @NotBlank
-    @Email
+    @Email(message = "이메일 주소를 입력해주세요.")
     private String email;
 
-    @NotBlank
-    @Size(min=8)
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Size(min=8, message = "비밀번호는 최소 8자 이상입니다.")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "주소를 입력해주세요.")
     private String address;
 
 }

@@ -40,6 +40,12 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public Member findOne(String email) {
+        Member member = memberRepository.findByEmail(email);
+        return member;
+    }
+
+    @Override
     public Long createMember(MemberFormDTO memberFormDTO) {
         Member member = Member.builder()
                 .email(memberFormDTO.getEmail())
@@ -91,6 +97,16 @@ public class MemberServiceImpl implements MemberService{
         List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
         PageImpl<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
         return page;
+    }
+
+    @Override
+    public void requestManagerAuth(Long memNum){
+        Member member = memberRepository.findByMemNum(memNum);
+    }
+
+    @Override
+    public void acceptManagerAuth(Long memNum){
+
     }
 
 }

@@ -45,12 +45,13 @@ public class AcademyController {
     public String register(Model model) {
         model.addAttribute("academy", new AcademyFormDTO());
         return "/academy/registerForm";
-        //academyForm이라는 view page 만들기. academy 등록에 필요한 양식들 존재.
     }
 
     @PostMapping("/register")
-    public String register(@Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        System.out.println(academyFormDTO);
+    public String register(@ModelAttribute("academy") @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "/academy/registerForm";
+        }
         Long acaNum = academyService.register(academyFormDTO);
         redirectAttributes.addFlashAttribute("message", acaNum);
         return "redirect:/academy/list";

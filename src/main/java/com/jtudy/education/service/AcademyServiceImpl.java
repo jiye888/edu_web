@@ -44,15 +44,15 @@ public class AcademyServiceImpl implements AcademyService{
     public Page<AcademyDTO> getAcademies(Member member) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Academy> academyList = academyMemberRepository.findByMember(member);
-        academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-        PageImpl page = new PageImpl(academyList, pageable, academyList.size());
+        List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+        PageImpl<AcademyDTO> page = new PageImpl<AcademyDTO>(academyDTOList, pageable, academyList.size());
         return page;
     }
 
     @Override
     public Long register(AcademyFormDTO academyFormDTO) {
         Academy academy = formToEntity(academyFormDTO);
-        academyRepository.save(academy);
+        academy = academyRepository.save(academy);
         return academy.getAcaNum();
     }
 
@@ -75,11 +75,11 @@ public class AcademyServiceImpl implements AcademyService{
     public Page<AcademyDTO> search(String category, String keyword) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<Academy> academy = null;
-        if (category == "name") {
+        if (category.equals("name")) {
             academy = academyRepository.findByAcaNameContaining(keyword, pageable);
-        } else if (category == "subject") {
+        } else if (category.equals("subject")) {
             academy = academyRepository.findBySubjectContaining(keyword, pageable);
-        } else if (category == "location") {
+        } else if (category.equals("location")) {
             academy = academyRepository.findByLocationContaining(keyword, pageable);
         }
         Page<AcademyDTO> academyDTO = academy.map(e -> entityToDTO(e));

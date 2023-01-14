@@ -26,6 +26,6 @@ public class BaseEntity {
 
     @CreatedBy
     @Column(name = "created_by")
-    private Long createdBy;
+    private String createdBy;
 
 }

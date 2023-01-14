@@ -10,10 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -38,12 +35,10 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(Model model, @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
-        /*
+    public String join(Model model, @ModelAttribute("member") @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "/member/memberForm";
+            return "/member/registerForm";
         }
-         */
         try {
             memberService.createMember(memberFormDTO);
         } catch (Exception e) {
@@ -51,6 +46,12 @@ public class MemberController {
             return "/member/registerForm";
         }
         return "redirect:/member/login";
+    }
+
+    @GetMapping("/read")
+    public void member(@RequestParam(value = "id") Long memNum, Model model) {
+        MemberDTO memberDTO = memberService.getOne(memNum);
+        model.addAttribute("member", memberDTO);
     }
 
     @GetMapping("/modify")
@@ -76,7 +77,7 @@ public class MemberController {
         return "redirect:/academy/main";
     }
 
-    @GetMapping("check")
+    @GetMapping("/check")
     public String loginCheck(BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("loginError", "아이디 또는 비밀번호를 확인해주세요.");
@@ -86,14 +87,18 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public String login(Model model) {
-        return "/member/login";
+    public void login() {
     }
 
-    @PostMapping("/login")
-    public String login(String email, String password) {
-        memberService.login(email, password);
-        return "redirect:/main";
+    @PostMapping("/loginCheck")
+    public String loginCheck(String email, String password, Model model) {
+        try {
+            memberService.login(email, password);
+        } catch (Exception e) {
+            model.addAttribute("msg", "아이디와 패스워드가 일치하지 않습니다.");
+            return "/member/login";
+        }
+        return "redirect:/academy/main";
     }
 
 }

@@ -6,8 +6,8 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Academy</h3>
+    <button type="button" class="register" th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>
     <div th:if = "${!academy.isEmpty()}">
-        <button type="button" class="register" th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>
         <table class="table table-borderless">
             <thead align="center">
             <tr>
