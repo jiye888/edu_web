@@ -33,11 +33,12 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("review") @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String register(@RequestParam("academy") Long acaNum, @RequestParam("member") Long memNum,
+                           @ModelAttribute("review") @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if(bindingResult.hasErrors()) {
             return "/review/registerForm";
         }
-        Long revNum = reviewService.register(reviewFormDTO);
+        Long revNum = reviewService.register(reviewFormDTO, acaNum, memNum);
         redirectAttributes.addFlashAttribute("message", revNum);
         return "redirect:/review/list";
     }
@@ -47,4 +48,28 @@ public class ReviewController {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
         model.addAttribute("review", reviewDTO);
     }
+
+    @GetMapping("/modify")
+    public String modify(@RequestParam("number") Long revNum, Model model) {
+        ReviewDTO reviewDTO = reviewService.getOne(revNum);
+        model.addAttribute("review", reviewDTO);
+        return "/review/modifyForm";
+    }
+
+    @PostMapping("/modify")
+    public String modify(@Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("msg", "모든 항목을 입력해주세요.");
+            return "/review/modifyForm";
+        }
+        reviewService.update(reviewFormDTO);
+        return "redirect:/review/list";
+    }
+
+    @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    public String delete(@RequestParam("number") Long revNum) {
+        reviewService.delete(revNum);
+        return "redirect:/review/list";
+    }
+
 }

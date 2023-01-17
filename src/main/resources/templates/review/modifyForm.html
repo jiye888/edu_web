@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    <h3>수정 화면</h3>
+    <form action="./modify" method="post" th:object="${review}">
+        제목<input type="text" th:field="*{title}">
+        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p><br>
+        평점
+        <div>
+            <input type="radio" id="5points" name="grade" value="5">
+            <label for="5points">5</label>
+            <input type="radio" id="4points" name="grade" value="4">
+            <label for="4points">4</label>
+            <input type="radio" id="3points" name="grade" value="3">
+            <label for="3points">3</label>
+            <input type="radio" id="2points" name="grade" value="2">
+            <label for="2points">2</label>
+            <input type="radio" id="1point" name="grade" value="1">
+            <label for="1point">1</label>
+        </div>
+        <p th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" class="fieldError"></p><br>
+        내용<input type="text" th:field="*{content}"><br>
+        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p><br>
+        <input type="submit" value="수정">
+    </form>
+</div>
+<script th:inline="javascript">
+            fetch("/review/modify", {
+        method: 'post',
+        headers: {
+            'content-type':'application/json',
+            'X-AUTH-TOKEN':localStorage.getItem('jwt'),
+        }
+    }).then(res => res.json())
+        .then(json => alert("이메일: "+json.name))
+        });
+</script>
+</body>
+</html>

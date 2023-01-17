@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    제목:
+    <span th:text="${review.title}">제목</span><br>
+    작성일자:
+    <span th:text="${review.createdAt}">작성일자</span><br>
+    평점
+    <span th:text="${review.grade}">평점</span><br>
+    내용:
+    <span th:text="${review.content}">내용</span><br>
+    <input type="hidden" th:field="${academy.acaNum}">
+    <input type="hidden" th:field="${review.revNum}">
+
+    <button type="button" class="modify" th:onclick="'location.href=\''+@{/review/modify?number={number}(number=${review.revNum})}+'\';'">수정하기</button>
+    <button type="button" class="delete" th:onclick="'location.href=\''+@{/review/delete?number={number}(number=${review.revNum})}+'\';'">삭제하기</button>
+</div>
+</body>
+</html>

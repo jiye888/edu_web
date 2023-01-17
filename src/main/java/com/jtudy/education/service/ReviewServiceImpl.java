@@ -2,7 +2,11 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
+import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
+import com.jtudy.education.repository.AcademyRepository;
+import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +23,8 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final AcademyRepository academyRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public Page<ReviewDTO> getAll() {
@@ -37,8 +43,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewFormDTO reviewFormDTO) {
+    public Long register(ReviewFormDTO reviewFormDTO, Long acaNum, Long memNum) {
         Review review = formToEntity(reviewFormDTO);
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        Member member = memberRepository.findByMemNum(memNum);
+        review.builder().academy(academy).writer(member).build();
         reviewRepository.save(review);
         return review.getRevNum();
     }
@@ -53,6 +62,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void delete(Long revNum) {
-
+        reviewRepository.deleteById(revNum);
     }
 }

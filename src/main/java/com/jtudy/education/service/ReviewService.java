@@ -13,7 +13,7 @@ public interface ReviewService {
 
     ReviewDTO getOne(Long revNum);
 
-    Long register(ReviewFormDTO reviewFormDTO);
+    Long register(ReviewFormDTO reviewFormDTO, Long acaNum, Long memNum);
 
     Long update(ReviewFormDTO reviewFormDTO);
 
@@ -31,17 +31,7 @@ public interface ReviewService {
     }
 
     default Review formToEntity(ReviewFormDTO reviewFormDTO) {
-        Academy academy = Academy.builder()
-                .acaNum(reviewFormDTO.getAcaNum())
-                .build();
-
-        Member member = Member.builder()
-                .memNum(reviewFormDTO.getMemNum())
-                .build();
-
         Review review = Review.builder()
-                .writer(member)
-                .academy(academy)
                 .title(reviewFormDTO.getTitle())
                 .content(reviewFormDTO.getContent())
                 .grade(reviewFormDTO.getGrade())
