@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ReviewDTO;
+import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Review;
 import com.jtudy.education.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,16 +37,16 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewDTO reviewDTO) {
-        Review review = dtoToEntity(reviewDTO);
+    public Long register(ReviewFormDTO reviewFormDTO) {
+        Review review = formToEntity(reviewFormDTO);
         reviewRepository.save(review);
         return review.getRevNum();
     }
 
     @Override
-    public Long update(ReviewDTO reviewDTO) {
-        Review review = reviewRepository.findByRevNum(reviewDTO.getRevNum());
-        review.changeReview(reviewDTO.getTitle(), reviewDTO.getContent());
+    public Long update(ReviewFormDTO reviewFormDTO) {
+        Review review = reviewRepository.findByRevNum(reviewFormDTO.getRevNum());
+        review.changeReview(reviewFormDTO.getTitle(), reviewFormDTO.getContent());
         reviewRepository.save(review);
         return review.getRevNum();
     }

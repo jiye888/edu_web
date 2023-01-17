@@ -80,7 +80,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public String login(String email, String password) {
-
         UserDetails user = userDetailsService.loadUserByUsername(email);
         Member member = memberRepository.findByEmail(user.getUsername());
         if (!passwordEncoder.matches(password, user.getPassword())) {

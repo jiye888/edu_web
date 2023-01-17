@@ -18,5 +18,16 @@
             <input type="submit" value="등록">
         </form>
     </div>
+<script th:inline="javascript">
+            fetch("/academy/register", {
+        method: 'post',
+        headers: {
+            'content-type':'application/json',
+            'X-AUTH-TOKEN':localStorage.getItem('jwt'),
+        }
+    }).then(res => res.json())
+        .then(json => alert("이메일: "+json.name))
+        });
+</script>
 </body>
 </html>

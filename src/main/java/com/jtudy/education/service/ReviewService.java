@@ -1,6 +1,9 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ReviewDTO;
+import com.jtudy.education.DTO.ReviewFormDTO;
+import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import org.springframework.data.domain.Page;
 
@@ -10,9 +13,9 @@ public interface ReviewService {
 
     ReviewDTO getOne(Long revNum);
 
-    Long register(ReviewDTO reviewDTO);
+    Long register(ReviewFormDTO reviewFormDTO);
 
-    Long update(ReviewDTO reviewDTO);
+    Long update(ReviewFormDTO reviewFormDTO);
 
     void delete(Long revNum);
 
@@ -22,6 +25,26 @@ public interface ReviewService {
                 .title(reviewDTO.getTitle())
                 .content(reviewDTO.getContent())
                 .grade(reviewDTO.getGrade())
+                .build();
+
+        return review;
+    }
+
+    default Review formToEntity(ReviewFormDTO reviewFormDTO) {
+        Academy academy = Academy.builder()
+                .acaNum(reviewFormDTO.getAcaNum())
+                .build();
+
+        Member member = Member.builder()
+                .memNum(reviewFormDTO.getMemNum())
+                .build();
+
+        Review review = Review.builder()
+                .writer(member)
+                .academy(academy)
+                .title(reviewFormDTO.getTitle())
+                .content(reviewFormDTO.getContent())
+                .grade(reviewFormDTO.getGrade())
                 .build();
 
         return review;

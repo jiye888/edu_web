@@ -52,6 +52,7 @@ public class AcademyController {
         if (bindingResult.hasErrors()) {
             return "/academy/registerForm";
         }
+
         Long acaNum = academyService.register(academyFormDTO);
         redirectAttributes.addFlashAttribute("message", acaNum);
         return "redirect:/academy/list";

@@ -47,7 +47,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtTokenProvider jwtTokenProvider) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                //.antMatchers("/academy/register").hasRole("MANAGER")
+                //.antMatchers("/academy/register").hasRole("USER")
                 //.antMatchers("/review/**").hasRole("USER")
                 //.antMatchers("/member/update").hasRole("USER")
                 .anyRequest().permitAll()
