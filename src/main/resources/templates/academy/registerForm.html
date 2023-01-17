@@ -5,193 +5,29 @@
     <meta charset="UTF-8">
 <body>
     <div layout:fragment="content">
-        <h3 class="custom-text font-bold">등록 화면</h3><br>
-        <form th:object="${academy}" class="custom-form">
-            <span class="custom-span">학원 이름</span>
-            <input type="text" class="custom-form-control w70" th:field="*{acaName}">
-            <p id="acaNameError"></p><br>
-            <span class="custom-span">학원 위치</span>
-            <div th:field="*{location}" >
-                <div style="display:flex;">
-                    <input type="text" class="custom-form-control f1" name="location" id="postcode" placeholder="우편번호">
-                    <input type="button" class="custom-form-control f0" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
-                </div>
-                <div style="display:flex">
-                    <input type="text" class="custom-form-control f1" name="location" id="address" placeholder="주소">
-                </div>
-                <div style="display:flex">
-                    <input type="text" class="custom-form-control f1" name="location" id="detailAddress" placeholder="상세주소">
-                    <input type="text" class="custom-form-control f1" name="location" id="extraAddress" placeholder="참고항목">
-                </div>
-            </div>
-            <p id="locationError"></p><br>
-
-            <span class="custom-span">수강 과목</span><br>
-            <div class="custom-control custom-radio custom-control-inline">
-                <div th:each="sub : ${subject}" class="custom-checkbox">
-                    <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="custom-check-input">
-                    <label th:for="${#ids.prev('subject')}" th:text="${sub.description}"></label>
-                </div>
-            </div>
-            <p id="subjectError"></p>
-
-            <div>
-                <span class="custom-span">학원 소개</span>
-                <input type="text" id="academyIntro" class="custom-form-control">
-            </div>
-            <br>
-            <span class="custom-span" style="margin-bottom:15px;">대표 이미지</span>
-            <div style="display:flex;">
-                <input type="file" id="inputFile" style="display:none;">
-                <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
-                <div class="custom-form-control file-name" id="selectedFile"></div>
-                <input type="button" id="deleteFile" class="custom-button-mint select-file" value="파일 삭제">
+        <h3>등록 화면</h3>
+        <form action="./register" method="post" th:object="${academy}">
+            학원 이름<input type="text" th:field="*{acaName}"><br>
+            학원 위치<input type="text" th:field="*{location}"><br>
+            수강 과목<br>
+            <div th:each="sub : ${subject}" class="form-check form-check line">
+                <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="form-check-input">
+                <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
             </div>
 
-            <div class="button-distance">
-                <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
-                <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
-            </div>
-
+            <input type="submit" value="등록">
         </form>
-        <script th:inline="javascript">
-
-        $(function() {
-
-            $('#deleteFile').on("click", function() {
-                $('#inputFile').val(null);
-                $('#selectedFile').val(null);
-            });
-
-            $('#registerBtn').on("click", function() {
-                register();
-            });
-            $('#cancelBtn').on("click", function() {
-                history.back();
-            });
-        });
-
-        const inputFile = document.getElementById('inputFile');
-        const selectedFile = document.getElementById('selectedFile');
-
-        inputFile.addEventListener('change', function() {
-            selectedFile.textContent = inputFile.files[0].name;
-        });
-
-        function getSubject() {
-            var subject = [];
-            var subjects = $("input[name=subject]:checkbox");
-            for ( var i = 0; i < subjects.length; i++) {
-                if (subjects[i].checked == true ) {
-                    subject.push(subjects[i].value);
-                }
-            }
-            return subject;
-        }
-
-        function register() {
-            clearText(["acaNameError", "locationError", "subjectError"]);
-            var acaName = $('#acaName').val();
-            var location = '';
-            $('input[name=location]:lt(3)').map(function(){
-                location += $(this).val();
-                location += ' ';
-            });
-            location = $.trim(location);
-            var subject = getSubject();
-            var intro = $('#academyIntro').val();
-
-            const formDTO = {
-                acaName:acaName,
-                location:location,
-                subject:subject,
-                intro:intro
-            };
-
-            var file = $('#inputFile').prop('files')[0];
-            var formData = new FormData();
-            formData.append("academyFormDTO", new Blob([JSON.stringify(formDTO)], {type:"application/json"}));
-            formData.append("file", file);
-
-            if (acaName && location && subject) {
-
-                $.ajax({
-                    url: '/academy/register',
-                    type: "POST",
-                    contentType: false,
-                    processData: false,
-                    data: formData,
-                    success: function(response) {
-                        var number = Number(response);
-                        window.location.href = "/academy/read?number="+number;
-                    },
-                    error: function(xhr, response) {
-                        jwtFilter();
-                        if (xhr.status === 422) {
-                            var errorMessage = JSON.parse(xhr.responseText);
-                            checkBindingResult(errorMessage);
-                        } else {
-                            console.log(xhr.responseText);
-                        }
-                    },
-                });
-            } else {
-                alert("모든 항목을 입력해주세요.");
-            }
-        }
-
-        </script>
-        <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-        <script>
-    function execDaumPostcode() {
-        new daum.Postcode({
-            oncomplete: function(data) {
-                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
-
-                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
-                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-                var addr = ''; // 주소 변수
-                var extraAddr = ''; // 참고항목 변수
-
-                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
-                    addr = data.roadAddress;
-                } else { // 사용자가 지번 주소를 선택했을 경우(J)
-                    addr = data.jibunAddress;
-                }
-
-                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
-                if(data.userSelectedType === 'R'){
-                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
-                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
-                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-                        extraAddr += data.bname;
-                    }
-                    // 건물명이 있고, 공동주택일 경우 추가한다.
-                    if(data.buildingName !== '' && data.apartment === 'Y'){
-                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                    }
-                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
-                    if(extraAddr !== ''){
-                        extraAddr = ' (' + extraAddr + ')';
-                    }
-                    // 조합된 참고항목을 해당 필드에 넣는다.
-                    document.getElementById("extraAddress").value = extraAddr;
-
-                } else {
-                    document.getElementById("extraAddress").value = '';
-                }
-
-                // 우편번호와 주소 정보를 해당 필드에 넣는다.
-                document.getElementById('postcode').value = data.zonecode;
-                document.getElementById("address").value = addr;
-                // 커서를 상세주소 필드로 이동한다.
-                document.getElementById("detailAddress").focus();
-            }
-        }).open();
-    }
-</script>
     </div>
-
+<script th:inline="javascript">
+            fetch("/academy/register", {
+        method: 'post',
+        headers: {
+            'content-type':'application/json',
+            'X-AUTH-TOKEN':localStorage.getItem('jwt'),
+        }
+    }).then(res => res.json())
+        .then(json => alert("이메일: "+json.name))
+        });
+</script>
 </body>
 </html>

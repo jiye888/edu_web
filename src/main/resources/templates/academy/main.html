@@ -3,53 +3,32 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 <meta charset="UTF-8">
+<body>
 <div layout:fragment="content">
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="margin-top:-20px;height:265px;" data-interval="5000" data-pause="hover">
-        <ol class="carousel-indicators">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-        </ol>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <a href="/info/read?number=18">
-                    <div class="custom-carousel-background1"></div>
-                </a>
-            </div>
-            <div class="carousel-item">
-                <a href="/info/read?number=17">
-                    <div class="custom-carousel-background2"></div>
-                </a>
-            </div>
-        </div>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
+    <h3 align="center">Academy</h3>
+    <div>
+        <button type="button" class="academy" th:onclick="'location.href=\''+@{/academy/list}+'\';'">학원 보러가기</button>
+        <button type="button" class="member_register" th:onclick="'location.href=\''+@{/member/join}+'\';'">회원 가입</button>
+        <button type="button" class="member_login" th:onclick="'location.href=\''+@{/member/login}+'\';'">로그인</button>
+        <table class="table table-borderless">
+            <thead align="center">
+            <tr>
+                <th scope="col" style="width:50%">학원 이름</th>
+                <th scope="col">학원 위치</th>
+                <th scope="col">수강 과목</th>
+                <th scope="col">평점</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="academy : ${academy}">
+                <td style="width:50%" align="center">
+                <td><span >평점</span></td>
+                <td><span >학원 위치</span></td>
+                <td><span >수강 과목</span></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="card" style="height:700px;border:none;">
-        <div class="custom-card-background" style="border:0;">
-            <div class="card-body">
-                <h3 align="center" class="card-title font-bold" style="color:white;">WELCOME!</h3>
-                <p class="card-text" align="center" style="color:white;">에듀웹에 오신 것을 환영합니다.</p>
-            </div>
-            <div class="justify-content-center" style="display:flex;">
-                <button type="button" class="custom-button-yellow" th:onclick="'location.href=\''+@{/academy/list}+'\';'">학원 보러가기</button>
-                <button type="button" class="custom-button-yellow" th:onclick="'location.href=\''+@{/member/join}+'\';'">회원 가입</button>
-                <button type="button" class="custom-button-yellow" id="authBtn" th:if="${isAdmin} == true">요청된 권한 목록</button>
-            </div>
-        </div>
-    </div>
-    <script th:inline="javascript">
-        $(function() {
-            $('#authBtn').on("click", function() {
-                requestedAuth();
-            });
-        });
-
-    </script>
 </div>
+</body>
 </html>

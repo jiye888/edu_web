@@ -1,7 +1,9 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ReviewDTO;
-import com.jtudy.education.entity.SubjectClass;
+import com.jtudy.education.DTO.ReviewFormDTO;
+import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import org.springframework.data.domain.Page;
 
@@ -11,17 +13,13 @@ public interface ReviewService {
 
     ReviewDTO getOne(Long revNum);
 
-    Long register(ReviewDTO reviewDTO);
+    Long register(ReviewFormDTO reviewFormDTO);
 
-    Long update(ReviewDTO reviewDTO);
+    Long update(ReviewFormDTO reviewFormDTO);
 
     void delete(Long revNum);
 
     default Review dtoToEntity(ReviewDTO reviewDTO) {
-        SubjectClass academyMember = SubjectClass.builder()
-                .amNum(reviewDTO.getAmNum())
-                .build();
-
         Review review = Review.builder()
                 .revNum(reviewDTO.getRevNum())
                 .title(reviewDTO.getTitle())
@@ -32,14 +30,31 @@ public interface ReviewService {
         return review;
     }
 
+    default Review formToEntity(ReviewFormDTO reviewFormDTO) {
+        Academy academy = Academy.builder()
+                .acaNum(reviewFormDTO.getAcaNum())
+                .build();
+
+        Member member = Member.builder()
+                .memNum(reviewFormDTO.getMemNum())
+                .build();
+
+        Review review = Review.builder()
+                .writer(member)
+                .academy(academy)
+                .title(reviewFormDTO.getTitle())
+                .content(reviewFormDTO.getContent())
+                .grade(reviewFormDTO.getGrade())
+                .build();
+
+        return review;
+    }
+
     default ReviewDTO entityToDTO(Review review) {
         ReviewDTO reviewDTO = ReviewDTO.builder()
                 .revNum(review.getRevNum())
                 .title(review.getTitle())
                 .content(review.getContent())
-                .amNum(review.getAcademyMember().getAmNum())
-                .acaNum(review.getAcademyMember().getAcademy().getAcaNum())
-                .acaName(review.getAcademyMember().getAcademy().getAcaName())
                 .writerNum(review.getWriter().getMemNum())
                 .writerName(review.getWriter().getName())
                 .writerEmail(review.getWriter().getEmail())
