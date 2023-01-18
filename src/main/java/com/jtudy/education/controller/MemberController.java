@@ -7,6 +7,9 @@ import com.jtudy.education.security.SecurityConfig;
 import com.jtudy.education.service.MemberServiceImpl;
 import com.jtudy.education.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -26,29 +30,28 @@ public class MemberController {
 
     private final MemberServiceImpl memberService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String main() {
-        return "/member/login";
+        return "member/login";
     }
 
     @GetMapping("/join")
     public String join(Model model) {
         model.addAttribute("member", new MemberFormDTO());
-        return "/member/registerForm";
+        return "member/registerForm";
     }
 
     @PostMapping("/join")
     public String join(Model model, @ModelAttribute("member") @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "/member/registerForm";
+            return "member/registerForm";
         }
         try {
             memberService.createMember(memberFormDTO);
         } catch (Exception e) {
             model.addAttribute("errorMsg", e.getMessage());
-            return "/member/registerForm";
+            return "member/registerForm";
         }
         return "redirect:/member/login";
     }
@@ -63,14 +66,14 @@ public class MemberController {
     public String modify(@RequestParam(value = "id") Long memNum, Model model) {
         MemberDTO memberDTO = memberService.getOne(memNum);
         model.addAttribute("member", memberDTO);
-        return "/member/modifyForm";
+        return "member/modifyForm";
     }
 
     @PostMapping("/modify")
     public String modify(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("msg", "모든 항목을 입력해주세요.");
-            return "/member/modifyForm";
+            return "member/modifyForm";
         }
         memberService.updateMember(memberFormDTO);
         return "redirect:/academy/main";
@@ -87,16 +90,18 @@ public class MemberController {
     }
 
     @PostMapping("/loginCheck")
-    public String loginCheck(String email, String password, Model model, HttpSession session, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> loginCheck(@RequestBody Map<String, String> member, Model model, HttpSession session, HttpServletRequest request) {
         try {
+            String email = member.get("email");
+            String password = member.get("password");
             String token = memberService.login(email, password);
-            session.setAttribute("token", token);
-            request.setAttribute("X-AUTH-TOKEN", token);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("token", token);
+            return new ResponseEntity(map, HttpStatus.OK);
         } catch (Exception e) {
             model.addAttribute("msg", "아이디와 패스워드가 일치하지 않습니다.");
-            return "/member/login";
+            return new ResponseEntity("redirect:/member/login", HttpStatus.BAD_REQUEST);
         }
-        return "redirect:/academy/main";
     }
 
  /*
