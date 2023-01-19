@@ -23,15 +23,13 @@
 
         $(document).ready(function() {
             $('#loginBtn').click(function() {
-                login_original();
+                login();
             });
         });
 
         function login() {
-        var email = $('input[name="email"]').val();
-        var password = $('input[name="password"]').val();
-        var token = [[${token}]];
-
+            var email = $('#email').val();
+            var password = $('#password').val();
 
             if (validate(email, password) == true){
                 const path = '/member/loginCheck';
@@ -39,61 +37,37 @@
                     "email": email,
                     "password": password,
                 };
-                const response = fetch("/member/loginCheck", {
-                    method: "POST",
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify(json),
-
-                }).then(token => {
-                        alert(token.toString());
+                $.ajax({
+                    url: path,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(json),
+                    success: function(data, textStatus, xhr) {
+                    },
+                }).then((response) => {
+                    var token = response.token;
+                    if (token != null) {
+                        alert('로그인 성공');
                         localStorage.setItem("jwt", token);
                         location.href = "/academy/main";
+                    } else {
+                        alert('로그인 실패');
+                    }
                 });
             }
         }
 
-
-    function login_original() {
-        var email = $('#email').val();
-        var password = $('#password').val();
-
-        if (validate(email, password) == true){
-            const path = '/member/loginCheck';
-            const json = {
-                "email": email,
-                "password": password,
-            };
-            $.ajax({
-                url: path,
-                type: "POST",
-                contentType: "application/json",
-                data: JSON.stringify(json),
-                success: function(data, textStatus, xhr) {
-                },
-            }).then((response) => {
-                var token = response.token;
-                if (token != null) {
-                    alert('로그인 성공');
-                    localStorage.setItem("jwt", token);
-                    location.href = "/academy/main";
-                } else {
-                    alert('로그인 실패');
-                }
-            });
+        function validate(email, password){
+            if (!email) {
+                alert('아이디를 입력해주세요');
+                return false;
+            }
+            if (!password ) {
+                alert('패스워드를 입력해주세요');
+                return false;
+            }
+            return true;
         }
-    }
-
-    function validate(email, password){
-        if (!email) {
-            alert('아이디를 입력해주세요');
-            return false;
-        }
-        if (!password ) {
-            alert('패스워드를 입력해주세요');
-            return false;
-        }
-        return true;
-    }
 
     </script>
     </div>

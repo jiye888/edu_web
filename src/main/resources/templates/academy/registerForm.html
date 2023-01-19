@@ -6,28 +6,63 @@
 <body>
     <div layout:fragment="content">
         <h3>등록 화면</h3>
-        <form action="./register" method="post" th:object="${academy}">
+        <form th:object="${academy}"><!-- action="./register" method="post" th:object="${academy}">-->
             학원 이름<input type="text" th:field="*{acaName}"><br>
             학원 위치<input type="text" th:field="*{location}"><br>
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
-                <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="form-check-input">
+                <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="form-check-input">
                 <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
             </div>
 
-            <input type="submit" value="등록">
+            <button type="button" id="registerBtn">등록</button>
+            <!--<input type="submit" id="registerBtn" value="등록">-->
         </form>
-    </div>
-<script th:inline="javascript">
-            fetch("/academy/register", {
-        method: 'post',
-        headers: {
-            'content-type':'application/json',
-            'X-AUTH-TOKEN':localStorage.getItem('jwt'),
-        }
-    }).then(res => res.json())
-        .then(json => alert("이메일: "+json.name))
+        <script th:inline="javascript">
+
+        $(document).ready(function() {
+            $('#registerBtn').click(function() {
+                register();
+            });
         });
-</script>
+
+        function getSubject() {
+            var subject = [];
+            var subjects = $("input[name=subject]:checkbox");
+            for ( var i = 0; i < subjects.length; i++) {
+                if (subjects[i].checked == true ) {
+                    subject.push(subjects[i].value);
+                }
+            }
+            return subject;
+        }
+
+        function register() {
+            var acaName = $('#acaName').val();
+            var location = $('#location').val();
+            var subject = getSubject();
+
+            $.ajax({
+                url: '/academy/register',
+                type: "POST",
+                contentType: "application/json",
+                headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
+                data: JSON.stringify({
+                    "acaName":acaName,
+                    "subject":subject,
+                    "location":location,
+                }),
+            }).then((response) => {
+                if (acaName != null && location != null && subject != null) {
+                    alert('등록이 완료되었습니다.');
+                    location.href="/academy/main";
+                } else {
+                    alert('모든 항목을 작성해주세요.');
+                };
+            });
+        }
+        </script>
+    </div>
+
 </body>
 </html>

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Base64;
 import java.util.Date;
@@ -78,9 +79,8 @@ public class JwtTokenProvider {
     }
     //Jws? Jwts?
 
-    public String resolveToken(HttpSession session) {
-        //return request.getHeader("X-AUTH-TOKEN");
-        return (String) session.getAttribute("token");
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("X-AUTH-TOKEN");
     }
 
 }

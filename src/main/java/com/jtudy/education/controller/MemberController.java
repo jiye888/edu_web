@@ -97,10 +97,12 @@ public class MemberController {
             String token = memberService.login(email, password);
             HashMap<String, String> map = new HashMap<>();
             map.put("token", token);
-            return new ResponseEntity(map, HttpStatus.OK);
+            return new ResponseEntity<>(map, HttpStatus.OK);
         } catch (Exception e) {
             model.addAttribute("msg", "아이디와 패스워드가 일치하지 않습니다.");
-            return new ResponseEntity("redirect:/member/login", HttpStatus.BAD_REQUEST);
+            HashMap<String, String> map = new HashMap<>();
+            map.put("redirect","redirect:/member/login");
+            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
     }
 

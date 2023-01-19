@@ -6,6 +6,7 @@ import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.AcademyService;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.EnumSet;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/academy")
@@ -48,11 +51,16 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("academy") @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String register(@RequestBody @Valid Map<String, Object> form, BindingResult bindingResult, RedirectAttributes redirectAttributes,
+                           @AuthenticationPrincipal Member member) {
+        AcademyFormDTO academyFormDTO = new AcademyFormDTO();
+        academyFormDTO.setAcaName(form.get("acaName").toString());
+        academyFormDTO.setSubject((EnumSet<Subject>) form.get("subject"));
+        academyFormDTO.setLocation(form.get("location").toString());
+        System.out.println(academyFormDTO);
         if (bindingResult.hasErrors()) {
             return "/academy/registerForm";
         }
-
         Long acaNum = academyService.register(academyFormDTO);
         redirectAttributes.addFlashAttribute("message", acaNum);
         return "redirect:/academy/list";
