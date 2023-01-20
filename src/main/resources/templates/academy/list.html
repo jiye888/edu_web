@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Academy</h3>
-    <button type="button" class="register" th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>
+    <button type="button" class="register" id="registerBtn">학원등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
     <div th:if = "${!academy.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
@@ -68,6 +68,35 @@
             </ul>
         </nav>
     </div>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            $('#registerBtn').click(function(){
+            reg();
+
+            });
+        });
+
+
+        function reg() {
+            var token = localStorage.getItem("jwt");
+
+            var request = new XMLHttpRequest();
+            request.open("GET", "/academy/register");
+            request.setRequestHeader("X-AUTH-TOKEN", token);
+            request.send();
+        }
+
+        function register() {
+                $.ajax({
+                    url: '/academy/register',
+                    type: 'GET',
+                    ContentType:"application/json",
+                    headers: {"X-AUTH-TOKEN":token},
+                });
+        }
+
+    </script>
 </div>
 </body>
 </html>

@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.keygen.KeyGenerators;
@@ -24,24 +25,12 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private Long tokenValidTime = 6 * 60 * 60 * 1000L; // 6시간
+    private Long tokenValidTime = 2 * 60 * 60 * 1000L; // 2시간
 
     private final UserDetailsServiceImpl userDetailsService;
 
     StringKeyGenerator keyGenerator = KeyGenerators.string();
     String secretKey = keyGenerator.generateKey();
-
-/*
-    private static SecretKey getSecureRandomKey(String cipher, int keySize) {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] randomKeyBytes = new byte[keySize];
-        secureRandom.nextBytes(randomKeyBytes);
-        return new SecretKeySpec(randomKeyBytes, cipher);
-
-    }
-    SecretKey secretKey = getSecureRandomKey("AES", 8);
-    String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
- */
 
     @PostConstruct
     protected void init() {
@@ -77,7 +66,6 @@ public class JwtTokenProvider {
             return false;
         }
     }
-    //Jws? Jwts?
 
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader("X-AUTH-TOKEN");

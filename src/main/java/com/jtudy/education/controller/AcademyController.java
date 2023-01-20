@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
 
@@ -53,9 +54,14 @@ public class AcademyController {
     @PostMapping("/register")
     public String register(@RequestBody @Valid Map<String, Object> form, BindingResult bindingResult, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal Member member) {
+        ArrayList<String> subjects = (ArrayList<String>) form.get("subject");
+        EnumSet<Subject> subject = EnumSet.noneOf(Subject.class);
+        for (String s : subjects) {
+            subject.add(Subject.valueOf(s));
+        }
         AcademyFormDTO academyFormDTO = new AcademyFormDTO();
         academyFormDTO.setAcaName(form.get("acaName").toString());
-        academyFormDTO.setSubject((EnumSet<Subject>) form.get("subject"));
+        academyFormDTO.setSubject(subject);
         academyFormDTO.setLocation(form.get("location").toString());
         System.out.println(academyFormDTO);
         if (bindingResult.hasErrors()) {
