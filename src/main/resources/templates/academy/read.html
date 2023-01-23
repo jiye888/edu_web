@@ -15,22 +15,41 @@
     </div>
     학원 위치:
     <span th:text="${academy.location}">학원 위치</span><br>
-    <input type="hidden" th:field="${academy.acaNum}">
+    <input type="hidden" th:field="${academy.acaNum}" id="number">
 
-    <button type="button" class="modify" th:onclick="'location.href=\''+@{/academy/modify?number={number}(number=${academy.acaNum})}+'\';'">수정하기</button>
-    <button type="button" class="delete" th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>
-    <button type="button" class="join" th:onclick="'location.href=\''+@{/academy/join?number={number}(number=${academy.acaNum})}+'\';'">수강 신청</button>
-    <button type="button" class="withdraw" th:onclick="'location.href=\''+@{/academy/withdraw?number={number}(number=${academy.acaNum})}+'\';">수강 취소</button>
+    <button type="button" id="modifyBtn">수정하기</button> <!--th:onclick="'location.href=\''+@{/academy/modify?number={number}(number=${academy.acaNum})}+'\';'">수정하기</button>-->
+    <button type="button" id="delete" th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>
+    <button type="button" id="join" th:onclick="'location.href=\''+@{/academy/join?number={number}(number=${academy.acaNum})}+'\';'">수강 신청</button>
+    <!--<button type="button" class="withdraw" th:onclick="'location.href=\''+@{/academy/withdraw?number={number}(number=${academy.acaNum})}+'\';">수강 취소</button>-->
+
+    <script th:inline="javascript">
+
+        $(document).ready(function() {
+            $('#modifyBtn').click(function() {
+                modify();
+            });
+        });
+
+        function modify() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+
+            $.ajax({
+                url: '/academy/modify',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {"number":number},
+                success: function(xhr) {
+                    location.href='/academy/modify?number='+number;
+                },
+            });
+        }
+
+    </script>
 </div>
 </body>
-<!--
-<script th:inline="javascript">
 
-    var number = [[${academy.acaNum}]]
-
-    $('.modify').on("click", function() {
-            location.href="/academy/modify?"+number;
-    });
-</script>
--->
 </html>

@@ -77,7 +77,6 @@ public class NoticeController {
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public String delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
-        NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(notNum, member)) {
             noticeService.delete(notNum);
         } else {

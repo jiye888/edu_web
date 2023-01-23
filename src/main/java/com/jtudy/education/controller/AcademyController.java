@@ -74,11 +74,11 @@ public class AcademyController {
     @GetMapping("/modify")
     public String modify(@RequestParam(value = "number") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
-        if (academyDTO.getManagerEmail() == member.getMember().getEmail()) {
+        //if (academyDTO.getManagerEmail() == member.getMember().getEmail()) {
             model.addAttribute("academy", academyDTO);
-        } else {
-            throw new IllegalArgumentException("관리자 권한이 없습니다.");
-        }
+        //} else {
+        //    throw new IllegalArgumentException("관리자 권한이 없습니다.");
+        //}
         return "academy/modifyForm";
     }
 
@@ -110,8 +110,8 @@ public class AcademyController {
     }
     //#
     @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
-    public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal Member member) {
-        academyMemberService.withdraw(member.getMemNum(), acaNum);
+    public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
+        academyMemberService.withdraw(member.getMember().getMemNum(), acaNum);
         return "redirect:/academy/list";
     }
     //#
