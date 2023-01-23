@@ -22,8 +22,7 @@
                 <td align="center"><a th:text="*{acaName}" th:href="@{/academy/read?number={number}(number=${academy.acaNum})}">학원 이름</a></td>
                 <td><span th:text="*{grade}">평점</span></td>
                 <td><span th:text="*{location}">학원 위치</span></td>
-                <!--<td><span th:text="*{subject.value}">수강 과목</span></td>-->
-                <td><a th:each="sub : ${academy.subject}" th:value="${sub}" th:text="${sub.description}"></a></td>
+                <td><a th:each="sub : ${academy.subject}" th:value="${sub}" th:text="'＊'+${sub.description}"></a></td>
             </tr>
             </tbody>
         </table>

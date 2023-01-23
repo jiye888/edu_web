@@ -10,23 +10,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface MemberService {
 
-    public MemberDTO getOne(Long memNum);
+    MemberDTO getOne(Long memNum);
 
-    public Member findOne(String email);
+    Member findOne(String email);
 
-    public Long createMember(MemberFormDTO memberFormDTO);
+    Long createMember(MemberFormDTO memberFormDTO);
 
-    public Long updateMember(MemberFormDTO memberFormDTO);
+    Long updateMember(MemberFormDTO memberFormDTO);
 
-    public void withdraw(Long memNum);
+    void withdraw(Long memNum);
 
-    public String login(String email, String password);
+    String login(String email, String password);
 
-    public Page<MemberDTO> getMembers(Academy academy);
+    Page<MemberDTO> getMembers(Long acaNum);
 
-    public void requestManagerAuth(Long memNum);
+    void requestManagerAuth(Long memNum);
 
-    public void acceptManagerAuth(Long memNum);
+    void acceptManagerAuth(Long memNum);
 
     default MemberDTO entityToDTO(Member member) {
         MemberDTO memberDTO = MemberDTO.builder()

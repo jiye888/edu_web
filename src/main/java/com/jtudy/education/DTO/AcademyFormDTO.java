@@ -11,7 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import javax.persistence.Convert;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Map;
 
 @Data
 @Builder
@@ -30,5 +32,17 @@ public class AcademyFormDTO {
 
     @NotBlank
     private String location;
+
+    public AcademyFormDTO(Map<String, Object> form) {
+        ArrayList<String> subjects = (ArrayList<String>) form.get("subject");
+        EnumSet<Subject> subject = EnumSet.noneOf(Subject.class);
+        for (String s : subjects) {
+            subject.add(Subject.valueOf(s));
+        }
+        AcademyFormDTO academyFormDTO = new AcademyFormDTO();
+        academyFormDTO.setAcaName(form.get("acaName").toString());
+        academyFormDTO.setSubject(subject);
+        academyFormDTO.setLocation(form.get("location").toString());
+    }
 
 }

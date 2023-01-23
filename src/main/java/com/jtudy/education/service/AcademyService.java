@@ -2,7 +2,9 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
+import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import org.springframework.data.domain.Page;
 
@@ -12,33 +14,15 @@ public interface AcademyService {
 
     AcademyDTO getOne(Long acaNum);
 
-    Page<AcademyDTO> getAcademies(Member member);
-
     Long register(AcademyFormDTO academyFormDTO);
 
     Long update(AcademyFormDTO academyFormDTO);
 
     void delete(Long acaNum);
 
+    Page<AcademyDTO> getAcademies(Long memNum);
+
     Page<AcademyDTO> search(String category, String keyword);
-
-
-    default Academy dtoToEntity(AcademyDTO academyDTO) {
-        /*
-        AcademyMember academyMember = AcademyMember.builder()
-                .amNum(academyDTO.getAmNum())
-                .build();
-         */
-
-        Academy academy = Academy.builder()
-                .acaNum(academyDTO.getAcaNum())
-                .acaName(academyDTO.getAcaName())
-                .subject(academyDTO.getSubject())
-                .location(academyDTO.getLocation())
-                .build();
-
-        return academy;
-    }
 
     default Academy formToEntity(AcademyFormDTO academyFormDTO) {
         Academy academy = Academy.builder()
@@ -57,6 +41,7 @@ public interface AcademyService {
                 .acaName(academy.getAcaName())
                 .subject(academy.getSubject())
                 .location(academy.getLocation())
+                .managerEmail(academy.getCreatedBy())
                 .build();
 
         return academyDTO;

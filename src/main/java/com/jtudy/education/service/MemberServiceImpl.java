@@ -28,6 +28,7 @@ public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
@@ -90,7 +91,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public Page<MemberDTO> getMembers(Academy academy) {
+    public Page<MemberDTO> getMembers(Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Member> memberList = academyMemberRepository.findByAcademy(academy);
         List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());

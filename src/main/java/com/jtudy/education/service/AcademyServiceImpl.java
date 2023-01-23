@@ -28,7 +28,7 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public Page<AcademyDTO> getAll() {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        List<AcademyDTO> academy = academyRepository.getAcademyWithReviewInfo();
+        List<AcademyDTO> academy = academyRepository.getAllAcademyWithReviewInfo();
         Page<AcademyDTO> academyPage = new PageImpl<>(academy, pageable, academy.size());
         return academyPage;
     }
@@ -36,12 +36,13 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public AcademyDTO getOne(Long acaNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        AcademyDTO academyDTO = entityToDTO(academy);
+        AcademyDTO academyDTO = academyRepository.getOneAcademyWithReviewInfo(acaNum);
         return academyDTO;
     }
 
     @Override
-    public Page<AcademyDTO> getAcademies(Member member) {
+    public Page<AcademyDTO> getAcademies(Long memNum) {
+        Member member = memberRepository.findByMemNum(memNum);
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Academy> academyList = academyMemberRepository.findByMember(member);
         List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
@@ -68,6 +69,7 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     @Transactional
     public void delete(Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
         academyRepository.deleteById(acaNum);
     }
 

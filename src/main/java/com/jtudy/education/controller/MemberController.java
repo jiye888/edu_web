@@ -2,14 +2,19 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
+import com.jtudy.education.entity.Academy;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityConfig;
+import com.jtudy.education.security.SecurityMember;
+import com.jtudy.education.service.AcademyService;
+import com.jtudy.education.service.MemberService;
 import com.jtudy.education.service.MemberServiceImpl;
 import com.jtudy.education.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,13 +33,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberServiceImpl memberService;
+    private final MemberService memberService;
     private final UserDetailsServiceImpl userDetailsService;
-
-    @GetMapping
-    public String main() {
-        return "member/login";
-    }
+    private final AcademyService academyService;
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -55,20 +56,20 @@ public class MemberController {
         }
         return "redirect:/member/login";
     }
-
+    //#
     @GetMapping("/read")
     public void member(@RequestParam(value = "id") Long memNum, Model model) {
         MemberDTO memberDTO = memberService.getOne(memNum);
         model.addAttribute("member", memberDTO);
     }
-
+    //#
     @GetMapping("/modify")
     public String modify(@RequestParam(value = "id") Long memNum, Model model) {
         MemberDTO memberDTO = memberService.getOne(memNum);
         model.addAttribute("member", memberDTO);
         return "member/modifyForm";
     }
-
+    //#
     @PostMapping("/modify")
     public String modify(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
@@ -106,23 +107,6 @@ public class MemberController {
         }
     }
 
- /*
-    @PostMapping("/loginCheck")
-    public @ResponseBody Object loginCheck(String email, String password, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        if (session.getAttribute("member")!=null){
-            session.removeAttribute("member");
-        }
-        try {
-            String token = memberService.login(email, password);
-            session.setAttribute("token", token);
-            return token;
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
- */
     @GetMapping("/logout")
     public void logout() {
     }
@@ -133,4 +117,14 @@ public class MemberController {
         return "redirect:/academy/main";
     }
 
+    @GetMapping("/details")
+    public void details(@RequestParam("id") Long memNum) {
+        memberService.getOne(memNum);
+    }
+
+    @GetMapping("/joined")
+    public void getMembers(@RequestParam("id") Long acaNum){
+        memberService.getMembers(acaNum);
+
+    }
 }

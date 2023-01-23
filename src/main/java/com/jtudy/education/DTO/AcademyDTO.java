@@ -10,8 +10,10 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -48,5 +50,6 @@ public class AcademyDTO {
         this.grade = grade;
         this.reviewCount = count;
     }
+
 
 }

@@ -3,7 +3,9 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.constant.Subject;
+import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.AcademyService;
 import lombok.NoArgsConstructor;
@@ -35,7 +37,7 @@ public class AcademyController {
     }
 
     @GetMapping("/main")
-    public void main(Model model) {
+    public void main() {
     }
 
     @GetMapping("/list")
@@ -54,16 +56,7 @@ public class AcademyController {
     @PostMapping("/register")
     public String register(@RequestBody @Valid Map<String, Object> form, BindingResult bindingResult, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal Member member) {
-        ArrayList<String> subjects = (ArrayList<String>) form.get("subject");
-        EnumSet<Subject> subject = EnumSet.noneOf(Subject.class);
-        for (String s : subjects) {
-            subject.add(Subject.valueOf(s));
-        }
-        AcademyFormDTO academyFormDTO = new AcademyFormDTO();
-        academyFormDTO.setAcaName(form.get("acaName").toString());
-        academyFormDTO.setSubject(subject);
-        academyFormDTO.setLocation(form.get("location").toString());
-        System.out.println(academyFormDTO);
+        AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
         if (bindingResult.hasErrors()) {
             return "/academy/registerForm";
         }
@@ -79,9 +72,13 @@ public class AcademyController {
     }
 
     @GetMapping("/modify")
-    public String modify(@RequestParam(value = "number") Long acaNum, Model model) {
+    public String modify(@RequestParam(value = "number") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
-        model.addAttribute("academy", academyDTO);
+        if (academyDTO.getManagerEmail() == member.getMember().getEmail()) {
+            model.addAttribute("academy", academyDTO);
+        } else {
+            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+        }
         return "/academy/modifyForm";
     }
 
@@ -96,20 +93,33 @@ public class AcademyController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public String delete(@RequestParam(value = "number") Long acaNum) {
-        academyService.delete(acaNum);
+    public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
+        AcademyDTO academyDTO = academyService.getOne(acaNum);
+        if (academyDTO.getManagerEmail() == member.getMember().getEmail()) {
+            academyService.delete(acaNum);
+        } else {
+            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+        }
         return "redirect:/academy/list";
     }
     //#
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
-    public String join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal Member member) {
-        academyMemberService.join(member.getMemNum(), acaNum);
+    public String join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
+        academyMemberService.join(member.getMember().getMemNum(), acaNum);
         return "redirect:/academy/list";
     }
     //#
-    @RequestMapping(value = "/withdrawal", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
     public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal Member member) {
         academyMemberService.withdraw(member.getMemNum(), acaNum);
         return "redirect:/academy/list";
     }
+    //#
+    @GetMapping("/joined")
+    public void getAcademies(@AuthenticationPrincipal SecurityMember member, Model model) {
+        Page<AcademyDTO> academyDTO = academyService.getAcademies(member.getMember().getMemNum());
+        model.addAttribute("academy", academyDTO);
+    }
+
+
 }
