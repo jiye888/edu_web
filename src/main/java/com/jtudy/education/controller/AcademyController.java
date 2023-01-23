@@ -50,7 +50,7 @@ public class AcademyController {
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("academy", new AcademyFormDTO());
-        return "/academy/registerForm";
+        return "academy/registerForm";
     }
 
     @PostMapping("/register")
@@ -58,7 +58,7 @@ public class AcademyController {
                            @AuthenticationPrincipal Member member) {
         AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
         if (bindingResult.hasErrors()) {
-            return "/academy/registerForm";
+            return "academy/registerForm";
         }
         Long acaNum = academyService.register(academyFormDTO);
         redirectAttributes.addFlashAttribute("message", acaNum);
@@ -79,14 +79,14 @@ public class AcademyController {
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
-        return "/academy/modifyForm";
+        return "academy/modifyForm";
     }
 
     @PostMapping("/modify")
     public String modify(@Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("msg", "모든 항목을 입력해주세요.");
-            return "/academy/modifyForm";
+            return "academy/modifyForm";
         }
         academyService.update(academyFormDTO);
         return "redirect:/academy/list";

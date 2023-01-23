@@ -6,6 +6,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.NoticeRepository;
+import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,9 +25,19 @@ public class NoticeServiceImpl implements NoticeService {
     private final AcademyRepository academyRepository;
 
     @Override
-    public Page<NoticeDTO> getAll() {
+    public boolean validateMember(Long notNum, SecurityMember member) {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        if (notice.getCreatedBy() == member.getUsername()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Page<NoticeDTO> getAll(Long acaNum) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "notNum"));
-        Page<Notice> notice = noticeRepository.findAll(pageable);
+        Page<Notice> notice = noticeRepository.findByAcaNum(pageable, acaNum);
         Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
         return noticeDTO;
     }
@@ -36,6 +47,13 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findByNotNum(notNum);
         NoticeDTO noticeDTO = entityToDTO(notice);
         return noticeDTO;
+    }
+
+    @Override
+    public NoticeFormDTO getForm(Long notNum) {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        NoticeFormDTO noticeFormDTO = entityToForm(notice);
+        return noticeFormDTO;
     }
 
     @Override

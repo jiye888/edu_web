@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    Page<Notice> findAll(Pageable pageable);
+    @Query("select n from Notice n left outer join Academy a on n.academy = a where a.acaNum = :acaNum")
+    Page<Notice> findByAcaNum(Pageable pageable, Long acaNum);
 
     Notice findByNotNum(Long notNum);
 
