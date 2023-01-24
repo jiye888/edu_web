@@ -21,8 +21,8 @@
         </form>
         <script th:inline="javascript">
 
-        $(document).ready(function() {
-            $('#loginBtn').click(function() {
+        $(function() {
+            $('#loginBtn').on('click', function() {
                 login();
             });
         });
@@ -42,9 +42,6 @@
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(json),
-                    success: function(res) {
-                        console.log(res);
-                    },
                 }).then((response) => {
                     var token = response.token;
                     if (token != null) {

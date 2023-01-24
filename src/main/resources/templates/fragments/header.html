@@ -32,12 +32,12 @@
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
-                    <button align="right" class="btn btn-outline-warning" type="button" id="loginBtn" onclick="location.href='/member/login';">Login</button>
+                    <button align="right" class="btn btn-outline-warning" type="button" id="loginBtn_nav" onclick="location.href='/member/login';">Login</button>
                 </div>
             </div>
         </nav>
         <script th:inline="javascript">
-            $(document).ready(function() {
+            $(function() {
                 InOrOut();
             });
 
@@ -45,7 +45,7 @@
                 var token = localStorage.getItem("jwt");
 
                 if(token) {
-                    $('#loginBtn').replaceWith("<button align='right' class='btn btn-outline-warning' type='button' id='logoutBtn' href='/member/logout'>Logout</button>");
+                    $('#loginBtn_nav').replaceWith("<button align='right' class='btn btn-outline-warning' type='button' id='logoutBtn' href='/member/logout'>Logout</button>");
 
                     $('#logoutBtn').click(function() {
                         localStorage.removeItem("jwt");
