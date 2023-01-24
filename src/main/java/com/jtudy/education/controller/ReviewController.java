@@ -2,9 +2,11 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
+import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,8 +35,8 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestParam("academy") Long acaNum, @RequestParam("member") Long memNum,
-                           @ModelAttribute("review") @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String register(@RequestParam("academy") Long acaNum, @RequestParam("member") Long memNum, @ModelAttribute("review") @Valid ReviewFormDTO reviewFormDTO,
+                           BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member) {
         if(bindingResult.hasErrors()) {
             return "/review/registerForm";
         }

@@ -42,7 +42,8 @@
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(json),
-                    success: function(data, textStatus, xhr) {
+                    success: function(res) {
+                        console.log(res);
                     },
                 }).then((response) => {
                     var token = response.token;

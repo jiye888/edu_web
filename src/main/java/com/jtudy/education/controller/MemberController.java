@@ -115,12 +115,8 @@ public class MemberController {
         }
     }
 
-    @GetMapping("/logout")
-    public void logout() {
-    }
-
-    @PostMapping("/logout")
-    public String logout(@RequestParam String email) {
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
+    public String logout() {
         return "redirect:/academy/main";
     }
 

@@ -59,12 +59,11 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        Notice notice = formToEntity(noticeFormDTO); // parameter에 academy 추가
+        Notice notice = formToEntity(noticeFormDTO);
+        notice.builder().academy(academy).build();
         noticeRepository.save(notice);
         return notice.getNotNum();
     }
-    //academy 정보 어떻게 가져올 것인지?
-    //register 버튼 누를 때 acaNum 받아오기?
 
     @Override
     public Long update(NoticeFormDTO noticeFormDTO) {
