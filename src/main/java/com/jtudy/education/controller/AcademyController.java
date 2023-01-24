@@ -74,11 +74,11 @@ public class AcademyController {
     @GetMapping("/modify")
     public String modify(@RequestParam(value = "number") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
-        //if (academyDTO.getManagerEmail() == member.getMember().getEmail()) {
+        if (academyService.validateMember(acaNum, member)) {
             model.addAttribute("academy", academyDTO);
-        //} else {
-        //    throw new IllegalArgumentException("관리자 권한이 없습니다.");
-        //}
+        } else {
+            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+        }
         return "academy/modifyForm";
     }
 

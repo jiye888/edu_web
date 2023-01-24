@@ -6,9 +6,12 @@ import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 
 public interface AcademyService {
+
+    boolean validateMember(Long acaNum, SecurityMember member);
 
     Page<AcademyDTO> getAll();
 

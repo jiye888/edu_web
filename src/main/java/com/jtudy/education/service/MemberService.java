@@ -5,10 +5,13 @@ import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface MemberService {
+
+    boolean validateMember(Long memNum, SecurityMember securityMember);
 
     MemberDTO getOne(Long memNum);
 

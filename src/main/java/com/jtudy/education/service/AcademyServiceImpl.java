@@ -7,6 +7,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.*;
+import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.access.AuthorizationServiceException;
@@ -24,6 +25,16 @@ public class AcademyServiceImpl implements AcademyService{
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
     private final MemberRepository memberRepository;
+
+    @Override
+    public boolean validateMember(Long acaNum, SecurityMember member) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        if (academy.getCreatedBy() == member.getUsername()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     @Override
     public Page<AcademyDTO> getAll() {

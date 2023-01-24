@@ -8,6 +8,7 @@ import com.jtudy.education.entity.Review;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.ReviewRepository;
+import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +26,16 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final AcademyRepository academyRepository;
     private final MemberRepository memberRepository;
+
+    @Override
+    public boolean validateMember(Long revNum, SecurityMember member) {
+        Review review = reviewRepository.findByRevNum(revNum);
+        if (review.getCreatedBy() == member.getUsername()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     @Override
     public Page<ReviewDTO> getAll() {

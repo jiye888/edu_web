@@ -23,7 +23,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("<" + email + "> 사용자를 찾을 수 없습니다.");
         }
         SecurityMember securityMember = new SecurityMember(member);
-        System.out.println(securityMember);
         return securityMember;
     }
 

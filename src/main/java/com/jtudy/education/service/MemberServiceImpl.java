@@ -34,6 +34,16 @@ public class MemberServiceImpl implements MemberService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    public boolean validateMember(Long memNum, SecurityMember securityMember) {
+        Member member = memberRepository.findByMemNum(memNum);
+        if (member.getEmail() == securityMember.getUsername()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public MemberDTO getOne(Long memNum) {
         Member member = memberRepository.findByMemNum(memNum);
         MemberDTO memberDTO = entityToDTO(member);

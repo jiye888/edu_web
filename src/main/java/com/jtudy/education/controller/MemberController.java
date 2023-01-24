@@ -57,16 +57,24 @@ public class MemberController {
         return "redirect:/member/login";
     }
     //#
-    @GetMapping("/read")
-    public void member(@RequestParam(value = "id") Long memNum, Model model) {
-        MemberDTO memberDTO = memberService.getOne(memNum);
-        model.addAttribute("member", memberDTO);
+    @GetMapping("/")
+    public void member(@RequestParam(value = "id") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+        if (memberService.validateMember(memNum, member)) {
+            MemberDTO memberDTO = memberService.getOne(memNum);
+            model.addAttribute("member", memberDTO);
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
     }
     //#
     @GetMapping("/modify")
-    public String modify(@RequestParam(value = "id") Long memNum, Model model) {
-        MemberDTO memberDTO = memberService.getOne(memNum);
-        model.addAttribute("member", memberDTO);
+    public String modify(@RequestParam(value = "id") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+        if (memberService.validateMember(memNum, member)) {
+            MemberDTO memberDTO = memberService.getOne(memNum);
+            model.addAttribute("member", memberDTO);
+        } else {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
         return "member/modifyForm";
     }
     //#
@@ -113,13 +121,7 @@ public class MemberController {
 
     @PostMapping("/logout")
     public String logout(@RequestParam String email) {
-        //
         return "redirect:/academy/main";
-    }
-
-    @GetMapping("/details")
-    public void details(@RequestParam("id") Long memNum) {
-        memberService.getOne(memNum);
     }
 
     @GetMapping("/joined")
