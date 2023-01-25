@@ -13,8 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/notice")
@@ -30,20 +34,21 @@ public class NoticeController {
         model.addAttribute("notice", noticeDTO);
     }
 
-    @GetMapping("/")
-    public void read(@RequestParam("number") Long notNum, Model model) {
+    @GetMapping("/read")
+    public String read(@RequestParam("number") Long notNum, Model model) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         model.addAttribute(noticeDTO);
+        return "notice/read";
     }
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("noticeForm", new NoticeFormDTO());
-        return "notice/noticeForm";
+        model.addAttribute("notice", new NoticeFormDTO());
+        return "notice/registerForm";
     }
 
     @PostMapping("/register")
-    public String register(@RequestParam("academy") Long acaNum, NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes,
+    public String register(@RequestBody Map<String, String> form, @RequestParam("academy") Long acaNum, NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal SecurityMember member) {
         //noticeDTO 객체로 들어오지 않으니 직접 Map<String, Object>로 리턴타입 설정하고
         //DTO로 가서 직접 등록
@@ -54,22 +59,25 @@ public class NoticeController {
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
-        return "redirect:/notice";
+        return "redirect:/notice/list";
     }
 
     @GetMapping("/modify")
     public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) {
-        NoticeFormDTO noticeFormDTO = noticeService.getForm(notNum);
+        NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(notNum, member)) {
-            model.addAttribute("noticeForm", noticeFormDTO);
+            model.addAttribute("notice", noticeDTO);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
-        return "notice/noticeForm";
+        return "notice/modifyForm";
     }
 
     @PostMapping("/modify")
-    public String modify(NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes) {
+    public String modify(@Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if(bindingResult.hasErrors()) {
+            return "notice/modifyForm";
+        }
         Long notNum = noticeService.update(noticeFormDTO);
         redirectAttributes.addFlashAttribute("message", notNum);
         return "redirect:/notice/list";

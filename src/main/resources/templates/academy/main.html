@@ -8,25 +8,6 @@
     <div>
         <button type="button" class="academy" th:onclick="'location.href=\''+@{/academy/list}+'\';'">학원 보러가기</button>
         <button type="button" class="member_register" th:onclick="'location.href=\''+@{/member/join}+'\';'">회원 가입</button>
-        <button type="button" class="member_login" th:onclick="'location.href=\''+@{/member/login}+'\';'">로그인</button>
-        <table class="table table-borderless">
-            <thead align="center">
-            <tr>
-                <th scope="col" style="width:50%">학원 이름</th>
-                <th scope="col">학원 위치</th>
-                <th scope="col">수강 과목</th>
-                <th scope="col">평점</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="academy : ${academy}">
-                <td style="width:50%" align="center">
-                <td><span >평점</span></td>
-                <td><span >학원 위치</span></td>
-                <td><span >수강 과목</span></td>
-            </tr>
-            </tbody>
-        </table>
     </div>
     <script th:inline="javascript">
     </script>

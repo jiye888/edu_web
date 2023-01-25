@@ -30,7 +30,7 @@
                     </ul>
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
+                        <button class="btn btn-outline-success" type="button" id="searchBtn">Search</button>
                     </form>
                     <button align="right" class="btn btn-outline-warning" type="button" id="loginBtn_nav" onclick="location.href='/member/login';">Login</button>
                 </div>
@@ -39,6 +39,9 @@
         <script th:inline="javascript">
             $(function() {
                 InOrOut();
+                $('#searchBtn').on("click", function() {
+                    search();
+                });
             });
 
             function InOrOut() {
@@ -51,8 +54,10 @@
                         localStorage.removeItem("jwt");
                         location.href = "/academy/main";
                     });
-
                 }
+            }
+
+            function search() {
 
             }
 

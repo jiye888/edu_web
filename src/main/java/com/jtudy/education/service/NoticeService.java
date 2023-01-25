@@ -19,13 +19,13 @@ public interface NoticeService {
 
     NoticeDTO getOne(Long notNum);
 
-    NoticeFormDTO getForm(Long notNum);
-
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 
     Long update(NoticeFormDTO noticeFormDTO);
 
     void delete(Long notNum);
+
+    Page<NoticeDTO> search(String category, String keyword);
 
     default Notice dtoToEntity(NoticeDTO noticeDTO) {
         Academy academy = Academy.builder()
@@ -68,16 +68,6 @@ public interface NoticeService {
                 .build();
 
         return noticeDTO;
-    }
-
-    default NoticeFormDTO entityToForm(Notice notice) {
-        NoticeFormDTO noticeFormDTO = NoticeFormDTO.builder()
-                .acaNum(notice.getAcademy().getAcaNum())
-                .notNum(notice.getNotNum())
-                .title(notice.getTitle())
-                .content(notice.getContent())
-                .build();
-        return noticeFormDTO;
     }
 
 }

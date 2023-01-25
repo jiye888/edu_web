@@ -5,42 +5,39 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 align="center">Academy</h3>
-    <button type="button" class="register" id="registerBtn">학원등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
-    <div th:if = "${!academy.isEmpty()}">
+    <h3 align="center">Notice</h3>
+    <button type="button" class="register" id="registerBtn">공지사항 등록</button>
+    <input type="hidden" th:field="${academy.acaNum}">
+    <div th:if = "${!notice.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
             <tr>
-                <th scope="col" style="width:50%">학원 이름</th>
-                <th scope="col">평점</th>
-                <th scope="col">학원 위치</th>
-                <th scope="col">수강 과목</th>
+                <th scope="col" style="width:50%">제목</th>
+                <th scope="col">작성일</th>
             </tr>
             </thead>
             <tbody align="center">
-            <tr th:each="academy : ${academy}" th:object="${academy}">
-                <td align="center"><a th:text="*{acaName}" th:href="@{/academy/read?number={number}(number=${academy.acaNum})}">학원 이름</a></td>
-                <td><span th:text="*{grade}">평점</span></td>
-                <td><span th:text="*{location}" style="font-size:50%">학원 위치</span></td>
-                <td><a th:each="sub : ${academy.subject}" th:value="${sub}" th:text="'＊'+${sub.description}"></a></td>
+            <tr th:each="notice : ${notice}" th:object="${notice}">
+                <td align="center"><a th:text="*{title}" th:href="@{/notice/read?number={number}(number=${notice.notNum})}">학원 이름</a></td>
+                <td><span th:text="*{createdAt}">작성일</span></td>
             </tr>
             </tbody>
         </table>
 
-        <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
-                            totalPages=${academy.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+        <nav th:with = "pageNumber=${notice.pageable.pageNumber}, pageSize=${notice.pageable.pageSize},
+                            totalPages=${notice.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
              aria-label="Page-navigation">
             <ul class="pagination">
                 <li th:classappend="${pageNumber+1<=pageSize+1}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/academy(page=1)}">
+                    <a class="page-link" th:href="@{/notice(page=1)}">
                         <span>&laquo;</span>
                         <span class="sr-only">첫페이지로</span>
                     </a>
                 </li>
 
-                <li th:classappend="${academy.first}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${academy.first}?'#':@{/academy(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
+                <li th:classappend="${notice.first}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${notice.first}?'#':@{/notice(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                         <span class="sr-only">이전 페이지</span>
@@ -48,11 +45,11 @@
                 </li>
 
                 <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
-                    <a th:text="${page}" class="page-link" th:href="@{/academy(page=${page})}"></a>
+                    <a th:text="${page}" class="page-link" th:href="@{/notice(page=${page})}"></a>
                 </li>
 
-                <li th:classappend="${academy.last}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${academy.last}?'#':@{/academy(page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}"
+                <li th:classappend="${notice.last}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${notice.last}?'#':@{/notice(page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}"
                        aria-label="Next">
                         <span aria-hidden="true">&gt;</span>
                         <span class="sr-only">다음 페이지</span>
@@ -60,7 +57,7 @@
                 </li>
 
                 <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/academy(page=${totalPages})}">
+                    <a class="page-link" th:href="@{/notice(page=${totalPages})}">
                         <span>&raquo;</span>
                         <span class="sr-only">처음으로</span>
                     </a>
@@ -69,7 +66,7 @@
         </nav>
     </div>
     <script th:inline="javascript">
-        $(document).ready(function() {
+        $(function() {
 
             $('#registerBtn').click(function(){
             register();
@@ -80,14 +77,14 @@
         function register() {
             var token = localStorage.getItem("jwt");
             $.ajax({
-                url: '/academy/register',
+                url: '/notice/registerForm',
                 type: 'GET',
                 contentType:"application/json",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
                 success: function() {
-                    location.href="/academy/register";
+                    location.href="/notice/registerForm";
                 }
             });
         }

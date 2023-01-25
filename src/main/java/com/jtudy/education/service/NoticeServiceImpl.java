@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.entity.Academy;
@@ -50,13 +51,6 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public NoticeFormDTO getForm(Long notNum) {
-        Notice notice = noticeRepository.findByNotNum(notNum);
-        NoticeFormDTO noticeFormDTO = entityToForm(notice);
-        return noticeFormDTO;
-    }
-
-    @Override
     public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Notice notice = formToEntity(noticeFormDTO);
@@ -76,5 +70,20 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void delete(Long notNum) {
         noticeRepository.deleteById(notNum);
+    }
+
+    @Override
+    public Page<NoticeDTO> search(String category, String keyword) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        Page<Notice> notice = null;
+        if (category.equals("title")) {
+            notice = noticeRepository.findByTitleContaining(keyword, pageable);
+        } else if (category.equals("content")) {
+            notice = noticeRepository.findByContentContaining(keyword, pageable);
+        } else if (category.equals("title&content")) {
+            notice = noticeRepository.findByTitleOrContentContaining(keyword, keyword, pageable);
+        }
+        Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
+        return noticeDTO;
     }
 }
