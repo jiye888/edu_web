@@ -30,7 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public boolean validateMember(Long revNum, SecurityMember member) {
         Review review = reviewRepository.findByRevNum(revNum);
-        if (review.getCreatedBy() == member.getUsername()) {
+        if (review.getCreatedBy().equals(member.getUsername())) {
             return true;
         } else {
             return false;

@@ -29,7 +29,7 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public boolean validateMember(Long acaNum, SecurityMember member) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        if (academy.getCreatedBy() == member.getUsername()) {
+        if (academy.getCreatedBy().equals(member.getUsername())) {
             return true;
         } else {
             return false;

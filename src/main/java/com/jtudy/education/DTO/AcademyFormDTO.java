@@ -42,12 +42,6 @@ public class AcademyFormDTO {
         this.acaName = form.get("acaName").toString();
         this.subject = subject;
         this.location = form.get("location").toString();
-        /*
-        AcademyFormDTO academyFormDTO = new AcademyFormDTO();
-        academyFormDTO.setAcaName(form.get("acaName").toString());
-        academyFormDTO.setSubject(subject);
-        academyFormDTO.setLocation(form.get("location").toString());*/
-
     }
 
 }

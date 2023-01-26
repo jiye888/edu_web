@@ -36,7 +36,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean validateMember(Long memNum, SecurityMember securityMember) {
         Member member = memberRepository.findByMemNum(memNum);
-        if (member.getEmail() == securityMember.getUsername()) {
+        if (member.getEmail().equals(securityMember.getUsername())) {
             return true;
         } else {
             return false;

@@ -26,9 +26,9 @@ public class NoticeServiceImpl implements NoticeService {
     private final AcademyRepository academyRepository;
 
     @Override
-    public boolean validateMember(Long notNum, SecurityMember member) {
-        Notice notice = noticeRepository.findByNotNum(notNum);
-        if (notice.getCreatedBy() == member.getUsername()) {
+    public boolean validateMember(Long acaNum, SecurityMember member) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        if (academy.getCreatedBy().equals(member.getUsername())) {
             return true;
         } else {
             return false;

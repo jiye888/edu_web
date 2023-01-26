@@ -23,7 +23,6 @@ public class Notice extends BaseEntity {
     private String title;
 
     @Column
-    @Size(min = 20)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

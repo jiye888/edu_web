@@ -1,10 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
 <body>
+<div layout:fragment="content">
+    <h3>공지사항</h3>
 
+            <span th:text="${notice.acaName}"></span><br>
+
+            <span th:text="${notice.title}" id="title">제목</span><br>
+            <span th:text="${notice.createdAt}" id="createdAt"></span><br>
+            <span th:text="${notice.content}" id="content"></span><br>
+
+    </table>
+
+    <input type="hidden" th:value="${notice.notNum}" id="number">
+    <input type="hidden" th:value="${notice.acaNum}" id="academy">
+
+    <button type="button" id="modifyBtn">수정하기</button>
+    <button type="button" id="deleteBtn">삭제하기</button>
+
+    <script th:inline="javascript">
+
+        $(function() {
+
+            $('#modifyBtn').on("click", function() {
+                modify();
+            });
+
+            $('#deleteBtn').on("click", function() {
+                delete_notice();
+            });
+
+        });
+
+        function modify() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+            var academy = Number($('#academy').val());
+
+            $.ajax({
+                url: '/notice/modify',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: JSON.stringify({"number":number, "academy":academy}),
+                success: function() {
+                    location.href='/notice/modify?number='+number;
+                },
+            });
+        }
+
+        function delete_notice() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+            var academy = Number($('#academy').val());
+
+            $.ajax({
+                url: '/notice/delete',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {"number":number, "academy":academy},
+                success: function() {
+                    location.href='/notice/list?academy='+academy;
+                },
+            });
+        }
+
+    </script>
+</div>
 </body>
+
 </html>

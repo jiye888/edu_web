@@ -133,15 +133,13 @@
         }
 
         function notice() {
-            var academy = $('#number').val();
-            academy = Number(academy);
-            console.log(typeof(academy));
+            var academy = Number($('#number').val());
 
             $.ajax({
                 url: '/notice/list',
                 type: 'GET',
                 contentType: "application/json",
-                //data: {"academy":academy},
+                data: {"academy":academy},
                 success: function() {
                     location.href="/notice/list?academy="+academy;
                 },

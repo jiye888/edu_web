@@ -32,28 +32,29 @@ public class NoticeController {
     public void list(@RequestParam("academy") Long acaNum, Model model) {
         Page<NoticeDTO> noticeDTO = noticeService.getAll(acaNum);
         model.addAttribute("notice", noticeDTO);
+        model.addAttribute("academy", acaNum);
     }
 
     @GetMapping("/read")
     public String read(@RequestParam("number") Long notNum, Model model) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
-        model.addAttribute(noticeDTO);
+        model.addAttribute("notice", noticeDTO);
         return "notice/read";
     }
 
     @GetMapping("/register")
-    public String register(Model model) {
+    public String register(@RequestParam("academy") Long acaNum, Model model) {
+        model.addAttribute("academy", acaNum);
         model.addAttribute("notice", new NoticeFormDTO());
         return "notice/registerForm";
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody Map<String, String> form, @RequestParam("academy") Long acaNum, NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes,
+    public String register(@RequestBody Map<String, String> form, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal SecurityMember member) {
-        //noticeDTO 객체로 들어오지 않으니 직접 Map<String, Object>로 리턴타입 설정하고
-        //DTO로 가서 직접 등록
-        AcademyDTO academyDTO = academyService.getOne(acaNum);
-        if (academyDTO.getManagerEmail() == member.getUsername()) {
+        Long acaNum = Long.valueOf(form.get("academy"));
+        if (noticeService.validateMember(acaNum, member)) {
+            NoticeFormDTO noticeFormDTO = new NoticeFormDTO(form);
             Long notNum = noticeService.register(noticeFormDTO, acaNum);
             redirectAttributes.addFlashAttribute("message", notNum);
         } else {
@@ -61,18 +62,22 @@ public class NoticeController {
         }
         return "redirect:/notice/list";
     }
-
+    //#
     @GetMapping("/modify")
-    public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+    public String modify(@RequestParam("number") Long notNum, @RequestParam("academy") Long acaNum,
+                         Model model, @AuthenticationPrincipal SecurityMember member) {
+        System.out.println("!!!"+acaNum);
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
-        if (noticeService.validateMember(notNum, member)) {
+        System.out.println("!!!"+noticeDTO);
+
+        if (noticeService.validateMember(acaNum, member)) {
             model.addAttribute("notice", noticeDTO);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
         return "notice/modifyForm";
     }
-
+    //#
     @PostMapping("/modify")
     public String modify(@Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if(bindingResult.hasErrors()) {
@@ -82,10 +87,10 @@ public class NoticeController {
         redirectAttributes.addFlashAttribute("message", notNum);
         return "redirect:/notice/list";
     }
-
+    //#
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public String delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
-        if (noticeService.validateMember(notNum, member)) {
+    public String delete(@RequestParam("number") Long notNum, @RequestParam("academy") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
+        if (noticeService.validateMember(acaNum, member)) {
             noticeService.delete(notNum);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");

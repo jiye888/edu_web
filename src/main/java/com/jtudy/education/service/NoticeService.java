@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface NoticeService {
 
-    boolean validateMember(Long notNum, SecurityMember member);
+    boolean validateMember(Long acaNum, SecurityMember member);
 
     Page<NoticeDTO> getAll(Long acaNum);
 

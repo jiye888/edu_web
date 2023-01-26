@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <h3 align="center">Notice</h3>
     <button type="button" class="register" id="registerBtn">공지사항 등록</button>
-    <input type="hidden" th:field="${academy.acaNum}">
+    <input type="hidden" th:value="${academy}" id="academy">
     <div th:if = "${!notice.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
@@ -69,23 +69,25 @@
         $(function() {
 
             $('#registerBtn').click(function(){
-            register();
-
+                register();
             });
         });
 
         function register() {
             var token = localStorage.getItem("jwt");
+            var academy = [[${academy}]];
+
             $.ajax({
-                url: '/notice/registerForm',
+                url: '/notice/register',
                 type: 'GET',
-                contentType:"application/json",
+                contentType: "application/json",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
+                data: {"academy":academy},
                 success: function() {
-                    location.href="/notice/registerForm";
-                }
+                    location.href="/notice/register?academy="+academy;
+                },
             });
         }
 

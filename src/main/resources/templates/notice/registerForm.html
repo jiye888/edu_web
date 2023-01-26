@@ -5,39 +5,37 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>수정 화면</h3>
-    <form action="./modify" method="post" th:object="${notice}">
-        <input type="hidden" th:field="${notice.acaNum}" id="academy">
-        <input type="hidden" th:field="*{notNum}" id="number">
+    <h3>등록 화면</h3>
+    <form th:object="${notice}">
+        <input type="hidden" th:value="${academy}" id="academy">
         제목<input type="text" th:field="*{title}"><br>
         내용<input type="text" th:field="*{content}"><br>
-        <button type="button" id="modifyBtn">수정</button>
+        <button type="button" id="registerBtn">등록</button>
     </form>
-
     <script th:inline="javascript">
         $(function() {
-            $('#modifyBtn').click(function() {
-                modify();
+            $('#registerBtn').click(function() {
+                register();
             });
         });
 
-        function modify() {
-            var academy = $('#academy').val();
-            var number = $('#number').val();
+        function register() {
+            var academy = [[${academy}]];
             var title = $('#title').val();
             var content = $('#content').val();
 
+            const json = {
+                    "academy":academy,
+                    "title":title,
+                    "content":content,
+                };
+
             $.ajax({
-                url: '/notice/modify',
+                url: '/notice/register',
                 type: "POST",
                 contentType: "application/json",
                 headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                data: JSON.stringify({
-                    "academy":academy,
-                    "number":number,
-                    "title":title,
-                    "content":content,
-                }),
+                data: JSON.stringify(json),
             }).then((response) => {
                 if (title != null && content != null) {
                     location.href="/notice/list?academy="+academy;
@@ -46,7 +44,8 @@
                 };
             });
         }
-        </script>
+    </script>
 </div>
+
 </body>
 </html>

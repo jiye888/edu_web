@@ -95,7 +95,7 @@ public class AcademyController {
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
-        if (academyDTO.getManagerEmail() == member.getMember().getEmail()) {
+        if (academyService.validateMember(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
