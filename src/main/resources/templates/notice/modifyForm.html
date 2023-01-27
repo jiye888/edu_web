@@ -6,8 +6,8 @@
 <body>
 <div layout:fragment="content">
     <h3>수정 화면</h3>
-    <form action="./modify" method="post" th:object="${notice}">
-        <input type="hidden" th:field="${notice.acaNum}" id="academy">
+    <form th:object="${notice}">
+        <input type="hidden" th:field="*{acaNum}" id="academy">
         <input type="hidden" th:field="*{notNum}" id="number">
         제목<input type="text" th:field="*{title}"><br>
         내용<input type="text" th:field="*{content}"><br>

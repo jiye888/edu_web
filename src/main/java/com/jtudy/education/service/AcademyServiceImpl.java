@@ -69,18 +69,19 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
+    @Transactional
     public Long update(AcademyFormDTO academyFormDTO) {
         Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
                 academyFormDTO.getLocation());
-        academyRepository.save(academy);
+        //academyRepository.save(academy);
         return academy.getAcaNum();
     }
 
     @Override
     @Transactional
     public void delete(Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
+        //Academy academy = academyRepository.findByAcaNum(acaNum);
         academyRepository.deleteById(acaNum);
     }
 

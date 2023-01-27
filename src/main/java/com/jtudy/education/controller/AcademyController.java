@@ -44,7 +44,6 @@ public class AcademyController {
     public void list(Model model) {
         Page<AcademyDTO> academyDTO = academyService.getAll();
         model.addAttribute("academy", academyDTO);
-        //model.addAttribute("list", academyService.getList(AcademyDTO, pageable));
     }
 
     @GetMapping("/register")
@@ -83,11 +82,8 @@ public class AcademyController {
     }
 
     @PostMapping("/modify")
-    public String modify(@Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, Model model) {
-        if(bindingResult.hasErrors()) {
-            model.addAttribute("msg", "모든 항목을 입력해주세요.");
-            return "academy/modifyForm";
-        }
+    public String modify(@RequestBody Map<String, Object> form) {
+        AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
         academyService.update(academyFormDTO);
         return "redirect:/academy/list";
     }

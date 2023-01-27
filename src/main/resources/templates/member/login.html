@@ -47,7 +47,7 @@
                     if (token != null) {
                         alert('로그인 성공');
                         localStorage.setItem("jwt", token);
-                        location.href = "/academy/main";
+                        history.back();
                     } else {
                         alert('로그인 실패');
                     }

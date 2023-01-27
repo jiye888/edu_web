@@ -39,6 +39,7 @@ public class NoticeController {
     public String read(@RequestParam("number") Long notNum, Model model) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         model.addAttribute("notice", noticeDTO);
+        model.addAttribute("academy", noticeDTO.getAcaNum());
         return "notice/read";
     }
 
@@ -62,15 +63,11 @@ public class NoticeController {
         }
         return "redirect:/notice/list";
     }
-    //#
-    @GetMapping("/modify")
-    public String modify(@RequestParam("number") Long notNum, @RequestParam("academy") Long acaNum,
-                         Model model, @AuthenticationPrincipal SecurityMember member) {
-        System.out.println("!!!"+acaNum);
-        NoticeDTO noticeDTO = noticeService.getOne(notNum);
-        System.out.println("!!!"+noticeDTO);
 
-        if (noticeService.validateMember(acaNum, member)) {
+    @GetMapping("/modify")
+    public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+        NoticeDTO noticeDTO = noticeService.getOne(notNum);
+        if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
             model.addAttribute("notice", noticeDTO);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
@@ -79,18 +76,17 @@ public class NoticeController {
     }
     //#
     @PostMapping("/modify")
-    public String modify(@Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if(bindingResult.hasErrors()) {
-            return "notice/modifyForm";
-        }
+    public String modify(@RequestBody Map<String, String> form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        NoticeFormDTO noticeFormDTO = new NoticeFormDTO(form);
         Long notNum = noticeService.update(noticeFormDTO);
         redirectAttributes.addFlashAttribute("message", notNum);
         return "redirect:/notice/list";
     }
     //#
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public String delete(@RequestParam("number") Long notNum, @RequestParam("academy") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
-        if (noticeService.validateMember(acaNum, member)) {
+    public String delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
+        NoticeDTO noticeDTO = noticeService.getOne(notNum);
+        if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
             noticeService.delete(notNum);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");

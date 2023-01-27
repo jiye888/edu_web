@@ -20,7 +20,7 @@
         });
 
         function register() {
-            var academy = [[${academy}]];
+            var academy = Number($('#academy').val());
             var title = $('#title').val();
             var content = $('#content').val();
 
@@ -38,7 +38,7 @@
                 data: JSON.stringify(json),
             }).then((response) => {
                 if (title != null && content != null) {
-                    location.href="/notice/list?academy="+academy;
+                    history.back();
                 } else {
                     alert('모든 항목을 작성해주세요.');
                 };

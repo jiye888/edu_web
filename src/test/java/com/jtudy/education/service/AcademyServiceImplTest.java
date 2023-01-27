@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
+import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
@@ -134,6 +135,21 @@ class AcademyServiceImplTest {
         logger.info("*********"+listA);
         //logger.info(listA.get(1));
         //logger.info(listA.get(2).getGrade());
+    }
+
+    @Test
+    public void updateMethod() {
+        Academy academy = academyRepository.findByAcaNum(Long.parseLong("4"));
+        System.out.println("<before"+academy.getAcaName());
+        AcademyFormDTO academyFormDTO = AcademyFormDTO.builder()
+                        .acaNum(Long.parseLong("4"))
+                                .acaName("인천제일!")
+                                        .subject(academy.getSubject())
+                                                .location(academy.getLocation())
+                .build();
+        academyService.update(academyFormDTO);
+        Academy academy2 = academyRepository.findByAcaNum(Long.parseLong("4"));
+        System.out.println("<after>"+academy2.getAcaName());
     }
 
 }

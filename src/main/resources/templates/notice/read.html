@@ -16,7 +16,7 @@
     </table>
 
     <input type="hidden" th:value="${notice.notNum}" id="number">
-    <input type="hidden" th:value="${notice.acaNum}" id="academy">
+    <input type="hidden" th:value="${academy}" id="academy">
 
     <button type="button" id="modifyBtn">수정하기</button>
     <button type="button" id="deleteBtn">삭제하기</button>
@@ -37,8 +37,8 @@
 
         function modify() {
             var token = localStorage.getItem("jwt");
-            var number = $('#number').val();
-            var academy = Number($('#academy').val());
+            var number = [[${notice.notNum}]];
+            var academy = [[${academy}]];
 
             $.ajax({
                 url: '/notice/modify',
@@ -47,9 +47,9 @@
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
-                data: JSON.stringify({"number":number, "academy":academy}),
+                data: {"number":number},
                 success: function() {
-                    location.href='/notice/modify?number='+number;
+                    location.href="/notice/modify?number="+number;
                 },
             });
         }
@@ -57,7 +57,6 @@
         function delete_notice() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
-            var academy = Number($('#academy').val());
 
             $.ajax({
                 url: '/notice/delete',
@@ -66,9 +65,9 @@
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
-                data: {"number":number, "academy":academy},
+                data: {"number":number},
                 success: function() {
-                    location.href='/notice/list?academy='+academy;
+                    location.href="/notice/delete?number="+number;
                 },
             });
         }

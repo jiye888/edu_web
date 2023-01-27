@@ -39,6 +39,9 @@ public class AcademyFormDTO {
         for (String s : subjects) {
             subject.add(Subject.valueOf(s));
         }
+        if (form.get("acaNum") != null) {
+            this.acaNum = Long.valueOf(form.get("acaNum").toString());
+        }
         this.acaName = form.get("acaName").toString();
         this.subject = subject;
         this.location = form.get("location").toString();

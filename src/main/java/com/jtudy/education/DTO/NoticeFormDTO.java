@@ -25,6 +25,9 @@ public class NoticeFormDTO {
     private String content;
 
     public NoticeFormDTO(Map<String, String> form) {
+        if (form.get("number") != null) {
+            this.notNum = Long.parseLong(form.get("number"));
+        }
         this.acaNum = Long.valueOf(form.get("academy"));
         this.title = form.get("title");
         this.content = form.get("content");
