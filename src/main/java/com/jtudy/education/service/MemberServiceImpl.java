@@ -36,11 +36,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean validateMember(Long memNum, SecurityMember securityMember) {
         Member member = memberRepository.findByMemNum(memNum);
-        if (member.getEmail().equals(securityMember.getUsername())) {
-            return true;
-        } else {
-            return false;
-        }
+        return member.getEmail().equals(securityMember.getUsername());
     }
 
     @Override
@@ -79,7 +75,8 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Long updateMember(MemberFormDTO memberFormDTO) {
         Member member = memberRepository.findByEmail(memberFormDTO.getEmail());
-        member.updateMember(memberFormDTO.getPassword(), memberFormDTO.getName(), memberFormDTO.getAddress(), passwordEncoder);
+        member.updateMember(passwordEncoder.encode(memberFormDTO.getPassword()), memberFormDTO.getName(), memberFormDTO.getAddress());
+        memberRepository.save(member);
         return member.getMemNum();
     }
 

@@ -19,11 +19,7 @@ public class MemberDTO {
     @Email
     private String email;
 
-    /*
-    @NotBlank
-    @Size(min=8)
     private String password;
-     */
 
     @NotBlank
     private String name;

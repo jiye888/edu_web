@@ -29,11 +29,7 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public boolean validateMember(Long acaNum, SecurityMember member) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        if (academy.getCreatedBy().equals(member.getUsername())) {
-            return true;
-        } else {
-            return false;
-        }
+        return academy.getCreatedBy().equals(member.getUsername());
     }
 
     @Override
@@ -69,12 +65,10 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
-    @Transactional
     public Long update(AcademyFormDTO academyFormDTO) {
         Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
                 academyFormDTO.getLocation());
-        //academyRepository.save(academy);
         return academy.getAcaNum();
     }
 

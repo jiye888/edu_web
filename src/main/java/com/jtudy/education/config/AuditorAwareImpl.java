@@ -17,19 +17,13 @@ import java.util.Optional;
 @Component
 public class AuditorAwareImpl implements AuditorAware<String> {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
     @Override
     public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication || !authentication.isAuthenticated()) {
             return null;
         }
-        Object principal = authentication.getName();
-        SecurityMember securityMember = userDetailsService.loadUserByUsername(principal.toString());
-
-        return Optional.of(securityMember.getUsername());
+        return Optional.of(authentication.getName());
     }
 
 }

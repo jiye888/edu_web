@@ -49,8 +49,8 @@ public class Member {
     @Builder.Default
     private List<Roles> rolesList = new ArrayList<>();
 
-    public void updateMember(String password, String name, String address, PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(password);
+    public void updateMember(String password, String name, String address) {
+        this.password = password;
         this.name = name;
         this.address = address;
     }

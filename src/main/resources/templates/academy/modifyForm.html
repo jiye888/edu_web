@@ -6,9 +6,9 @@
 <body>
     <div layout:fragment="content">
         <h3>수정 화면</h3>
-        <form action="./modify" method="post" th:object="${academy}">
+        <form th:object="${academy}">
 
-            <input type="hidden" th:field="*{acaNum}" th:value="${academy.acaNum}">
+            <input type="hidden" th:field="*{acaNum}">
             학원 이름<input type="text" th:field="*{acaName}"><br>
             학원 위치<input type="text" th:field="*{location}"><br>
             수강 과목<br>

@@ -2,6 +2,7 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
+import com.jtudy.education.config.AuditorAwareImpl;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
@@ -23,6 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -119,12 +122,7 @@ class AcademyServiceImplTest {
 
         Long count = academyRepository.getReviewCount(aa.getAcaNum());
         logger.info(count);
-
          */
-        //Page<Object[]> pageObject = new Page<Object[]>;
-        //Academy pageObject[0] = academyRepository.findAll();
-        //이러고 dto로 변환하고 1에는 grade 2에는 count 넣고십따고ㅠㅠ
-
 
 
     }
@@ -140,16 +138,16 @@ class AcademyServiceImplTest {
     @Test
     public void updateMethod() {
         Academy academy = academyRepository.findByAcaNum(Long.parseLong("4"));
-        System.out.println("<before"+academy.getAcaName());
+        System.out.println(academy.getAcaName());
         AcademyFormDTO academyFormDTO = AcademyFormDTO.builder()
                         .acaNum(Long.parseLong("4"))
-                                .acaName("인천제일!")
+                                .acaName("인천제일!!")
                                         .subject(academy.getSubject())
                                                 .location(academy.getLocation())
                 .build();
         academyService.update(academyFormDTO);
         Academy academy2 = academyRepository.findByAcaNum(Long.parseLong("4"));
-        System.out.println("<after>"+academy2.getAcaName());
+        System.out.println(academy2.getAcaName());
     }
 
 }
