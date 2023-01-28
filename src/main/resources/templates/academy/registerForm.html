@@ -67,7 +67,7 @@
                     "subject":subject,
                     "location":location,
                 }),
-            }).then((response) => {
+            }).done((response) => {
                 if (acaName != null && location != null && subject != null) {
                     location.href="/academy/main";
                 } else {

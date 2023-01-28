@@ -69,6 +69,7 @@ public class AcademyServiceImpl implements AcademyService{
         Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
                 academyFormDTO.getLocation());
+        academyRepository.save(academy);
         return academy.getAcaNum();
     }
 

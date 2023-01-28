@@ -82,10 +82,11 @@ public class AcademyController {
     }
 
     @PostMapping("/modify")
-    public String modify(@RequestBody Map<String, Object> form) {
+    public void modify(@RequestBody Map<String, Object> form, Model model) {
         AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
+        model.addAttribute("number", academyFormDTO.getAcaNum());
+        model.addAttribute("academy", academyFormDTO);
         academyService.update(academyFormDTO);
-        return "redirect:/academy/list";
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})

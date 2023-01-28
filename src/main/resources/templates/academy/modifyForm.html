@@ -23,8 +23,8 @@
 
         <script th:inline="javascript">
 
-        $(document).ready(function() {
-            $('#modifyBtn').click(function() {
+        $(function() {
+            $('#modifyBtn').on("click", function() {
                 modify();
             });
         });
@@ -46,24 +46,27 @@
             var location = $('#location').val();
             var subject = getSubject();
 
-            $.ajax({
-                url: '/academy/modify',
-                type: "POST",
-                contentType: "application/json",
-                headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                data: JSON.stringify({
-                    "acaNum":acaNum,
-                    "acaName":acaName,
-                    "subject":subject,
-                    "location":location,
-                }),
-            }).then((response) => {
-                if (acaName != null && location != null && subject != null) {
-                    location.href="/academy/main";
-                } else {
-                    alert('모든 항목을 작성해주세요.');
-                };
-            });
+            if (acaName != null && location != null && subject != null) {
+
+                $.ajax({
+                    url: '/academy/modify',
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
+                    data: JSON.stringify({
+                        "acaNum":acaNum,
+                        "acaName":acaName,
+                        "subject":subject,
+                        "location":location,
+                    }),
+                    success: function() {
+                        history.back();
+                    },
+                });
+
+            } else {
+                alert('모든 항목을 입력해주세요.');
+            }
         }
         </script>
     </div>
