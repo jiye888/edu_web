@@ -28,7 +28,7 @@
                             </ul>
                         </li>
                     </ul>
-                    <form class="d-flex" role="search">
+                    <form class="d-flex" role="search" id="searchForm">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="button" id="searchBtn">Search</button>
                     </form>
@@ -38,14 +38,14 @@
         </nav>
         <script th:inline="javascript">
             $(function() {
-                InOrOut();
+                member();
                 $('#searchBtn').on("click", function() {
                     search();
                 });
 
             });
 
-            function InOrOut() {
+            function member() {
                 var token = localStorage.getItem("jwt");
 
                 if(token) {
@@ -54,6 +54,22 @@
                     $('#logoutBtn').click(function() {
                         localStorage.removeItem("jwt");
                         location.href = "/academy/main";
+                    });
+
+                    $('#searchForm').append("<button type='button' id='memberBtn' href='/member/read'>회원 정보</button>");
+
+                    $('#memberBtn').on("click", function() {
+                        $.ajax({
+                            url: '/member/request',
+                            type: 'GET',
+                            contentType: "application/json",
+                            beforeSend: function(xhr) {
+                                xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                            },
+                        }).then((response) => {
+                            var number = response;
+                            location.href="/member/read?number="+number;
+                        });
                     });
                 }
             }

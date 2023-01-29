@@ -74,7 +74,7 @@ public class NoticeController {
         }
         return "notice/modifyForm";
     }
-    //#
+
     @PostMapping("/modify")
     public String modify(@RequestBody Map<String, String> form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         NoticeFormDTO noticeFormDTO = new NoticeFormDTO(form);

@@ -56,9 +56,15 @@ public class MemberController {
         }
         return "redirect:/member/login";
     }
-    //#
-    @GetMapping("/")
-    public void member(@RequestParam(value = "id") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+
+    @GetMapping("/request")
+    public ResponseEntity requestInfo(@AuthenticationPrincipal SecurityMember member) {
+        Long number = member.getMember().getMemNum();
+        return ResponseEntity.ok().body(number);
+    }
+
+    @GetMapping("/read")
+    public void member(@RequestParam(value = "number") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         if (memberService.validateMember(memNum, member)) {
             MemberDTO memberDTO = memberService.getOne(memNum);
             model.addAttribute("member", memberDTO);

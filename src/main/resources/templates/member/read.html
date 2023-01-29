@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    이름:
+    <span th:text="${member.name}" id="name">이름</span><br>
+    비밀번호:
+    주소:
+    <span th:text="${member.address}">주소</span><br>
+    <input type="hidden" th:field="${member.memNum}" id="number">
+    <button type="button" id="noticeBtn">학원 리스트</button><br>
+
+    <button type="button" id="modifyBtn">수정하기</button>
+    <button type="button" id="deleteBtn">삭제하기</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
+
+    <script th:inline="javascript">
+
+        $(function() {
+
+            $('#modifyBtn').on("click", function() {
+                modify();
+            });
+
+            $('#deleteBtn').on("click", function() {
+                delete_academy();
+            });
+
+            $('#joinBtn').on("click", function() {
+                join();
+            });
+
+            $('#withdrawBtn').on("click", function() {
+                withdraw();
+            });
+
+            $('#noticeBtn').on("click", function() {
+                notice();
+            });
+
+        });
+
+        function modify() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+
+            $.ajax({
+                url: '/academy/modify',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {"number":number},
+                success: function() {
+                    location.href='/academy/modify?number='+number;
+                },
+            });
+        }
+
+        function delete_academy() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+
+            $.ajax({
+                url: '/academy/delete',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {"number":number},
+                success: function() {
+                    location.href='/academy/main';
+                },
+            });
+        }
+
+        function join() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+            var name = $('#name').val();
+
+            var result = confirm(name + ' 학원에 가입하시겠습니까?');
+
+            if (result) {
+                $.ajax({
+                    url: '/academy/join',
+                    type: 'GET',
+                    contentType: "application/json",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                    },
+                    data: {"number":number},
+                    success: function() {
+                        location.href="/academy/join?number="+number;
+                    },
+                });
+            }
+        }
+
+        function withdraw() {
+            var token = localStorage.getItem("jwt");
+            var number = $('#number').val();
+            var name = $('#name').val();
+
+            var result = confirm(name + ' 학원에서 탈퇴하시겠습니까?');
+
+            if (result) {
+                $.ajax({
+                    url: '/academy/withdraw',
+                    type: 'GET',
+                    contentType: "application/json",
+                    beforeSend: function(xhr){
+                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                    },
+                    data: {"number":number},
+                    success: function() {
+                        location.href="/academy/withdraw?number="+number;
+                    },
+                });
+            }
+        }
+
+        function notice() {
+            var academy = Number($('#number').val());
+
+            $.ajax({
+                url: '/notice/list',
+                type: 'GET',
+                contentType: "application/json",
+                data: {"academy":academy},
+                success: function() {
+                    location.href="/notice/list?academy="+academy;
+                },
+            });
+        }
+
+
+    </script>
+</div>
+</body>
+
+</html>

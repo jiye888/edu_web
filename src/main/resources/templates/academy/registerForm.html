@@ -57,28 +57,31 @@
             location = $.trim(location);
             var subject = getSubject();
 
-            $.ajax({
-                url: '/academy/register',
-                type: "POST",
-                contentType: "application/json",
-                headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                data: JSON.stringify({
-                    "acaName":acaName,
-                    "subject":subject,
-                    "location":location,
-                }),
-            }).done((response) => {
-                if (acaName != null && location != null && subject != null) {
-                    location.href="/academy/main";
-                } else {
-                    alert('모든 항목을 작성해주세요.');
-                };
-            });
+
+            if (acaName & location & subject != []) {
+                $.ajax({
+                    url: '/academy/register',
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
+                    data: JSON.stringify({
+                        "acaName":acaName,
+                        "subject":subject,
+                        "location":location,
+                    }),
+                    success: function () {
+                        location.href="/academy/list";
+                    },
+                });
+            } else {
+                alert('모든 항목을 입력해주세요.');
+            }
         }
+
         </script>
         <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
         <script>
-    function execDaumPostcode() {
+        function execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
                 // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
