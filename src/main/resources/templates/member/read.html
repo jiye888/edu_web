@@ -7,11 +7,10 @@
 <div layout:fragment="content">
     이름:
     <span th:text="${member.name}" id="name">이름</span><br>
-    비밀번호:
     주소:
     <span th:text="${member.address}">주소</span><br>
     <input type="hidden" th:field="${member.memNum}" id="number">
-    <button type="button" id="noticeBtn">학원 리스트</button><br>
+    <button type="button" id="academyBtn">학원 리스트</button><br>
 
     <button type="button" id="modifyBtn">수정하기</button>
     <button type="button" id="deleteBtn">삭제하기</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
@@ -25,19 +24,11 @@
             });
 
             $('#deleteBtn').on("click", function() {
-                delete_academy();
+                delete_member();
             });
 
-            $('#joinBtn').on("click", function() {
-                join();
-            });
-
-            $('#withdrawBtn').on("click", function() {
-                withdraw();
-            });
-
-            $('#noticeBtn').on("click", function() {
-                notice();
+            $('#academyBtn').on("click", function() {
+                academyList();
             });
 
         });
@@ -47,7 +38,7 @@
             var number = $('#number').val();
 
             $.ajax({
-                url: '/academy/modify',
+                url: '/member/modify',
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
@@ -55,17 +46,17 @@
                 },
                 data: {"number":number},
                 success: function() {
-                    location.href='/academy/modify?number='+number;
+                    location.href='/member/modify?number='+number;
                 },
             });
         }
 
-        function delete_academy() {
+        function delete_member() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
-                url: '/academy/delete',
+                url: '/member/delete',
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
@@ -78,66 +69,23 @@
             });
         }
 
-        function join() {
+        function academyList() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
-            var name = $('#name').val();
-
-            var result = confirm(name + ' 학원에 가입하시겠습니까?');
-
-            if (result) {
-                $.ajax({
-                    url: '/academy/join',
-                    type: 'GET',
-                    contentType: "application/json",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                    },
-                    data: {"number":number},
-                    success: function() {
-                        location.href="/academy/join?number="+number;
-                    },
-                });
-            }
-        }
-
-        function withdraw() {
-            var token = localStorage.getItem("jwt");
-            var number = $('#number').val();
-            var name = $('#name').val();
-
-            var result = confirm(name + ' 학원에서 탈퇴하시겠습니까?');
-
-            if (result) {
-                $.ajax({
-                    url: '/academy/withdraw',
-                    type: 'GET',
-                    contentType: "application/json",
-                    beforeSend: function(xhr){
-                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                    },
-                    data: {"number":number},
-                    success: function() {
-                        location.href="/academy/withdraw?number="+number;
-                    },
-                });
-            }
-        }
-
-        function notice() {
-            var academy = Number($('#number').val());
 
             $.ajax({
-                url: '/notice/list',
+                url: '/academy/joined',
                 type: 'GET',
                 contentType: "application/json",
-                data: {"academy":academy},
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                //date: {"number":number},
                 success: function() {
-                    location.href="/notice/list?academy="+academy;
+                    location.href="/academy/joined";
                 },
             });
         }
-
 
     </script>
 </div>

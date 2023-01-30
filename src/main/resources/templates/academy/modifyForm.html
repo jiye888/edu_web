@@ -19,7 +19,8 @@
                 <span id="guide" style="color:#999;display:none"></span>
                 <input type="text" name="location" id="detailAddress" placeholder="상세주소">
                 <input type="text" name="location" id="extraAddress" placeholder="참고항목">
-            </div>
+            </div><br>
+            <input type="text" style="width:150px" th:value="*{location}" readonly><br>
 
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
@@ -28,14 +29,12 @@
             </div>
 
             <button type="button" id="modifyBtn">수정</button>
-            <!--<input type="submit" value="등록">-->
+
         </form>
 
         <script th:inline="javascript">
 
         $(function() {
-
-            getLocation();
 
             $('#modifyBtn').on("click", function() {
                 modify();

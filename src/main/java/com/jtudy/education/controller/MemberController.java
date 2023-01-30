@@ -35,7 +35,6 @@ public class MemberController {
 
     private final MemberService memberService;
     private final UserDetailsServiceImpl userDetailsService;
-    private final AcademyService academyService;
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -72,9 +71,9 @@ public class MemberController {
             throw new IllegalArgumentException("권한이 없습니다.");
         }
     }
-    //#
+
     @GetMapping("/modify")
-    public String modify(@RequestParam(value = "id") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+    public String modify(@RequestParam(value = "number") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         if (memberService.validateMember(memNum, member)) {
             MemberDTO memberDTO = memberService.getOne(memNum);
             model.addAttribute("member", memberDTO);
@@ -83,13 +82,12 @@ public class MemberController {
         }
         return "member/modifyForm";
     }
-    //#
+
     @PostMapping("/modify")
-    public String modify(@Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("msg", "모든 항목을 입력해주세요.");
-            return "member/modifyForm";
-        }
+    public String modify(@RequestBody Map<String, String> form, Model model) {
+        System.out.println(form);
+        MemberFormDTO memberFormDTO = new MemberFormDTO(form);
+        System.out.println(memberFormDTO);
         memberService.updateMember(memberFormDTO);
         return "redirect:/academy/main";
     }
