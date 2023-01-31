@@ -20,7 +20,8 @@
                 <input type="text" name="location" id="detailAddress" placeholder="상세주소">
                 <input type="text" name="location" id="extraAddress" placeholder="참고항목">
             </div><br>
-            <input type="text" style="width:150px" th:value="*{location}" readonly><br>
+            기존 주소
+            <input type="text" style="width:500px;" th:value="*{location}" id="ex_location" readonly><br>
 
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
@@ -58,13 +59,20 @@
             var acaName = $('#acaName').val();
             var location = '';
             $('input[name=location]').map(function(){
-                location += $(this).val();
-                location += ' ';
+                if ('input[name=location]') {
+                    location += $(this).val();
+                    location += ' ';
+                }
             });
             location = $.trim(location);
+
+            if (!location) {
+                location = $('#ex_location').val();
+            }
+
             var subject = getSubject();
 
-            if (acaName && location && subject != []) {
+            if (acaName && subject != []) {
 
                 $.ajax({
                     url: '/academy/modify',

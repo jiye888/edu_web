@@ -30,8 +30,8 @@
         </form>
         <script th:inline="javascript">
 
-        $(document).ready(function() {
-            $('#registerBtn').click(function() {
+        $(function() {
+            $('#registerBtn').on("click", function() {
                 register();
             });
         });

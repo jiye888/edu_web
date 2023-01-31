@@ -76,7 +76,7 @@ public class AcademyController {
         if (academyService.validateMember(acaNum, member)) {
             model.addAttribute("academy", academyDTO);
         } else {
-            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
         }
         return "academy/modifyForm";
     }
@@ -90,12 +90,12 @@ public class AcademyController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
+    public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         if (academyService.validateMember(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
-            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
         }
         return "redirect:/academy/list";
     }
@@ -107,8 +107,13 @@ public class AcademyController {
     }
     //#
     @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
-    public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
-        academyMemberService.withdraw(member.getMember().getMemNum(), acaNum);
+    public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+        Long memNum = member.getMember().getMemNum();
+        if (academyService.validateMember(memNum, member)) {
+            academyMemberService.withdraw(memNum, acaNum);
+        } else {
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
+        }
         return "redirect:/academy/list";
     }
     //#
@@ -118,6 +123,8 @@ public class AcademyController {
         if (academyService.validateMember(memNum, member)){
             Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum);
             model.addAttribute("academy", academyDTO);
+        } else {
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
         }
     }
 

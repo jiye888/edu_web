@@ -50,16 +50,21 @@ public class MemberController {
         try {
             memberService.createMember(memberFormDTO);
         } catch (Exception e) {
-            model.addAttribute("errorMsg", e.getMessage());
+            model.addAttribute("error", e.getMessage());
             return "member/registerForm";
         }
         return "redirect:/member/login";
     }
 
     @GetMapping("/request")
-    public ResponseEntity requestInfo(@AuthenticationPrincipal SecurityMember member) {
-        Long number = member.getMember().getMemNum();
-        return ResponseEntity.ok().body(number);
+    public ResponseEntity requestInfo(@AuthenticationPrincipal SecurityMember member, Model model) {
+        try {
+            Long number = member.getMember().getMemNum();
+            return ResponseEntity.ok().body(number);
+        } catch (Exception e) {
+            String error = e.getMessage();
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 
     @GetMapping("/read")

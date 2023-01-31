@@ -5,6 +5,7 @@ import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
+import com.jtudy.education.repository.AcademyMemberRepository;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.ReviewRepository;
@@ -26,17 +27,23 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final AcademyRepository academyRepository;
     private final MemberRepository memberRepository;
+    private final AcademyMemberRepository academyMemberRepository;
 
     @Override
     public boolean validateMember(Long revNum, SecurityMember member) {
         Review review = reviewRepository.findByRevNum(revNum);
-        return review.getCreatedBy().equals(member.getUsername());
+        Academy academy = review.getAcademy();
+        List<Academy> academyList = academyMemberRepository.findByMember(member.getMember());
+        boolean regInfo = academyList.contains(academy);
+        boolean modInfo = review.getCreatedBy().equals(member.getUsername());
+        return (regInfo || modInfo);
     }
 
     @Override
-    public Page<ReviewDTO> getAll() {
+    public Page<ReviewDTO> getAll(Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
-        Page<Review> review = reviewRepository.findAll(pageable);
+        Page<Review> review = reviewRepository.findByAcademy(academy, pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;
     }
@@ -50,10 +57,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewFormDTO reviewFormDTO, Long acaNum, Long memNum) {
+    public Long register(ReviewFormDTO reviewFormDTO) {
         Review review = formToEntity(reviewFormDTO);
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        Member member = memberRepository.findByMemNum(memNum);
+        Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcaNum());
+        Member member = memberRepository.findByMemNum(reviewFormDTO.getMemNum());
         review.builder().academy(academy).writer(member).build();
         reviewRepository.save(review);
         return review.getRevNum();

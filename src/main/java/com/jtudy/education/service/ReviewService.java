@@ -12,11 +12,11 @@ public interface ReviewService {
 
     boolean validateMember(Long revNum, SecurityMember member);
 
-    Page<ReviewDTO> getAll();
+    Page<ReviewDTO> getAll(Long acaNum);
 
     ReviewDTO getOne(Long revNum);
 
-    Long register(ReviewFormDTO reviewFormDTO, Long acaNum, Long memNum);
+    Long register(ReviewFormDTO reviewFormDTO);
 
     Long update(ReviewFormDTO reviewFormDTO);
 
@@ -48,6 +48,8 @@ public interface ReviewService {
                 .revNum(review.getRevNum())
                 .title(review.getTitle())
                 .content(review.getContent())
+                .acaNum(review.getAcademy().getAcaNum())
+                .acaName(review.getAcademy().getAcaName())
                 .writerNum(review.getWriter().getMemNum())
                 .writerName(review.getWriter().getName())
                 .writerEmail(review.getWriter().getEmail())

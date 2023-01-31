@@ -6,8 +6,8 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Review</h3>
-    <input type="hidden" th:class="number" th:value="${academy.acaNum}">
-    <button type="button" class="register" th:onclick="'location.href=\''+@{/review/register}+'\';'">리뷰 작성</button>
+    <input type="hidden" th:value="${academy}" id="academy">
+    <button type="button" class="register" id="registerBtn">리뷰 작성</button>
     <div th:if = "${!review.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
@@ -69,6 +69,30 @@
             </ul>
         </nav>
     </div>
+    <script th:inline="javascript">
+        $(function() {
+            $('#registerBtn').click(function() {
+                register();
+            });
+        });
+
+        function register() {
+            var token = localStorage.getItem("jwt");
+            var academy = $('#academy').val();
+            $.ajax({
+                url: '/review/register',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {"academy":academy},
+                success: function() {
+                    location.href="/review/register?academy="+academy;
+                }
+            });
+        }
+    </script>
 </div>
 </body>
 </html>

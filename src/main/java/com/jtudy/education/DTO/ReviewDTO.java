@@ -24,8 +24,6 @@ public class ReviewDTO {
     @NotBlank
     private String content;
 
-    private Long amNum;
-
     private Long acaNum;
 
     private String acaName;

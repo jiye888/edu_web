@@ -16,7 +16,8 @@
     학원 위치:
     <span th:text="${academy.location}">학원 위치</span><br>
     <input type="hidden" th:field="${academy.acaNum}" id="number">
-    <button type="button" id="noticeBtn">공지사항</button><br>
+    <button type="button" id="noticeBtn">공지사항</button>
+    <button type="button" id="reviewBtn">수강 후기</button><br>
 
     <button type="button" id="modifyBtn">수정하기</button>
     <button type="button" id="deleteBtn">삭제하기</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
@@ -46,6 +47,10 @@
 
             $('#noticeBtn').on("click", function() {
                 notice();
+            });
+
+            $('#reviewBtn').on("click", function() {
+                review();
             });
 
         });
@@ -146,6 +151,19 @@
             });
         }
 
+        function review() {
+            var academy = Number($('#number').val());
+
+            $.ajax({
+                url: '/review/list',
+                type: 'GET',
+                contentType: "application/json",
+                data: {"academy":academy},
+                success: function() {
+                    location.href="/review/list?academy="+academy;
+                },
+            });
+        }
 
     </script>
 </div>
