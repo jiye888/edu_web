@@ -38,12 +38,9 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody Map<String, Object> form, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void register(@RequestBody Map<String, Object> form, @AuthenticationPrincipal SecurityMember member, Model model) {
         ReviewFormDTO reviewFormDTO = new ReviewFormDTO(form, member.getMember().getMemNum());
-        System.out.println(form.get("grade").getClass()); // int > long cast할 수 없다고 오류
-        System.out.println(reviewFormDTO);
         reviewService.register(reviewFormDTO);
-        return "redirect:/review/list";
     }
 
     @GetMapping("/read")

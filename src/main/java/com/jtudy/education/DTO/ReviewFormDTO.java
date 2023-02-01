@@ -28,15 +28,14 @@ public class ReviewFormDTO {
     @NotBlank
     private String content;
 
-    @Size(min=1, max=5)
     private Integer grade;
 
     public ReviewFormDTO(Map<String, Object> form, Long memNum) {
-        this.acaNum = (Long) form.get("academy");
+        this.acaNum = Long.parseLong(form.get("academy").toString());
         this.memNum = memNum;
         this.title = form.get("title").toString();
         this.content = form.get("content").toString();
-        this.grade = (Integer) form.get("grade");
+        this.grade = Integer.parseInt(form.get("grade").toString());
     }
 
 }

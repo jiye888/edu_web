@@ -33,11 +33,13 @@ public interface ReviewService {
         return review;
     }
 
-    default Review formToEntity(ReviewFormDTO reviewFormDTO) {
+    default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy, Member member) {
         Review review = Review.builder()
                 .title(reviewFormDTO.getTitle())
                 .content(reviewFormDTO.getContent())
                 .grade(reviewFormDTO.getGrade())
+                .academy(academy)
+                .writer(member)
                 .build();
 
         return review;
