@@ -52,24 +52,25 @@ public class ReviewController {
     @GetMapping("/modify")
     public String modify(@RequestParam("number") Long revNum, Model model) {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
+        model.addAttribute("academy", reviewDTO.getAcaNum());
         model.addAttribute("review", reviewDTO);
         return "/review/modifyForm";
     }
 
     @PostMapping("/modify")
-    public String modify(@Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, Model model) {
+    public void modify(@RequestBody Map<String, Object> form, @AuthenticationPrincipal SecurityMember member, BindingResult bindingResult, Model model) {
+        ReviewFormDTO reviewFormDTO = new ReviewFormDTO(form, member.getMember().getMemNum());
         if (bindingResult.hasErrors()) {
             model.addAttribute("msg", "모든 항목을 입력해주세요.");
-            return "/review/modifyForm";
         }
         reviewService.update(reviewFormDTO);
-        return "redirect:/review/list";
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public String delete(@RequestParam("number") Long revNum) {
+    public void delete(@RequestParam("number") Long revNum, Model model) {
+        ReviewDTO reviewDTO = reviewService.getOne(revNum);
+        model.addAttribute("academy", reviewDTO.getAcaNum());
         reviewService.delete(revNum);
-        return "redirect:/review/list";
     }
 
 }

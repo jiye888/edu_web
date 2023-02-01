@@ -26,7 +26,6 @@
             </div>
 
             <button type="button" id="registerBtn">등록</button>
-            <!--<input type="submit" id="registerBtn" value="등록">-->
         </form>
         <script th:inline="javascript">
 
@@ -56,9 +55,11 @@
             });
             location = $.trim(location);
             var subject = getSubject();
+            console.log(acaName);
+            console.log(location);
+            console.log(subject);
 
-
-            if (acaName & location & subject != []) {
+            if (acaName & location & subject.length != 0) {
                 $.ajax({
                     url: '/academy/register',
                     type: "POST",

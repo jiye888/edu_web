@@ -38,8 +38,6 @@
         var title = $('#title').val();
         var content = $('#content').val();
         var grade = $('input[type=radio][name=grade]:checked').val();
-        console.log(academy);
-        console.log(typeof(academy));
 
         if (title && content && grade) {
             $.ajax({

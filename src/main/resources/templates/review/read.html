@@ -13,11 +13,68 @@
     <span th:text="${review.grade}">평점</span><br>
     내용:
     <span th:text="${review.content}">내용</span><br>
-    <input type="hidden" th:field="${academy.acaNum}">
-    <input type="hidden" th:field="${review.revNum}">
+    <input type="hidden" th:field="${review.acaNum}" id="academy">
+    <input type="hidden" th:field="${review.revNum}" id="number">
 
-    <button type="button" class="modify" th:onclick="'location.href=\''+@{/review/modify?number={number}(number=${review.revNum})}+'\';'">수정하기</button>
-    <button type="button" class="delete" th:onclick="'location.href=\''+@{/review/delete?number={number}(number=${review.revNum})}+'\';'">삭제하기</button>
+    <button type="button" id="modifyBtn">수정하기</button>
+    <button type="button" id="deleteBtn">삭제하기</button>
+
+    <script th:inline="javascript">
+        $(function() {
+            $('#modifyBtn').on("click", function() {
+                modify();
+            });
+
+            $('#deleteBtn').on("click", function() {
+                delete_review();
+            });
+        });
+
+        function modify() {
+            var token = localStorage.getItem("jwt");
+            var academy = $('#academy').val();
+            var number = $('#number').val();
+
+            $.ajax({
+                url: '/review/modify',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {
+                    "number":number,
+                    "academy":academy,
+                },
+                success: function() {
+                    location.href='/review/modify?number='+number;
+                },
+            });
+        }
+
+        function delete_review() {
+            var token = localStorage.getItem("jwt");
+            var academy = $('#academy').val();
+            var number = $('#number').val();
+
+            $.ajax({
+                url: '/review/delete',
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {
+                    "number":number,
+                    "academy":academy
+                },
+                success: function() {
+                    location.href="/review/list?academy="+academy;
+                },
+            });
+        }
+
+    </script>
 </div>
 </body>
 </html>

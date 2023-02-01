@@ -50,8 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDTO getOne(Long revNum) {
-        Review review = reviewRepository.findById(revNum)
-                .orElseThrow(EntityNotFoundException::new);
+        Review review = reviewRepository.findByRevNum(revNum);
         ReviewDTO reviewDTO = entityToDTO(review);
         return reviewDTO;
     }
@@ -68,7 +67,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Long update(ReviewFormDTO reviewFormDTO) {
         Review review = reviewRepository.findByRevNum(reviewFormDTO.getRevNum());
-        review.changeReview(reviewFormDTO.getTitle(), reviewFormDTO.getContent());
+        System.out.println("!!!"+review.getAcademy());
+        System.out.println(review.getTitle());
+        review.changeReview(reviewFormDTO.getTitle(), reviewFormDTO.getContent(), reviewFormDTO.getGrade());
+        System.out.println("!!!!!"+review.getAcademy());
+        System.out.println(review.getTitle());
         reviewRepository.save(review);
         return review.getRevNum();
     }

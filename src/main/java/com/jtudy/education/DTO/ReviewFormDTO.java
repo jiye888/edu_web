@@ -31,6 +31,7 @@ public class ReviewFormDTO {
     private Integer grade;
 
     public ReviewFormDTO(Map<String, Object> form, Long memNum) {
+        this.revNum = Long.parseLong(form.get("number").toString());
         this.acaNum = Long.parseLong(form.get("academy").toString());
         this.memNum = memNum;
         this.title = form.get("title").toString();
