@@ -12,8 +12,8 @@
     <input type="hidden" th:field="${member.memNum}" id="number">
     <button type="button" id="academyBtn">학원 리스트</button><br>
 
-    <button type="button" id="modifyBtn">수정하기</button>
-    <button type="button" id="deleteBtn">삭제하기</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
+    <button type="button" id="modifyBtn">회원 정보 수정</button>
+    <button type="button" id="deleteBtn">회원 탈퇴</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
 
     <script th:inline="javascript">
 
@@ -55,18 +55,22 @@
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
-            $.ajax({
-                url: '/member/delete',
-                type: 'GET',
-                contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
-                data: {"number":number},
-                success: function() {
-                    location.href='/academy/main';
-                },
-            });
+            var result = confirm("회원 탈퇴를 진행하시겠습니까?");
+
+            if (result) {
+                $.ajax({
+                    url: '/member/withdraw?number='+number,
+                    type: 'POST',
+                    contentType: "application/json",
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                    },
+                    data: {"number":number},
+                    success: function() {
+                        location.href='/academy/main';
+                    },
+                });
+            }
         }
 
         function academyList() {

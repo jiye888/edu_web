@@ -82,7 +82,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void withdraw(Long memNum) {
-        //Member member = memberRepository.findByMemNum(memNum);
         memberRepository.deleteById(memNum);
     }
 

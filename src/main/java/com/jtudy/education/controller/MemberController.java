@@ -98,9 +98,8 @@ public class MemberController {
     }
 
     @PostMapping("/withdraw")
-    public String withdraw(Long memNum) {
+    public void withdraw(@RequestParam("number") Long memNum) {
         memberService.withdraw(memNum);
-        return "redirect:/academy/main";
     }
 
     @GetMapping("/login")
