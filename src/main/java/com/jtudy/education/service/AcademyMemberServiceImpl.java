@@ -10,6 +10,8 @@ import com.jtudy.education.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AcademyMemberServiceImpl implements AcademyMemberService {
@@ -27,23 +29,45 @@ public class AcademyMemberServiceImpl implements AcademyMemberService {
                 .academy(academy)
                 .member(member)
                 .build();
-        academyMemberRepository.save(academyMember);
-        if (!member.getRolesList().contains(Roles.STUDENT)) {
-            member.addRoles(Roles.STUDENT);
+        if(!isPresent(memNum, acaNum)) {
+            academyMemberRepository.save(academyMember);
+            if (!member.getRolesList().contains(Roles.STUDENT)) {
+                member.addRoles(Roles.STUDENT);
+            }
+            memberRepository.save(member);
+            return academyMember.getAmNum();
+        } else {
+            return getOne(memNum, acaNum);
         }
-        memberRepository.save(member);
-        return academyMember.getAmNum();
     }
 
     @Override
     public void withdraw(Long memNum, Long acaNum) {
+        Member member = memberRepository.findByMemNum(memNum);
+        if (isPresent(memNum, acaNum)) {
+            Long am = getOne(memNum, acaNum);
+            academyMemberRepository.deleteById(am);
+            if (academyMemberRepository.findByMember(member) == null) {
+                member.removeRoles(Roles.STUDENT);
+            }
+        }
+    }
+
+    @Override
+    public Long getOne(Long memNum, Long acaNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Member member = memberRepository.findByMemNum(memNum);
-        AcademyMember academyMember = academyMemberRepository.findByAcademyAndMember(academy, member);
-        academyMemberRepository.deleteById(academyMember.getAmNum());
-        if (academyMemberRepository.findByMember(member) == null) {
-            member.removeRoles(Roles.STUDENT);
-        }
+        Optional<AcademyMember> am = academyMemberRepository.findByAcademyAndMember(academy, member);
+        AcademyMember academyMember = am.get();
+        return academyMember.getAmNum();
+    }
+
+    @Override
+    public boolean isPresent(Long memNum, Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        Member member = memberRepository.findByMemNum(memNum);
+        Optional<AcademyMember> am = academyMemberRepository.findByAcademyAndMember(academy, member);
+        return am.isPresent();
     }
 
 }

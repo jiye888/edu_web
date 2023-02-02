@@ -25,4 +25,18 @@ class AcademyMemberServiceImplTest {
         academyMemberService.withdraw(Long.parseLong("1"), Long.parseLong("5"));
     }
 
+    @Test
+    public void validate() {
+        Long memNum = Long.parseLong("1");
+        Long acaNum = Long.parseLong("1");
+        if(academyMemberService.isPresent(memNum, acaNum)) {
+            Long am = academyMemberService.getOne(memNum, acaNum);
+            System.out.println("true");
+            System.out.println(am);
+        } else {
+            System.out.println("false");
+        }
+
+    }
+
 }

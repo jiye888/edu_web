@@ -101,8 +101,11 @@ public class AcademyController {
     }
 
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
-    public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
+    public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         Long memNum = member.getMember().getMemNum();
+        //if (academyMemberService.getOne(memNum, acaNum) == null) {
+            //model.addAttribute("", am);
+        //}
         academyMemberService.join(memNum, acaNum);
     }
 

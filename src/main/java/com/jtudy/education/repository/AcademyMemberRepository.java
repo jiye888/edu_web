@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AcademyMemberRepository extends JpaRepository<AcademyMember, Long> {
 
     List<Academy> findByMember(Member member);
     List<Member> findByAcademy(Academy academy);
-    AcademyMember findByAcademyAndMember(Academy academy, Member member);
+    Optional<AcademyMember> findByAcademyAndMember(Academy academy, Member member);
 
 }

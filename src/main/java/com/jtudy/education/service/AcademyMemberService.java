@@ -6,4 +6,7 @@ public interface AcademyMemberService {
 
     void withdraw(Long memNum, Long acaNum);
 
+    Long getOne(Long memNum, Long acaNum);
+
+    boolean isPresent(Long memNum, Long acaNum);
 }

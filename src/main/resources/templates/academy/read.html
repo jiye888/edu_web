@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     학원명:
-    <span th:value="${academy.acaName}" id="academy_name">학원 이름</span><br>
+    <span th:text="${academy.acaName}" id="academy_name">학원 이름</span><br>
     수강 과목:
     <div th:each="subject : ${academy.subject}">
         <span th:each="sub : ${subject}" th:if="${subject == subject}">
@@ -14,7 +14,7 @@
         </span>
     </div>
     학원 위치:
-    <span th:value="${academy.location}">학원 위치</span><br>
+    <span th:text="${academy.location}">학원 위치</span><br>
     <input type="hidden" th:field="${academy.acaNum}" id="number">
     <button type="button" id="noticeBtn">공지사항</button>
     <button type="button" id="reviewBtn">수강 후기</button><br>
@@ -94,22 +94,21 @@
         function join() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
-            var name = $('#academy_name').val();
+            var name = document.getElementById("academy_name").innerHTML;
 
             var result = confirm(name + ' 학원에 가입하시겠습니까?');
-            console.log(number);
-            console.log(name);
 
             if (result) {
                 $.ajax({
-                    url: '/academy/join',
+                    url: '/academy/join?number='+number,
                     type: 'POST',
                     contentType: "application/json",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader("X-AUTH-TOKEN", token)
                     },
-                    data: {"number":number},
+                    data: JSON.stringify({"number":number}),
                     success: function() {
+                        alert("등록이 완료되었습니다.");
                     },
                 });
             }
@@ -118,21 +117,21 @@
         function withdraw() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
-            var name = document.getElementById("academy_name").innerText;
-            console.log(number);
+            var name = document.getElementById("academy_name").innerHTML;
 
             var result = confirm(name + ' 학원에서 탈퇴하시겠습니까?');
 
             if (result) {
                 $.ajax({
-                    url: '/academy/withdraw',
+                    url: '/academy/withdraw?number='+number,
                     type: 'POST',
                     contentType: "application/json",
                     beforeSend: function(xhr){
                         xhr.setRequestHeader("X-AUTH-TOKEN", token)
                     },
-                    data: {"number":number},
+                    data: JSON.stringify({"number":number}),
                     success: function() {
+                        alert("탙퇴가 완료되었습니다.");
                     },
                 });
             }
