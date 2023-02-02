@@ -42,7 +42,7 @@ public class AcademyMemberServiceImpl implements AcademyMemberService {
         AcademyMember academyMember = academyMemberRepository.findByAcademyAndMember(academy, member);
         academyMemberRepository.deleteById(academyMember.getAmNum());
         if (academyMemberRepository.findByMember(member) == null) {
-            member.removeRoles(Roles.MANAGER);
+            member.removeRoles(Roles.STUDENT);
         }
     }
 

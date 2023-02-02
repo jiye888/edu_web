@@ -99,22 +99,17 @@ public class AcademyController {
         }
         return "redirect:/academy/list";
     }
-    //#
+
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
-    public String join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
-        academyMemberService.join(member.getMember().getMemNum(), acaNum);
-        return "redirect:/academy/list";
-    }
-    //#
-    @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
-    public String withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
         Long memNum = member.getMember().getMemNum();
-        if (academyService.validateMember(memNum, member)) {
-            academyMemberService.withdraw(memNum, acaNum);
-        } else {
-            model.addAttribute("msg", "관리자 권한이 없습니다.");
-        }
-        return "redirect:/academy/list";
+        academyMemberService.join(memNum, acaNum);
+    }
+
+    @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
+    public void withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+        Long memNum = member.getMember().getMemNum();
+        academyMemberService.withdraw(memNum, acaNum);
     }
     //#
     @GetMapping("/joined")

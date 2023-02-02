@@ -82,16 +82,15 @@ public class NoticeController {
         redirectAttributes.addFlashAttribute("message", notNum);
         return "redirect:/notice/list";
     }
-    //#
+
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public String delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
+    public void delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
             noticeService.delete(notNum);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
-        return "redirect:/notice/list";
     }
 
 }

@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     학원명:
-    <span th:text="${academy.acaName}" id="name">학원 이름</span><br>
+    <span th:value="${academy.acaName}" id="academy_name">학원 이름</span><br>
     수강 과목:
     <div th:each="subject : ${academy.subject}">
         <span th:each="sub : ${subject}" th:if="${subject == subject}">
@@ -14,14 +14,14 @@
         </span>
     </div>
     학원 위치:
-    <span th:text="${academy.location}">학원 위치</span><br>
+    <span th:value="${academy.location}">학원 위치</span><br>
     <input type="hidden" th:field="${academy.acaNum}" id="number">
     <button type="button" id="noticeBtn">공지사항</button>
     <button type="button" id="reviewBtn">수강 후기</button><br>
 
     <button type="button" id="modifyBtn">수정하기</button>
-    <button type="button" id="deleteBtn">삭제하기</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
-    <button type="button" id="joinBtn">수강 신청</button><!-- th:onclick="'location.href=\''+@{/academy/join?number={number}(number=${academy.acaNum})}+'\';'">수강 신청</button>-->
+    <button type="button" id="deleteBtn">삭제하기</button>
+    <button type="button" id="joinBtn">수강 신청</button>
     <button type="button" id="withdrawBtn">수강 취소</button>
     <!--<button type="button" class="withdraw" th:onclick="'location.href=\''+@{/academy/withdraw?number={number}(number=${academy.acaNum})}+'\';">수강 취소</button>-->
 
@@ -94,21 +94,22 @@
         function join() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
-            var name = $('#name').val();
+            var name = $('#academy_name').val();
 
             var result = confirm(name + ' 학원에 가입하시겠습니까?');
+            console.log(number);
+            console.log(name);
 
             if (result) {
                 $.ajax({
                     url: '/academy/join',
-                    type: 'GET',
+                    type: 'POST',
                     contentType: "application/json",
                     beforeSend: function(xhr) {
                         xhr.setRequestHeader("X-AUTH-TOKEN", token)
                     },
                     data: {"number":number},
                     success: function() {
-                        location.href="/academy/join?number="+number;
                     },
                 });
             }
@@ -117,21 +118,21 @@
         function withdraw() {
             var token = localStorage.getItem("jwt");
             var number = $('#number').val();
-            var name = $('#name').val();
+            var name = document.getElementById("academy_name").innerText;
+            console.log(number);
 
             var result = confirm(name + ' 학원에서 탈퇴하시겠습니까?');
 
             if (result) {
                 $.ajax({
                     url: '/academy/withdraw',
-                    type: 'GET',
+                    type: 'POST',
                     contentType: "application/json",
                     beforeSend: function(xhr){
                         xhr.setRequestHeader("X-AUTH-TOKEN", token)
                     },
                     data: {"number":number},
                     success: function() {
-                        location.href="/academy/withdraw?number="+number;
                     },
                 });
             }
