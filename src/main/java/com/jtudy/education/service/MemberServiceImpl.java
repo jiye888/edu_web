@@ -5,6 +5,7 @@ import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.entity.RefreshToken;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -32,6 +34,7 @@ public class MemberServiceImpl implements MemberService{
     private final AcademyMemberRepository academyMemberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public boolean validateMember(Long memNum, SecurityMember securityMember) {
@@ -92,8 +95,12 @@ public class MemberServiceImpl implements MemberService{
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("잘못된 아이디, 또는 비밀번호입니다.");
         }
-        return jwtTokenProvider.createToken(email, member.getRolesList());
-
+        //return jwtTokenProvider.createToken(email, member.getRolesList());
+        String accessToken = jwtTokenProvider.createAccessToken(email, member.getRolesList());
+        String refreshToken = jwtTokenProvider.createRefreshToken(email, member.getRolesList());
+        RefreshToken token = new RefreshToken(refreshToken, member.getMemNum());
+        refreshTokenRepository.save(token);
+        return accessToken;
     }
 
     @Override

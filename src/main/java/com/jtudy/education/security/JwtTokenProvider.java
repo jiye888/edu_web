@@ -1,6 +1,7 @@
 package com.jtudy.education.security;
 
 import com.jtudy.education.constant.Roles;
+import com.jtudy.education.repository.RefreshTokenRepository;
 import com.jtudy.education.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.Duration;
 import java.util.Base64;
@@ -31,6 +33,8 @@ public class JwtTokenProvider {
 
     private final UserDetailsServiceImpl userDetailsService;
 
+    private final RefreshTokenRepository refreshTokenRepository;
+
     StringKeyGenerator keyGenerator = KeyGenerators.string();
     String secretKey = keyGenerator.generateKey();
 
@@ -39,24 +43,28 @@ public class JwtTokenProvider {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String email, List<Roles> roles) {
+    public String createToken(String email, List<Roles> roles, Long validTime) {
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("roles", roles);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + accessTokenValidTime))
+                .setExpiration(new Date(now.getTime() + validTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
-/*
+
+    public String createAccessToken(String email, List<Roles> roles) {
+        String accessToken = createToken(email, roles, accessTokenValidTime);
+        return accessToken;
+    }
+
     public String createRefreshToken(String email, List<Roles> roles) {
-        String refreshToken = this.createToken(email, roles);
-        redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
+        String refreshToken = createToken(email, roles, refreshTokenValidTime);
+        //redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
         return refreshToken;
     }
- */
 
     public Authentication getAuthentication(String token) {
         SecurityMember securityMember = userDetailsService.loadUserByUsername(this.getEmail(token));
