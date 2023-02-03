@@ -41,7 +41,7 @@
             var academy = [[${academy}]];
 
             $.ajax({
-                url: '/notice/modify',
+                url: '/notice/modify?number='+number,
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
@@ -59,15 +59,16 @@
             var number = $('#number').val();
 
             $.ajax({
-                url: '/notice/delete',
-                type: 'GET',
+                url: '/notice/delete?number='+number,
+                type: 'POST',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
                 data: {"number":number},
                 success: function() {
-                    location.href="/notice/delete?number="+number;
+                    alert("삭제가 완료되었습니다.");
+                    history.back();
                 },
             });
         }

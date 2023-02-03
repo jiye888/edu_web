@@ -51,7 +51,7 @@ public class NoticeController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody Map<String, String> form, RedirectAttributes redirectAttributes,
+    public void register(@RequestBody Map<String, String> form, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal SecurityMember member) {
         Long acaNum = Long.valueOf(form.get("academy"));
         if (noticeService.validateMember(acaNum, member)) {
@@ -61,7 +61,6 @@ public class NoticeController {
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
-        return "redirect:/notice/list";
     }
 
     @GetMapping("/modify")

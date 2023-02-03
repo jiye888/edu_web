@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,8 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private Long tokenValidTime = 2 * 60 * 60 * 1000L; // 2시간
+    private Long accessTokenValidTime = 2 * 60 * 60 * 1000L;
+    private Long refreshTokenValidTime = 24 * 7 * 60 * 60 * 1000L;
 
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -44,10 +46,17 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidTime))
+                .setExpiration(new Date(now.getTime() + accessTokenValidTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+/*
+    public String createRefreshToken(String email, List<Roles> roles) {
+        String refreshToken = this.createToken(email, roles);
+        redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
+        return refreshToken;
+    }
+ */
 
     public Authentication getAuthentication(String token) {
         SecurityMember securityMember = userDetailsService.loadUserByUsername(this.getEmail(token));
