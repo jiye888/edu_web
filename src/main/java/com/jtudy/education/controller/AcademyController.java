@@ -103,9 +103,6 @@ public class AcademyController {
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
     public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         Long memNum = member.getMember().getMemNum();
-        //if (academyMemberService.getOne(memNum, acaNum) == null) {
-            //model.addAttribute("", am);
-        //}
         academyMemberService.join(memNum, acaNum);
     }
 
@@ -114,7 +111,7 @@ public class AcademyController {
         Long memNum = member.getMember().getMemNum();
         academyMemberService.withdraw(memNum, acaNum);
     }
-    //#
+
     @GetMapping("/joined")
     public void getAcademies(@AuthenticationPrincipal SecurityMember member, Model model) {
         Long memNum = member.getMember().getMemNum();
@@ -122,9 +119,14 @@ public class AcademyController {
             Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum);
             model.addAttribute("academy", academyDTO);
         } else {
-            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            model.addAttribute("msg", "권한이 없습니다.");
         }
     }
 
+    @GetMapping("/search")
+    public void search(@RequestParam String category, @RequestParam String keyword, Model model) {
+        Page<AcademyDTO> academy = academyService.search(category, keyword);
+        model.addAttribute("academy", academy);
+    }
 
 }

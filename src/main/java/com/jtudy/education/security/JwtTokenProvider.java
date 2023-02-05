@@ -1,6 +1,7 @@
 package com.jtudy.education.security;
 
 import com.jtudy.education.constant.Roles;
+import com.jtudy.education.entity.RefreshToken;
 import com.jtudy.education.repository.RefreshTokenRepository;
 import com.jtudy.education.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.management.relation.Role;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,12 +25,13 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
-    private Long accessTokenValidTime = 2 * 60 * 60 * 1000L;
+    private Long accessTokenValidTime = 1000L; //2 * 60 * 60 * 1000L;
     private Long refreshTokenValidTime = 24 * 7 * 60 * 60 * 1000L;
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -62,7 +65,6 @@ public class JwtTokenProvider {
 
     public String createRefreshToken(String email, List<Roles> roles) {
         String refreshToken = createToken(email, roles, refreshTokenValidTime);
-        //redisService.setValues(email, refreshToken, Duration.ofMillis(refreshTokenValidTime));
         return refreshToken;
     }
 
@@ -86,6 +88,18 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader("X-AUTH-TOKEN");
+    }
+
+    public String issueAccessToken(String email) {
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(email);
+        if (refreshToken.isPresent()) {
+            SecurityMember member = userDetailsService.loadUserByUsername(email);
+            List<Roles> roles = member.getMember().getRolesList();
+            String accessToken = createAccessToken(email, roles);
+            return accessToken;
+        } else {
+            return null;
+        }
     }
 
 }

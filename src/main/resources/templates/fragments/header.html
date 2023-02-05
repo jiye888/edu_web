@@ -29,7 +29,12 @@
                         </li>
                     </ul>
                     <form class="d-flex" role="search" id="searchForm">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <select name="category">
+                            <option value="name">학원명</option>
+                            <option value="subject">과목명</option>
+                            <option value="location">학원 위치</option>
+                        </select>
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="keyword">
                         <button class="btn btn-outline-success" type="button" id="searchBtn">Search</button>
                     </form>
                     <button align="right" class="btn btn-outline-warning" type="button" id="loginBtn_nav" onclick="location.href='/member/login';">Login</button>
@@ -52,8 +57,20 @@
                     $('#loginBtn_nav').replaceWith("<button align='right' class='btn btn-outline-warning' type='button' id='logoutBtn' href='/member/logout'>Logout</button>");
 
                     $('#logoutBtn').click(function() {
-                        localStorage.removeItem("jwt");
-                        location.href = "/academy/main";
+
+                        $.ajax({
+                            url: '/member/logout',
+                            type: 'POST',
+                            contentType: "application/json",
+                            beforeSend: function(xhr) {
+                                xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                            },
+                        }).then(() => {
+                            localStorage.removeItem("jwt");
+                            alert("로그아웃이 완료되었습니다.");
+                            location.href = "/academy/main";
+                        });
+
                     });
 
                     $('#searchForm').append("<button type='button' id='memberBtn' href='/member/read'>회원 정보</button>");
@@ -75,7 +92,21 @@
             }
 
             function search() {
+                var category = $('option[name=category]').val();
+                var keyword = $('#keyword').val();
 
+                $.ajax({
+                    url: '/academy/search?category='+category+'&keyword='+keyword,
+                    type: 'GET',
+                    contentType: "application/json",
+                    data: {
+                        "category":category,
+                        "keyword":keyword,
+                    },
+                    success: function() {
+                        location.href='/academy/search?category='+category+'&keyword='+keyword;
+                    },
+                });
             }
 
         </script>

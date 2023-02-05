@@ -12,7 +12,7 @@
         <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p><br>
         비밀번호<input type="password" th:field="*{password}">
         <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p><br>
-        비밀번호 확인<input type="password" id="password2">
+        비밀번호 확인<input type="password" id="password2"><br>
         이름<input type="text" th:field="*{name}">
         <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError"></p><br>
         주소
@@ -27,7 +27,7 @@
         </div><br>
         <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError"></p><br>
 
-        <button type="button" value="등록" id="registerBtn"></button>
+        <button type="button" id="registerBtn">등록</button>
     </form>
     <script th:inline="javascript">
     $(function() {
@@ -39,7 +39,6 @@
     });
 
     function register() {
-        var token = localStorage.getItem("jwt");
         var email = $('#email').val();
         var password = $('#password').val();
         var password2 = $('#password2').val();
@@ -59,10 +58,9 @@
             if (password == password2) {
 
                 $.ajax({
-                    url: '/member/modify',
+                    url: '/member/join',
                     type: "POST",
                     contentType: "application/json",
-                    headers: {"X-AUTH-TOKEN":token},
                     data: JSON.stringify({
                     "email":email,
                     "password":password,
@@ -70,7 +68,7 @@
                     "address":address,
                     }),
                     success: function() {
-                    history.back();
+                        history.back();
                     },
                 });
             } else {

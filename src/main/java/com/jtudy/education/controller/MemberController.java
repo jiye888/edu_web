@@ -3,6 +3,7 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.RefreshToken;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityConfig;
 import com.jtudy.education.security.SecurityMember;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/member")
@@ -43,7 +45,7 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(Model model, @ModelAttribute("member") @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
+    public String join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "member/registerForm";
         }
@@ -124,8 +126,8 @@ public class MemberController {
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
-    public String logout() {
-        return "redirect:/academy/main";
+    public void logout(@AuthenticationPrincipal SecurityMember member) {
+        memberService.logout(member.getUsername());
     }
 
     @GetMapping("/joined")

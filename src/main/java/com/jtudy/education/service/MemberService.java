@@ -25,6 +25,8 @@ public interface MemberService {
 
     String login(String email, String password);
 
+    void logout(String email);
+
     Page<MemberDTO> getMembers(Long acaNum);
 
     void requestManagerAuth(Long memNum);

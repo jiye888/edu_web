@@ -10,17 +10,14 @@ import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -95,12 +92,21 @@ public class MemberServiceImpl implements MemberService{
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("잘못된 아이디, 또는 비밀번호입니다.");
         }
-        //return jwtTokenProvider.createToken(email, member.getRolesList());
         String accessToken = jwtTokenProvider.createAccessToken(email, member.getRolesList());
         String refreshToken = jwtTokenProvider.createRefreshToken(email, member.getRolesList());
-        RefreshToken token = new RefreshToken(refreshToken, member.getMemNum());
+        RefreshToken token = new RefreshToken(email, refreshToken);
+        System.out.println(token);
         refreshTokenRepository.save(token);
         return accessToken;
+    }
+
+    @Override
+    public void logout(String email) {
+        Member member = memberRepository.findByEmail(email);
+        Optional<RefreshToken> token = refreshTokenRepository.findById(email);
+        if (token.isPresent()) {
+            refreshTokenRepository.delete(token.get());
+        }
     }
 
     @Override
