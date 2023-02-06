@@ -18,10 +18,8 @@ public class ReviewDTO {
 
     private Long revNum;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private String content;
 
     private Long acaNum;
@@ -34,7 +32,6 @@ public class ReviewDTO {
 
     private String writerEmail;
 
-    @Size(min=1, max=5)
     private Integer grade;
 
     private LocalDateTime createdAt;

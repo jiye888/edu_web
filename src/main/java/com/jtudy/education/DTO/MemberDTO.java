@@ -15,16 +15,12 @@ public class MemberDTO {
 
     private Long memNum;
 
-    @NotBlank
-    @Email
     private String email;
 
     private String password;
 
-    @NotBlank
     private String name;
 
-    @NotBlank
     private String address;
 
 }

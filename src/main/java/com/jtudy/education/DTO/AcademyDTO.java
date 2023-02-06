@@ -8,12 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
 
 @Data
 @Builder
@@ -26,10 +21,8 @@ public class AcademyDTO {
 
     private String acaName;
 
-    @NotEmpty
     private EnumSet<Subject> subject;
 
-    @NotEmpty
     private String location;
 
     private Long managerMemNum;

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ public class ReviewFormDTO {
     @NotBlank
     private String content;
 
+    @NotNull
     private Integer grade;
 
     public ReviewFormDTO(Map<String, Object> form, Long memNum) {
