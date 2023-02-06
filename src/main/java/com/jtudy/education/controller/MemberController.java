@@ -92,9 +92,7 @@ public class MemberController {
 
     @PostMapping("/modify")
     public String modify(@RequestBody Map<String, String> form, Model model) {
-        System.out.println(form);
         MemberFormDTO memberFormDTO = new MemberFormDTO(form);
-        System.out.println(memberFormDTO);
         memberService.updateMember(memberFormDTO);
         return "redirect:/academy/main";
     }

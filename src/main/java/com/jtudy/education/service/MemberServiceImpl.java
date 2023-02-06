@@ -95,7 +95,6 @@ public class MemberServiceImpl implements MemberService{
         String accessToken = jwtTokenProvider.createAccessToken(email, member.getRolesList());
         String refreshToken = jwtTokenProvider.createRefreshToken(email, member.getRolesList());
         RefreshToken token = new RefreshToken(email, refreshToken);
-        System.out.println(token);
         refreshTokenRepository.save(token);
         return accessToken;
     }

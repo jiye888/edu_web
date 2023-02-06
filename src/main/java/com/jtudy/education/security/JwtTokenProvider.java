@@ -4,10 +4,7 @@ import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.RefreshToken;
 import com.jtudy.education.repository.RefreshTokenRepository;
 import com.jtudy.education.service.UserDetailsServiceImpl;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -74,7 +71,14 @@ public class JwtTokenProvider {
     }
 
     public String getEmail(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+            return (String) claims.get("sub");
+        } catch (ExpiredJwtException e) {
+            Claims expired = e.getClaims();
+            System.out.println("get email" + expired);
+            return (String) expired.get("sub");
+        }
     }
 
     public boolean validateToken(String token) {
