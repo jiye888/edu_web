@@ -8,7 +8,8 @@
     <h3>등록 화면</h3>
     <form th:object="${review}">
         <input type="hidden" th:value="${academy}" id="academy">
-        제목<input type="text" th:field="*{title}"><br>
+        제목<input type="text" th:field="*{title}">
+        <p th:if="${#fields.hasError('title')}" th:errors="*{title}" class="fieldError"></p><br>
         평점
         <div th:field="*{grade}">
             <input type="radio" id="5points" name="grade" value="5">
@@ -21,8 +22,10 @@
             <label for="2points">2</label>
             <input type="radio" id="1point" name="grade" value="1">
             <label for="1point">1</label>
-        </div><br>
-        내용<input type="text" style="height: 600px; width: 800px;" th:field="*{content}"><br>
+        </div>
+        <p th:if="${#fields.hasError('grade')}" th:errors="*{grade}" class="fieldError"></p><br>
+        내용<input type="text" style="height: 600px; width: 800px;" th:field="*{content}">
+        <p th:if="${#fields.hasError('content')}" th:errors="*{content}" class="fieldError"></p><br>
         <button type="button" id="registerBtn">등록</button>
 </form>
 <script th:inline="javascript">

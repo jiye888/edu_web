@@ -28,7 +28,7 @@ import java.util.Optional;
 @Component
 public class JwtTokenProvider {
 
-    private Long accessTokenValidTime = 1000L; //2 * 60 * 60 * 1000L;
+    private Long accessTokenValidTime = 60 * 60 * 1000L;
     private Long refreshTokenValidTime = 24 * 7 * 60 * 60 * 1000L;
 
     private final UserDetailsServiceImpl userDetailsService;

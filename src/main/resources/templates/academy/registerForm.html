@@ -6,9 +6,10 @@
 <body>
     <div layout:fragment="content">
         <h3>등록 화면</h3>
-        <form th:object="${academy}"><!-- action="./register" method="post" th:object="${academy}">-->
-            학원 이름<input type="text" th:field="*{acaName}"><br>
-            학원 위치<!--<input type="text" th:field="*{location}"><br>-->
+        <form th:object="${academy}">
+            학원 이름<input type="text" th:field="*{acaName}">
+            <p th:if="${#fields.hasError('acaName')}" th:errors="*{acaName}" class="fieldError"></p><br>
+            학원 위치
             <div th:field="*{location}">
                 <input type="text" name="location" id="postcode" placeholder="우편번호">
                 <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
@@ -18,12 +19,14 @@
                 <input type="text" name="location" id="detailAddress" placeholder="상세주소">
                 <input type="text" name="location" id="extraAddress" placeholder="참고항목">
             </div>
+            <p th:if="${#fields.hasError('location')}" th:errors="*{location}" class="fieldError"></p><br>
 
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
                 <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="form-check-input">
                 <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
             </div>
+            <p th:if="${#fields.hasError('subject')}" th:errors="*{subject}" class="fieldError"></p><br>
 
             <button type="button" id="registerBtn">등록</button>
         </form>

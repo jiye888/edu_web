@@ -2,33 +2,22 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.RefreshToken;
-import com.jtudy.education.security.JwtTokenProvider;
-import com.jtudy.education.security.SecurityConfig;
 import com.jtudy.education.security.SecurityMember;
-import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.MemberService;
-import com.jtudy.education.service.MemberServiceImpl;
-import com.jtudy.education.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/member")
@@ -36,7 +25,6 @@ import java.util.Optional;
 public class MemberController {
 
     private final MemberService memberService;
-    private final UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -108,17 +96,15 @@ public class MemberController {
 
     @PostMapping("/loginCheck")
     public ResponseEntity<Map<String, String>> loginCheck(@RequestBody Map<String, String> member, Model model, HttpSession session, HttpServletRequest request) {
+        HashMap<String, String> map = new HashMap<>();
         try {
             String email = member.get("email");
             String password = member.get("password");
             String token = memberService.login(email, password);
-            HashMap<String, String> map = new HashMap<>();
             map.put("token", token);
             return new ResponseEntity<>(map, HttpStatus.OK);
         } catch (Exception e) {
-            model.addAttribute("msg", "아이디와 패스워드가 일치하지 않습니다.");
-            HashMap<String, String> map = new HashMap<>();
-            map.put("redirect","redirect:/member/login");
+            map.put("message", e.getMessage());
             return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
         }
     }
