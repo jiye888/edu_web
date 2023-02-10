@@ -22,6 +22,8 @@ public interface ReviewService {
 
     void delete(Long revNum);
 
+    Page<ReviewDTO> getReviews(Member member);
+
     default Review dtoToEntity(ReviewDTO reviewDTO) {
         Review review = Review.builder()
                 .revNum(reviewDTO.getRevNum())
@@ -33,13 +35,12 @@ public interface ReviewService {
         return review;
     }
 
-    default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy, Member member) {
+    default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy) {
         Review review = Review.builder()
                 .title(reviewFormDTO.getTitle())
                 .content(reviewFormDTO.getContent())
                 .grade(reviewFormDTO.getGrade())
                 .academy(academy)
-                .writer(member)
                 .build();
 
         return review;
@@ -52,9 +53,7 @@ public interface ReviewService {
                 .content(review.getContent())
                 .acaNum(review.getAcademy().getAcaNum())
                 .acaName(review.getAcademy().getAcaName())
-                .writerNum(review.getWriter().getMemNum())
-                .writerName(review.getWriter().getName())
-                .writerEmail(review.getWriter().getEmail())
+                .writerEmail(review.getCreatedBy())
                 .grade(review.getGrade())
                 .createdAt(review.getCreatedAt())
                 .modifiedAt(review.getModifiedAt())

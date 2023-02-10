@@ -17,11 +17,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class ReviewFormDTO {
 
-    private Long revNum;
+    private Long number;
 
-    private Long acaNum;
-
-    private Long memNum;
+    private Long academy;
 
     @NotBlank
     private String title;
@@ -31,14 +29,5 @@ public class ReviewFormDTO {
 
     @NotNull
     private Integer grade;
-
-    public ReviewFormDTO(Map<String, Object> form, Long memNum) {
-        this.revNum = Long.parseLong(form.get("number").toString());
-        this.acaNum = Long.parseLong(form.get("academy").toString());
-        this.memNum = memNum;
-        this.title = form.get("title").toString();
-        this.content = form.get("content").toString();
-        this.grade = Integer.parseInt(form.get("grade").toString());
-    }
 
 }

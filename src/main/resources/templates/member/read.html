@@ -3,17 +3,20 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 <meta charset="UTF-8">
-<body>
 <div layout:fragment="content">
     이름:
-    <span th:text="${member.name}" id="name">이름</span><br>
+    <span th:text="${memberDTO.name}" id="name">이름</span><br>
+    이메일:
+    <span th:text="${memberDTO.email}" id="email">이메일</span><br>
     주소:
-    <span th:text="${member.address}">주소</span><br>
-    <input type="hidden" th:field="${member.memNum}" id="number">
+    <span th:text="${memberDTO.address}">주소</span><br>
+
+    <input type="hidden" th:value="${memberDTO.memNum}" id="number">
     <button type="button" id="academyBtn">학원 리스트</button><br>
+    <button type="button" id="reviewBtn">작성한 학원 리뷰</button>
 
     <button type="button" id="modifyBtn">회원 정보 수정</button>
-    <button type="button" id="deleteBtn">회원 탈퇴</button><!-- th:onclick="'location.href=\''+@{/academy/delete?number={number}(number=${academy.acaNum})}+'\';'">삭제하기</button>-->
+    <button type="button" id="deleteBtn">회원 탈퇴</button>
 
     <script th:inline="javascript">
 
@@ -31,6 +34,10 @@
                 academyList();
             });
 
+            $('#reviewBtn').on("click", function() {
+                reviews();
+            });
+
         });
 
         function modify() {
@@ -38,7 +45,7 @@
             var number = $('#number').val();
 
             $.ajax({
-                url: '/member/modify',
+                url: '/member/modify?number='+number,
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
@@ -78,21 +85,40 @@
             var number = $('#number').val();
 
             $.ajax({
-                url: '/academy/joined',
+                url: '/academy/joined?number='+number,
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
-                //data: {"number":number},
+                data: {"number":number},
                 success: function() {
-                    location.href="/academy/joined";
+                    location.href="/academy/joined?number="+number;
+                },
+            });
+        }
+
+        function reviews() {
+            var token = localStorage.getItem("jwt");
+            var member = $('#number').val();
+
+            $.ajax({
+                url: '/review/by?member='+member,
+                type: 'GET',
+                contentType: "application/json",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
+                },
+                data: {"member":member},
+                success: function() {
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
                 },
             });
         }
 
     </script>
 </div>
-</body>
 
 </html>

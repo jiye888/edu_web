@@ -8,7 +8,7 @@
     <h3>회원 정보 수정</h3>
     <form th:object="${member}">
 
-        이메일<input type="email" th:field="*{email}">
+        이메일<input type="email" th:field="*{email}" readonly>
         <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p><br>
         비밀번호<input type="password" th:field="*{password}">
         <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p><br>

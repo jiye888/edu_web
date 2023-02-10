@@ -12,10 +12,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +28,8 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+
+    private final TemplateEngine templateEngine;
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -58,13 +63,24 @@ public class MemberController {
     }
 
     @GetMapping("/read")
-    public void member(@RequestParam(value = "number") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
-        if (memberService.validateMember(memNum, member)) {
-            MemberDTO memberDTO = memberService.getOne(memNum);
-            model.addAttribute("member", memberDTO);
-        } else {
-            throw new IllegalArgumentException("권한이 없습니다.");
+    public ResponseEntity member(@RequestParam(value = "number") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+        try {
+            if (memberService.validateMember(memNum, member)) {
+                MemberDTO memberDTO = memberService.getOne(memNum);
+                model.addAttribute("memberDTO", memberDTO);
+                Context context = new Context();
+                context.setVariables(model.asMap());
+                String html = templateEngine.process("member/read", context);
+                return ResponseEntity.ok().body(html);
+            } else {
+                String message = "권한이 없습니다.";
+                return ResponseEntity.status(HttpStatus.FOUND).body(message);
+            }
+        } catch (NullPointerException e) {
+            String error = e.getMessage();
+            return ResponseEntity.badRequest().body(error);
         }
+
     }
 
     @GetMapping("/modify")
@@ -73,14 +89,13 @@ public class MemberController {
             MemberDTO memberDTO = memberService.getOne(memNum);
             model.addAttribute("member", memberDTO);
         } else {
-            throw new IllegalArgumentException("권한이 없습니다.");
+            return "academy/main";
         }
         return "member/modifyForm";
     }
 
     @PostMapping("/modify")
-    public String modify(@RequestBody Map<String, String> form, Model model) {
-        MemberFormDTO memberFormDTO = new MemberFormDTO(form);
+    public String modify(@RequestBody @Valid MemberFormDTO memberFormDTO, Model model) {
         memberService.updateMember(memberFormDTO);
         return "redirect:/academy/main";
     }

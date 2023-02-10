@@ -9,9 +9,9 @@
     <form th:object="${notice}">
         <input type="hidden" th:value="${academy}" id="academy">
         제목<input type="text" th:field="*{title}">
-        <p th:if="${#fields.hasError('title')}" th:errors="*{title}" class="fieldError"></p><br>
+        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p><br>
         내용<input type="text" th:field="*{content}">
-        <p th:if="${#fields.hasError('content')}" th:errors="*{content}" class="fieldError"></p><br>
+        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p><br>
         <button type="button" id="registerBtn">등록</button>
     </form>
     <script th:inline="javascript">

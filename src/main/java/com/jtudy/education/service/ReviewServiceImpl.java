@@ -57,16 +57,15 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Long register(ReviewFormDTO reviewFormDTO) {
-        Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcaNum());
-        Member member = memberRepository.findByMemNum(reviewFormDTO.getMemNum());
-        Review review = formToEntity(reviewFormDTO, academy, member);
+        Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcademy());
+        Review review = formToEntity(reviewFormDTO, academy);
         reviewRepository.save(review);
         return review.getRevNum();
     }
 
     @Override
     public Long update(ReviewFormDTO reviewFormDTO) {
-        Review review = reviewRepository.findByRevNum(reviewFormDTO.getRevNum());
+        Review review = reviewRepository.findByRevNum(reviewFormDTO.getNumber());
         System.out.println("!!!"+review.getAcademy());
         System.out.println(review.getTitle());
         review.changeReview(reviewFormDTO.getTitle(), reviewFormDTO.getContent(), reviewFormDTO.getGrade());
@@ -80,4 +79,13 @@ public class ReviewServiceImpl implements ReviewService {
     public void delete(Long revNum) {
         reviewRepository.deleteById(revNum);
     }
+
+    @Override
+    public Page<ReviewDTO> getReviews(Member member) {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
+        Page<Review> review = reviewRepository.findByWriter(member, pageable);
+        Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
+        return reviewDTO;
+    }
+
 }

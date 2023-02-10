@@ -36,11 +36,4 @@ public class MemberFormDTO {
     @NotBlank(message = "주소를 입력해주세요.")
     private String address;
 
-    public MemberFormDTO(Map<String, String> form) {
-        this.email = form.get("email");
-        this.password = form.get("password");
-        this.name = form.get("name");
-        this.address = form.get("address");
-    }
-
 }

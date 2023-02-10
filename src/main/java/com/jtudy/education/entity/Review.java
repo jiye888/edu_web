@@ -29,9 +29,6 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Academy academy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member writer;
-
     private Integer grade;
 
     public void changeReview(String title, String content, Integer grade) {

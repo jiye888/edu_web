@@ -29,7 +29,8 @@ public interface AcademyService {
 
     default Academy formToEntity(AcademyFormDTO academyFormDTO) {
         Academy academy = Academy.builder()
-                .acaNum(academyFormDTO.getAcaNum())
+                //.acaNum(academyFormDTO.getAcaNum())
+                .acaNum(academyFormDTO.getNumber())
                 .acaName(academyFormDTO.getAcaName())
                 .subject(academyFormDTO.getSubject())
                 .location(academyFormDTO.getLocation())

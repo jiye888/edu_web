@@ -6,6 +6,9 @@ import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 import java.util.Map;
 
 @Controller
@@ -38,9 +42,19 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody Map<String, Object> form, @AuthenticationPrincipal SecurityMember member, Model model) {
-        ReviewFormDTO reviewFormDTO = new ReviewFormDTO(form, member.getMember().getMemNum());
-        reviewService.register(reviewFormDTO);
+    public ResponseEntity register(@RequestBody @Valid ReviewFormDTO reviewFormDTO, @AuthenticationPrincipal SecurityMember member, Model model) {
+        try {
+            System.out.println(reviewFormDTO);
+            Long rev = reviewService.register(reviewFormDTO);
+            System.out.println(rev);
+        } catch (NullPointerException e) {
+            String message = "Null pointer exception";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        } catch (Exception e) {
+            String message = e.getMessage();
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).body(message);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/read")
@@ -58,8 +72,7 @@ public class ReviewController {
     }
 
     @PostMapping("/modify")
-    public void modify(@RequestBody Map<String, Object> form, @AuthenticationPrincipal SecurityMember member, BindingResult bindingResult, Model model) {
-        ReviewFormDTO reviewFormDTO = new ReviewFormDTO(form, member.getMember().getMemNum());
+    public void modify(@RequestBody @Valid ReviewFormDTO reviewFormDTO, @AuthenticationPrincipal SecurityMember member, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("msg", "모든 항목을 입력해주세요.");
         }
@@ -71,6 +84,27 @@ public class ReviewController {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
         model.addAttribute("academy", reviewDTO.getAcaNum());
         reviewService.delete(revNum);
+    }
+
+    @GetMapping("/by")
+    public ResponseEntity reviews(@RequestParam("member") Long memNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+        model.addAttribute("member", member);
+        try {
+            if (memNum.equals(member.getMember().getMemNum())) {
+                Page<ReviewDTO> review = reviewService.getReviews(member.getMember());
+                model.addAttribute("review", review);
+            } else {
+                String message = "본인이 아닙니다. 권한이 없습니다.";
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+            }
+        } catch (NullPointerException e) {
+            String message = "작성된 리뷰가 없습니다.";
+            return ResponseEntity.status(HttpStatus.SEE_OTHER).header(HttpHeaders.LOCATION, "member/read").body(message);
+        } catch (Exception e) {
+            String message = e.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, "review/by").build();
     }
 
 }

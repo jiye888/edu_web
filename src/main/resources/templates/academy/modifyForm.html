@@ -10,7 +10,7 @@
 
             <input type="hidden" th:field="*{acaNum}">
             학원 이름<input type="text" th:field="*{acaName}">
-            <p th:if="${#fields.hasError('acaName')}" th:errors="*{acaName}" class="fieldError"></p><br>
+            <p th:if="${#fields.hasErrors('acaName')}" th:errors="*{acaName}" class="fieldError"></p><br>
             학원 위치
             <div th:field="*{location}">
                 <input type="text" name="location" id="postcode" placeholder="우편번호">
@@ -23,14 +23,14 @@
             </div><br>
             기존 주소
             <input type="text" style="width:500px;" th:value="*{location}" id="ex_location" readonly>
-            <p th:if="${#fields.hasError('location')}" th:errors="*{location}" class="fieldError"></p><br>
+            <p th:if="${#fields.hasErrors('location')}" th:errors="*{location}" class="fieldError"></p><br>
 
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
                 <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="form-check-input">
                 <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
             </div>
-            <<p th:if="${#fields.hasError('subject')}" th:errors="*{subject}" class="fieldError"></p><br>
+            <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}" class="fieldError"></p><br>
 
             <button type="button" id="modifyBtn">수정</button>
 

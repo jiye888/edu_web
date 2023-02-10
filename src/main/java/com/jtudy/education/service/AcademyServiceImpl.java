@@ -66,7 +66,8 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     public Long update(AcademyFormDTO academyFormDTO) {
-        Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
+        //Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
+        Academy academy = academyRepository.findByAcaNum(academyFormDTO.getNumber());
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
                 academyFormDTO.getLocation());
         academyRepository.save(academy);

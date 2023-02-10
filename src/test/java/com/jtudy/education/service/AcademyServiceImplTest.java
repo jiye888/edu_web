@@ -140,7 +140,7 @@ class AcademyServiceImplTest {
         Academy academy = academyRepository.findByAcaNum(Long.parseLong("4"));
         System.out.println(academy.getAcaName());
         AcademyFormDTO academyFormDTO = AcademyFormDTO.builder()
-                        .acaNum(Long.parseLong("4"))
+                        .number(Long.parseLong("4"))
                                 .acaName("인천제일!!")
                                         .subject(academy.getSubject())
                                                 .location(academy.getLocation())

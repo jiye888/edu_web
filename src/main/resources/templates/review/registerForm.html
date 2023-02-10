@@ -9,7 +9,7 @@
     <form th:object="${review}">
         <input type="hidden" th:value="${academy}" id="academy">
         제목<input type="text" th:field="*{title}">
-        <p th:if="${#fields.hasError('title')}" th:errors="*{title}" class="fieldError"></p><br>
+        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p><br>
         평점
         <div th:field="*{grade}">
             <input type="radio" id="5points" name="grade" value="5">
@@ -23,9 +23,9 @@
             <input type="radio" id="1point" name="grade" value="1">
             <label for="1point">1</label>
         </div>
-        <p th:if="${#fields.hasError('grade')}" th:errors="*{grade}" class="fieldError"></p><br>
+        <p th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" class="fieldError"></p><br>
         내용<input type="text" style="height: 600px; width: 800px;" th:field="*{content}">
-        <p th:if="${#fields.hasError('content')}" th:errors="*{content}" class="fieldError"></p><br>
+        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p><br>
         <button type="button" id="registerBtn">등록</button>
 </form>
 <script th:inline="javascript">
@@ -56,6 +56,9 @@
                 }),
                 success: function() {
                     history.back();
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
                 },
             });
         } else {

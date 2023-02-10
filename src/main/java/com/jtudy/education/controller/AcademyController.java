@@ -11,6 +11,8 @@ import com.jtudy.education.service.AcademyService;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,15 +55,15 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody @Valid Map<String, Object> form, BindingResult bindingResult, RedirectAttributes redirectAttributes,
-                           @AuthenticationPrincipal Member member) {
-        AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
+    public ResponseEntity register(/*@RequestBody Map<String, Object> form*/@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes,
+                                                                            @AuthenticationPrincipal Member member, Model model) {
+        //AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
+        model.addAttribute("academy", new AcademyFormDTO());
         if (bindingResult.hasErrors()) {
-            return "academy/registerForm";
         }
         Long acaNum = academyService.register(academyFormDTO);
-        redirectAttributes.addFlashAttribute("message", acaNum);
-        return "redirect:/academy/list";
+        redirectAttributes.addFlashAttribute("number", acaNum);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/read")
@@ -82,9 +84,10 @@ public class AcademyController {
     }
 
     @PostMapping("/modify")
-    public void modify(@RequestBody Map<String, Object> form, Model model) {
-        AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
-        model.addAttribute("number", academyFormDTO.getAcaNum());
+    public void modify(@RequestBody @Valid /*Map<String, Object> form*/AcademyFormDTO academyFormDTO, Model model) {
+        //AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
+        //model.addAttribute("number", academyFormDTO.getAcaNum());
+        model.addAttribute("number", academyFormDTO.getNumber());
         model.addAttribute("academy", academyFormDTO);
         academyService.update(academyFormDTO);
     }
@@ -113,7 +116,7 @@ public class AcademyController {
     }
 
     @GetMapping("/joined")
-    public void getAcademies(@AuthenticationPrincipal SecurityMember member, Model model) {
+    public void getAcademies(@RequestParam("number") Long number, @AuthenticationPrincipal SecurityMember member, Model model) {
         Long memNum = member.getMember().getMemNum();
         if (academyService.validateMember(memNum, member)){
             Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum);
