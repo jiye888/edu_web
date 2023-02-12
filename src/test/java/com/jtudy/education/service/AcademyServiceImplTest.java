@@ -129,7 +129,8 @@ class AcademyServiceImplTest {
 
     @Test
     public void showReview() {
-        List<AcademyDTO> listA = academyRepository.getAllAcademyWithReviewInfo();
+        Pageable pageable = PageRequest.of(0, 10)
+        Page<AcademyDTO> listA = academyRepository.getAllAcademyWithReviewInfo(pageable);
         logger.info("*********"+listA);
         //logger.info(listA.get(1));
         //logger.info(listA.get(2).getGrade());

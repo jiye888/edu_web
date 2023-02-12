@@ -114,7 +114,7 @@ public class MemberServiceImpl implements MemberService{
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Member> memberList = academyMemberRepository.findByAcademy(academy);
         List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-        PageImpl<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
+        Page<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
         return page;
     }
 

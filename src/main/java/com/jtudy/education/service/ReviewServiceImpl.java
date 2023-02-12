@@ -39,9 +39,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Page<ReviewDTO> getAll(Long acaNum) {
+    public Page<ReviewDTO> getAll(Long acaNum, Pageable pageable) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
         Page<Review> review = reviewRepository.findByAcademy(academy, pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;

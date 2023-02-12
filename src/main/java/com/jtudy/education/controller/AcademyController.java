@@ -53,9 +53,10 @@ public class AcademyController {
     }
 
     @GetMapping("/list")
-    public void list(Model model) {
+    public void list(Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
         //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        Pageable pageable = PageRequest.of(0, 10);
+        //model.addAttribute("page", page);
+        Pageable pageable = PageRequest.of(page-1, 10);
         Page<AcademyDTO> academyDTO = academyService.getAll(pageable);
         model.addAttribute("academy", academyDTO);
     }
@@ -85,7 +86,8 @@ public class AcademyController {
         context.setVariables(model.asMap());
         //String html = templateEngine.process("/read/number?="+number, context);
         //return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, location).build();
-        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, newLocation).build();
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION, newLocation).build();
+        //return ResponseEntity.status(HttpStatus.OK).body(newLocation).build();
     }
 
     @GetMapping("/read")

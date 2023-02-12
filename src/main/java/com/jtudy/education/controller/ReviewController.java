@@ -6,6 +6,9 @@ import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +32,8 @@ public class ReviewController {
 
     @GetMapping("/list")
     public void list(@RequestParam("academy") Long acaNum, Model model) {
-        Page<ReviewDTO> reviewDTO = reviewService.getAll(acaNum);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
+        Page<ReviewDTO> reviewDTO = reviewService.getAll(acaNum, pageable);
         model.addAttribute("academy", acaNum);
         model.addAttribute("review", reviewDTO);
     }

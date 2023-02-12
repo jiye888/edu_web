@@ -7,12 +7,13 @@ import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
 
     boolean validateMember(Long revNum, SecurityMember member);
 
-    Page<ReviewDTO> getAll(Long acaNum);
+    Page<ReviewDTO> getAll(Long acaNum, Pageable pageable);
 
     ReviewDTO getOne(Long revNum);
 

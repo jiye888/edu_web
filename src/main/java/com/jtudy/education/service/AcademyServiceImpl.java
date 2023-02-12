@@ -35,9 +35,8 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public Page<AcademyDTO> getAll(Pageable pageable) {
         //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        List<AcademyDTO> academy = academyRepository.getAllAcademyWithReviewInfo();
-        Page<AcademyDTO> academyPage = new PageImpl<>(academy, pageable, academy.size());
-        return academyPage;
+        Page<AcademyDTO> academy = academyRepository.getAllAcademyWithReviewInfo(pageable);
+        return academy;
     }
 
     @Override
@@ -53,7 +52,7 @@ public class AcademyServiceImpl implements AcademyService{
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<Academy> academyList = academyMemberRepository.findByMember(member);
         List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-        PageImpl<AcademyDTO> page = new PageImpl<AcademyDTO>(academyDTOList, pageable, academyList.size());
+        Page<AcademyDTO> page = new PageImpl<AcademyDTO>(academyDTOList, pageable, academyList.size());
         return page;
     }
 
