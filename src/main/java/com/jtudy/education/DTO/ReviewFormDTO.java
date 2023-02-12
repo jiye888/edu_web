@@ -21,13 +21,13 @@ public class ReviewFormDTO {
 
     private Long academy;
 
-    @NotBlank
+    @NotBlank(message = "제목을 입력해주세요.")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "내용을 입력해주세요.")
     private String content;
 
-    @NotNull
+    @NotNull(message = "평가 점수를 선택해주세요.")
     private Integer grade;
 
 }

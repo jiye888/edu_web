@@ -18,6 +18,7 @@ import javax.management.relation.Role;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.security.SignatureException;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;

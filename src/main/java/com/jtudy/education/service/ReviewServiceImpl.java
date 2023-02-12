@@ -26,7 +26,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final AcademyRepository academyRepository;
-    private final MemberRepository memberRepository;
     private final AcademyMemberRepository academyMemberRepository;
 
     @Override
@@ -83,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<ReviewDTO> getReviews(Member member) {
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
-        Page<Review> review = reviewRepository.findByWriter(member, pageable);
+        Page<Review> review = reviewRepository.findByCreatedBy(member.getEmail(), pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;
     }

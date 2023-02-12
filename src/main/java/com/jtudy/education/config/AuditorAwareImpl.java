@@ -1,5 +1,6 @@
 package com.jtudy.education.config;
 
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.MemberService;
@@ -23,6 +24,7 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         if (null == authentication || !authentication.isAuthenticated()) {
             return null;
         }
+
         return Optional.of(authentication.getName());
     }
 

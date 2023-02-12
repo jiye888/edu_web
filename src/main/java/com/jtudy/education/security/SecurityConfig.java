@@ -105,16 +105,5 @@ public class SecurityConfig {
             response.getWriter().close();
         };
     }
-/*
-    @Bean
-    public JwtAuthenticationFilter getFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtTokenProvider);
-        AuthenticationManager authenticationManager = getAuthenticationManager(new AuthenticationConfiguration());
-        filter.setAuthenticationManager(authenticationManager);
-        return filter;
-    }
-
- */
-
 
 }

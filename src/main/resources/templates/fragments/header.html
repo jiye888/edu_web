@@ -65,6 +65,10 @@
                             beforeSend: function(xhr) {
                                 xhr.setRequestHeader("X-AUTH-TOKEN", token)
                             },
+                            error: function() {
+                                localStorage.removeItem("jwt");
+                                location.href=location.href;
+                            },
                         }).then(() => {
                             localStorage.removeItem("jwt");
                             alert("로그아웃이 완료되었습니다.");

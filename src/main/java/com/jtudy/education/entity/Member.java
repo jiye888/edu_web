@@ -40,10 +40,11 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
     private List<AcademyMember> academyMember = new ArrayList<>();
-
+/*
     @OneToMany(mappedBy = "writer", fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
     private List<Review> review = new ArrayList<>();
+ */
 
     @Convert(converter = RolesConverter.class)
     @Builder.Default

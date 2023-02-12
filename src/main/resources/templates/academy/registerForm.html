@@ -69,10 +69,44 @@
                         "subject":subject,
                         "location":location,
                     }),
-                }).then((response)=>{
-                    var number =
-                    location.href="/academy/read?number=
+
+                    success: function(data, status, xhr) {
+
+                        var header = xhr.getResponseHeader("Location");
+                        alert(header);
+                        window.location.href = header;
+                    /*
+                        var headers = xhr.getAllResponseHeaders();
+                        var header = extractHeader(headers, 'Location');
+                        alert(header);
+                        window.location.href = header;
+                        */
+                    },
+
+                    /*
+                }).then(function (data, textStatus, jqXHR) {
+                    var header = jqXHR.getResponseHeader('Location');
+                    alert(header);
+                    window.location.href = header;
+                }).done(function (data, xhr, textStatus) {
+                    var location_header = xhr.getResponseHeader("Location");
+                    if (location_header) {
+                        window.location.href = location_header;
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error(errorThrown);
+                */
                 });
+        }
+
+        function extractHeader(headers, headerName) {
+            var lines = headers.split('\n');
+            for (var i=0; i<lines.length; i++) {
+                var line = lines[i];
+                if (line.startsWith(headerName)) {
+                     return line.split(': ')[1];
+                }
+            }
         }
 
         </script>

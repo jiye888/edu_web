@@ -1,6 +1,7 @@
 package com.jtudy.education.security;
 
 import com.jtudy.education.repository.RefreshTokenRepository;
+import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,12 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else if(accessToken != null && !jwtTokenProvider.validateToken(accessToken)){
-            String email = jwtTokenProvider.getEmail(accessToken);
-            Optional refreshToken = refreshTokenRepository.findById(email);
-            if (refreshToken.isPresent()) {
-                String reIssued = jwtTokenProvider.issueAccessToken(email);
-                Authentication authentication = jwtTokenProvider.getAuthentication(reIssued);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                String email = jwtTokenProvider.getEmail(accessToken);
+                Optional refreshToken = refreshTokenRepository.findById(email);
+                if (refreshToken.isPresent()) {
+                    String reIssued = jwtTokenProvider.issueAccessToken(email);
+                    Authentication authentication = jwtTokenProvider.getAuthentication(reIssued);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch(SignatureException e) {
+                System.out.println("JWT couldn't be matched. "+e.getMessage());
             }
 
         }

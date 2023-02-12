@@ -11,6 +11,10 @@ import com.jtudy.education.service.AcademyService;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,8 +23,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
@@ -33,6 +41,8 @@ public class AcademyController {
     private final AcademyService academyService;
     private final AcademyMemberService academyMemberService;
 
+    private final TemplateEngine templateEngine;
+
     @ModelAttribute("subject")
     public Subject[] subject() {
         return Subject.values();
@@ -44,7 +54,9 @@ public class AcademyController {
 
     @GetMapping("/list")
     public void list(Model model) {
-        Page<AcademyDTO> academyDTO = academyService.getAll();
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<AcademyDTO> academyDTO = academyService.getAll(pageable);
         model.addAttribute("academy", academyDTO);
     }
 
@@ -55,15 +67,25 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(/*@RequestBody Map<String, Object> form*/@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes,
-                                                                            @AuthenticationPrincipal Member member, Model model) {
+    public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal Member member, Model model, HttpServletRequest request) {
         //AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
         model.addAttribute("academy", new AcademyFormDTO());
         if (bindingResult.hasErrors()) {
         }
-        Long acaNum = academyService.register(academyFormDTO);
-        redirectAttributes.addFlashAttribute("number", acaNum);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        Long number = academyService.register(academyFormDTO);
+        model.addAttribute("number", number);
+        //URI baseUri = new URI(request.getRequestURI().toString());
+        HttpHeaders headers = new HttpHeaders();
+        String location = "/academy/read?number="+number;
+        //headers.setLocation(URI.create(location));
+        String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
+        //URI newLocation = URI.create(current+"/read?number="+number);
+        String newLocation = current+"/read?number="+number;
+        Context context = new Context();
+        context.setVariables(model.asMap());
+        //String html = templateEngine.process("/read/number?="+number, context);
+        //return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, location).build();
+        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, newLocation).build();
     }
 
     @GetMapping("/read")

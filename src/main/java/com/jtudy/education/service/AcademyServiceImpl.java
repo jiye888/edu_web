@@ -33,8 +33,8 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
-    public Page<AcademyDTO> getAll() {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+    public Page<AcademyDTO> getAll(Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<AcademyDTO> academy = academyRepository.getAllAcademyWithReviewInfo();
         Page<AcademyDTO> academyPage = new PageImpl<>(academy, pageable, academy.size());
         return academyPage;

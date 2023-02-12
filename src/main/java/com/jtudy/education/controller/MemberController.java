@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +96,10 @@ public class MemberController {
     }
 
     @PostMapping("/modify")
-    public String modify(@RequestBody @Valid MemberFormDTO memberFormDTO, Model model) {
+    public String modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
+        if (bindingResult.hasErrors()){
+            return "member/modifyForm";
+        }
         memberService.updateMember(memberFormDTO);
         return "redirect:/academy/main";
     }
@@ -126,7 +130,7 @@ public class MemberController {
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public void logout(@AuthenticationPrincipal SecurityMember member) {
-        memberService.logout(member.getUsername());
+            memberService.logout(member.getUsername());
     }
 
     @GetMapping("/joined")
