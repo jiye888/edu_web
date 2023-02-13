@@ -87,7 +87,6 @@ public class AcademyController {
         //String html = templateEngine.process("/read/number?="+number, context);
         //return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, location).build();
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION, newLocation).build();
-        //return ResponseEntity.status(HttpStatus.OK).body(newLocation).build();
     }
 
     @GetMapping("/read")

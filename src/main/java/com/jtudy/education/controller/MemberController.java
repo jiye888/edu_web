@@ -75,7 +75,7 @@ public class MemberController {
                 return ResponseEntity.ok().body(html);
             } else {
                 String message = "권한이 없습니다.";
-                return ResponseEntity.status(HttpStatus.FOUND).body(message);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
             }
         } catch (NullPointerException e) {
             String error = e.getMessage();

@@ -103,7 +103,7 @@
             var member = $('#number').val();
 
             $.ajax({
-                url: '/review/by?member='+member,
+                url: '/review/by',
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {
@@ -111,6 +111,7 @@
                 },
                 data: {"member":member},
                 success: function() {
+                    location.href='/review/by?member='+member;
                 },
                 error: function(xhr, status, error) {
                     console.log(xhr.responseText);

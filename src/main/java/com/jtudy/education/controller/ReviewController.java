@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
 import java.util.Map;
@@ -91,11 +92,12 @@ public class ReviewController {
     }
 
     @GetMapping("/by")
-    public ResponseEntity reviews(@RequestParam("member") Long memNum, @AuthenticationPrincipal SecurityMember member, Model model) {
-        model.addAttribute("member", member);
+    public ResponseEntity reviews(@RequestParam("member") Long memNum, @AuthenticationPrincipal SecurityMember securityMember, Model model, HttpServletRequest request) {
+        //model.addAttribute("member", member);
+        System.out.println(memNum);
         try {
-            if (memNum.equals(member.getMember().getMemNum())) {
-                Page<ReviewDTO> review = reviewService.getReviews(member.getMember());
+            if (memNum.equals(securityMember.getMember().getMemNum())) {
+                Page<ReviewDTO> review = reviewService.getReviews(securityMember.getMember());
                 model.addAttribute("review", review);
             } else {
                 String message = "본인이 아닙니다. 권한이 없습니다.";
@@ -108,7 +110,7 @@ public class ReviewController {
             String message = e.getMessage();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
         }
-        return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, "review/by").build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

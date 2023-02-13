@@ -70,7 +70,7 @@
                         "location":location,
                     }),
 
-                    success: function(data, status, xhr) {
+                    success: function(data, status, xhr, responseBody) {
                         var header = xhr.getResponseHeader("Location");
                         window.location.href = header;
                     },

@@ -47,7 +47,12 @@
                 $('#searchBtn').on("click", function() {
                     search();
                 });
+            });
 
+            document.addEventListener("click", function() {
+                //console.log(event.target);
+                //console.log(request);
+                jwtFilter(request);
             });
 
             function member() {
@@ -111,6 +116,26 @@
                         location.href='/academy/search?category='+category+'&keyword='+keyword;
                     },
                 });
+            }
+
+            function jwtFilter(request) {
+                console.log("필터 실행");
+                return function() {
+                console.log("헤더 찾기");
+                        var xhr = new XMLHttpRequest();
+                        xhr.open(request.type, request.url, true);
+                        xhr.onreadystatechange = function() {
+                            var header = xhr.getResponseHeader("Matched_Token");
+                            console.log(header);
+                            if(header == "not_matched") {
+                                localStorage.delete("jwt");
+                                console.log(header+"deleted");
+                            }
+
+                        }
+
+                    xhr.send();
+                };
             }
 
         </script>

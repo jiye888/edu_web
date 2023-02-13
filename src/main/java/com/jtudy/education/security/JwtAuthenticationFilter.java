@@ -49,6 +49,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             } catch(SignatureException e) {
                 System.out.println("JWT couldn't be matched. "+e.getMessage());
+                //String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
+                //String location = current + "/login";
+                //response.sendRedirect(location);
+                //response.setHeader("Matched_Token", "not_matched");
             }
 
         }

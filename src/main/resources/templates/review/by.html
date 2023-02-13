@@ -18,11 +18,11 @@
             </tr>
             </thead>
             <tbody align="center">
-            <tr th:each="review : ${review}">
-                <td style="width:50%" align="center"><a th:text="${review.title}" th:href="@{/review/read?number={number}(number=${review.revNum})}">제목</a></td>
-                <td><span th:text="${review.writerName}">작성자</span></td>
-                <td><span th:text="${review.grade}">평점</span></td>
-                <td><span th:text="${review.createdAt}">작성 일자</span></td>
+            <tr th:each="rev : ${review}">
+                <td style="width:50%" align="center"><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
+                <td><span th:text="${rev.writerName}">작성자</span></td>
+                <td><span th:text="${rev.grade}">평점</span></td>
+                <td><span th:text="${rev.createdAt}">작성 일자</span></td>
             </tr>
             </tbody>
         </table>
@@ -32,15 +32,15 @@
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
              aria-label="Page-navigation">
             <ul class="pagination">
-                <li th:classappend="${pageNumber+1<=pageSize+1}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/review(page=1)}">
+                <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/review/by?(page=1)}">
                         <span>&laquo;</span>
                         <span class="sr-only">첫페이지로</span>
                     </a>
                 </li>
 
                 <li th:classappend="${review.first}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${review.first}?'#':@{/review(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
+                    <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/by?(page=1)}:@{/review/by?(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                         <span class="sr-only">이전 페이지</span>
@@ -48,11 +48,11 @@
                 </li>
 
                 <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
-                    <a th:text="${page}" class="page-link" th:href="@{/review(page=${page})}"></a>
+                    <a th:text="${page}" class="page-link" th:href="@{/review/by?(page=${page})}"></a>
                 </li>
 
                 <li th:classappend="${review.last}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${review.last}?'#':@{/review(page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}"
+                    <a class="page-link" th:href="${review.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/review/by?(page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/review/by?(page=${endPage})})"
                        aria-label="Next">
                         <span aria-hidden="true">&gt;</span>
                         <span class="sr-only">다음 페이지</span>
@@ -60,9 +60,9 @@
                 </li>
 
                 <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/review(page=${totalPages})}">
+                    <a class="page-link" th:href="@{/review?by(page=${totalPages})}">
                         <span>&raquo;</span>
-                        <span class="sr-only">처음으로</span>
+                        <span class="sr-only">마지막으로</span>
                     </a>
                 </li>
             </ul>
