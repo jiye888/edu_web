@@ -3,9 +3,7 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.constant.Roles;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.RefreshToken;
+import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
@@ -16,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -112,20 +111,23 @@ public class MemberServiceImpl implements MemberService{
     public Page<MemberDTO> getMembers(Long acaNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        List<Member> memberList = academyMemberRepository.findByAcademy(academy);
+        List<AcademyMember> academyMemberList = academyMemberRepository.findByAcademy(academy);
+        List<Member> memberList = academyMemberList.stream().map(e -> e.getMember()).collect(Collectors.toList());
         List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
         Page<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
         return page;
     }
 
     @Override
-    public void requestManagerAuth(Long memNum){
+    public LocalDateTime getJoinedDate(Long acaNum, Long memNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
         Member member = memberRepository.findByMemNum(memNum);
-    }
-
-    @Override
-    public void acceptManagerAuth(Long memNum){
-
+        Optional<AcademyMember> academyMember = academyMemberRepository.findByAcademyAndMember(academy, member);
+        LocalDateTime date = null;
+        if (academyMember.isPresent()) {
+            date = academyMember.get().getCreatedAt();
+        }
+        return date;
     }
 
 }

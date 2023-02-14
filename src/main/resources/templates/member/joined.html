@@ -5,25 +5,23 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 align="center">Academy</h3>
-    <button type="button" class="register" id="registerBtn">학원등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
-
+    <h3 align="center">[[${name}]] 학원의 수강생 목록입니다.</h3>
     <div th:if = "${!academy.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
             <tr>
-                <th scope="col" style="width:50%">학원 이름</th>
-                <th scope="col">평점</th>
-                <th scope="col">학원 위치</th>
-                <th scope="col">수강 과목</th>
+                <th scope="col">이름</th>
+                <th scope="col">이메일</th>
+                <th scope="col">주소</th>
+                <th scope="col">등록일</th>
             </tr>
             </thead>
             <tbody align="center">
-            <tr th:each="aca : ${academy}">
-                <td><a th:text="${aca.acaName}" th:href="@{/academy/read?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
-                <td><span th:text="${aca.grade}">평점</span></td>
-                <td><span th:text="${aca.location}" style="font-size:50%">학원 위치</span></td>
-                <td><a th:each="sub : ${aca.subject}" th:value="${sub}" th:text="'＊'+${sub.description}"></a></td>
+            <tr th:each="mem : ${member}">
+                <td><a th:text="${mem.name}">이름</a></td>
+                <td><span th:text="${mem.email}">이메일</span></td>
+                <td><span th:text="${mem.address}" style="font-size:50%">주소</span></td>
+                <td><a th:each="">등록일</a></td>
 
             </tr>
             </tbody>

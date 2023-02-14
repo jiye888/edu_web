@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -24,5 +26,9 @@ public class AcademyMember {
 
     @ManyToOne
     private Member member;
+
+    @CreatedBy
+    @Column(updatable = false, name = "created_at")
+    private LocalDateTime createdAt;
 
 }

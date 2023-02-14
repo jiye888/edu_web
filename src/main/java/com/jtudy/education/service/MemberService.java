@@ -3,11 +3,14 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDateTime;
 
 public interface MemberService {
 
@@ -29,9 +32,7 @@ public interface MemberService {
 
     Page<MemberDTO> getMembers(Long acaNum);
 
-    void requestManagerAuth(Long memNum);
-
-    void acceptManagerAuth(Long memNum);
+    LocalDateTime getJoinedDate(Long acaNum, Long memNum);
 
     default MemberDTO entityToDTO(Member member) {
         MemberDTO memberDTO = MemberDTO.builder()

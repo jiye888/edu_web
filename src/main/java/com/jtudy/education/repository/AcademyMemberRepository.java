@@ -12,8 +12,8 @@ import java.util.Optional;
 @Repository
 public interface AcademyMemberRepository extends JpaRepository<AcademyMember, Long> {
 
-    List<Academy> findByMember(Member member);
-    List<Member> findByAcademy(Academy academy);
+    List<AcademyMember> findByMember(Member member);
+    List<AcademyMember> findByAcademy(Academy academy);
     Optional<AcademyMember> findByAcademyAndMember(Academy academy, Member member);
 
 }

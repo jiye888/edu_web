@@ -140,6 +140,8 @@ public class AcademyController {
 
     @GetMapping("/joined")
     public void getAcademies(@RequestParam("number") Long number, @AuthenticationPrincipal SecurityMember member, Model model) {
+        String name = member.getMember().getName();
+        model.addAttribute("name", name);
         Long memNum = member.getMember().getMemNum();
         if (academyService.validateMember(memNum, member)){
             Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum);

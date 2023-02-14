@@ -1,10 +1,16 @@
 package com.jtudy.education.controller;
 
+import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
+import com.jtudy.education.constant.Roles;
+import com.jtudy.education.entity.RequestAuth;
 import com.jtudy.education.security.SecurityMember;
+import com.jtudy.education.service.AcademyService;
+import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +26,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
 import java.security.SignatureException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +36,8 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final AcademyService academyService;
+    private final AuthService authService;
 
     private final TemplateEngine templateEngine;
 
@@ -134,8 +143,28 @@ public class MemberController {
     }
 
     @GetMapping("/joined")
-    public void getMembers(@RequestParam("id") Long acaNum){
-        memberService.getMembers(acaNum);
-
+    public Page<Object> getMembers(@RequestParam("id") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model){
+        AcademyDTO academyDTO = academyService.getOne(acaNum);
+        model.addAttribute("name", academyDTO.getAcaName());
+        Page<MemberDTO> member = memberService.getMembers(acaNum);
+        model.addAttribute("member", member);
+        Page<Object> date = member.map(e -> memberService.getJoinedDate(acaNum, e.getMemNum()));
+        model.addAttribute("date", date);
+        return date;
     }
+
+    @GetMapping("/request_auth")
+    public void requestAuth(@RequestParam String roles, @AuthenticationPrincipal SecurityMember member) {
+        String email = member.getMember().getEmail();
+        authService.requestAuth(email, Roles.valueOf(roles));
+    }
+
+    @PostMapping("/accept_auth")
+    public void acceptAuth(@RequestParam String email, @RequestParam String roles, @AuthenticationPrincipal SecurityMember member) {
+        if (member.getAuthorities().contains("ADMIN")) {
+            authService.acceptAuth(email, Roles.valueOf(roles));
+        }
+    }
+
+
 }

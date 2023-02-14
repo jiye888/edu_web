@@ -3,6 +3,7 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import com.jtudy.education.repository.AcademyMemberRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,8 @@ public class ReviewServiceImpl implements ReviewService {
     public boolean validateMember(Long revNum, SecurityMember member) {
         Review review = reviewRepository.findByRevNum(revNum);
         Academy academy = review.getAcademy();
-        List<Academy> academyList = academyMemberRepository.findByMember(member.getMember());
+        List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member.getMember());
+        List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
         boolean regInfo = academyList.contains(academy);
         boolean modInfo = review.getCreatedBy().equals(member.getUsername());
         return (regInfo || modInfo);

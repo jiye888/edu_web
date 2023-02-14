@@ -50,9 +50,10 @@ public class AcademyServiceImpl implements AcademyService{
     public Page<AcademyDTO> getAcademies(Long memNum) {
         Member member = memberRepository.findByMemNum(memNum);
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        List<Academy> academyList = academyMemberRepository.findByMember(member);
+        List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member);
+        List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
         List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-        Page<AcademyDTO> page = new PageImpl<AcademyDTO>(academyDTOList, pageable, academyList.size());
+        Page<AcademyDTO> page = new PageImpl<>(academyDTOList, pageable, academyList.size());
         return page;
     }
 
