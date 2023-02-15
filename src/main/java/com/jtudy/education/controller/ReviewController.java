@@ -42,7 +42,7 @@ public class ReviewController {
     @GetMapping("/register")
     public String register(@RequestParam("academy") Long acaNum, Model model) {
         model.addAttribute("review", new ReviewFormDTO());
-        model.addAttribute("academy", acaNum);
+        //model.addAttribute("academy", acaNum);
         return "/review/registerForm";
     }
 

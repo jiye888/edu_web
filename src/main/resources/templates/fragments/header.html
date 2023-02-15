@@ -47,13 +47,13 @@
                 $('#searchBtn').on("click", function() {
                     search();
                 });
+                jwtFilter();
             });
-
+/*
             document.addEventListener("click", function() {
-                //console.log(event.target);
-                //console.log(request);
-                jwtFilter(request);
+                jwtFilter();
             });
+            */
 
             function member() {
                 var token = localStorage.getItem("jwt");
@@ -118,8 +118,39 @@
                 });
             }
 
-            function jwtFilter(request) {
+            function jwtFilter() {
                 console.log("필터 실행");
+                var cookies = document.cookie.split(".");
+                var cookieName = "Matched_Token";
+                var cookieValue = "";
+                for (var i=0; i<cookies.length; i++) {
+                    var cookie = cookies[i];
+                    while (cookie.charAt(0) == ' '){
+                        cookie = cookie.substring(1);
+                    }
+                    if (cookie.indexOf(cookieName) == 0) {
+                        cookieValue = cookie.substring(cookieName.length+1);
+                        console.log(cookieValue);
+
+                        if (cookieValue == "not_matched") {
+                            localStorage.removeItem("jwt");
+
+                            var expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                            document.cookie = cookieName + "=; " + expires;
+
+                            if (confirm("로그인 정보가 유효하지 않습니다. 다시 로그인하시겠습니까?")) {
+                                window.location.href = "/member/login";
+                            } else {
+                                window.location.href = location.href;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+
+                /*
                 return function() {
                 console.log("헤더 찾기");
                         var xhr = new XMLHttpRequest();
@@ -136,6 +167,7 @@
 
                     xhr.send();
                 };
+                */
             }
 
         </script>

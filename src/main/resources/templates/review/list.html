@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <h3 align="center">Review</h3>
     <button type="button" class="register" id="registerBtn">리뷰 작성</button>
-        <input type="hidden" th:value="${member}" id="member">
+        <input type="hidden" th:value="${academy}" id="academy">
         <div th:if = "${!review.isEmpty()}">
             <table class="table table-borderless">
                 <thead align="center">
@@ -21,7 +21,7 @@
                 <tbody align="center">
                 <tr th:each="rev : ${review}">
                     <td style="width:50%" align="center"><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
-                    <td><span th:text="${rev.writerName}">작성자</span></td>
+                    <td><span th:text="${rev.writerEmail}">작성자</span></td>
                     <td><span th:text="${rev.grade}">평점</span></td>
                     <td><span th:text="${rev.createdAt}">작성 일자</span></td>
                 </tr>
@@ -34,14 +34,14 @@
                  aria-label="Page-navigation">
                 <ul class="pagination">
                     <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{/review/list?(page=1)}">
+                        <a class="page-link" th:href="@{/review/list(academy=${academy}, page=1)}">
                             <span>&laquo;</span>
                             <span class="sr-only">첫페이지로</span>
                         </a>
                     </li>
 
                     <li th:classappend="${review.first}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/list?(page=1)}:@{/review/list?(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
+                        <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/list(academy=${academy}, page=1)}:@{/review/list(academy=${academy}, page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})})"
                            aria-label="Previous">
                             <span aria-hidden="true">&lt;</span>
                             <span class="sr-only">이전 페이지</span>
@@ -49,11 +49,11 @@
                     </li>
 
                     <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
-                        <a th:text="${page}" class="page-link" th:href="@{/review/list?(page=${page})}"></a>
+                        <a th:text="${page}" class="page-link" th:href="@{/review/list(academy=${academy}, page=${page})}"></a>
                     </li>
 
                     <li th:classappend="${review.last}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="${review.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/review/list?(page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/review/list?(page=${endPage})})"
+                        <a class="page-link" th:href="${review.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/review/list(academy=${academy}, page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/review/list(academy=${academy}, page=${endPage})})"
                            aria-label="Next">
                             <span aria-hidden="true">&gt;</span>
                             <span class="sr-only">다음 페이지</span>
@@ -78,9 +78,9 @@
 
         function register() {
             var token = localStorage.getItem("jwt");
-            var academy = Number($('#academy').val());
+            var academy = $('#academy').val();
             $.ajax({
-                url: '/review/register',
+                url: '/review/register?academy='+academy,
                 type: 'GET',
                 contentType: "application/json",
                 beforeSend: function(xhr) {

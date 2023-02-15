@@ -19,6 +19,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -53,6 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 //String location = current + "/login";
                 //response.sendRedirect(location);
                 //response.setHeader("Matched_Token", "not_matched");
+                Cookie cookie = new Cookie("Matched_Token", "not_matched");
+                cookie.setMaxAge(60*60*24);
+                response.addCookie(cookie);
             }
 
         }
