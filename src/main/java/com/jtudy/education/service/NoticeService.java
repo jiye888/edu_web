@@ -15,7 +15,7 @@ public interface NoticeService {
 
     boolean validateMember(Long acaNum, SecurityMember member);
 
-    Page<NoticeDTO> getAll(Long acaNum);
+    Page<NoticeDTO> getAll(Long acaNum, Pageable pageable);
 
     NoticeDTO getOne(Long notNum);
 
@@ -25,7 +25,7 @@ public interface NoticeService {
 
     void delete(Long notNum);
 
-    Page<NoticeDTO> search(String category, String keyword);
+    Page<NoticeDTO> search(String category, String keyword, Pageable pageable);
 
     default Notice dtoToEntity(NoticeDTO noticeDTO) {
         Academy academy = Academy.builder()

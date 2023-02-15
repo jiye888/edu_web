@@ -23,7 +23,7 @@ public interface ReviewService {
 
     void delete(Long revNum);
 
-    Page<ReviewDTO> getReviews(Member member);
+    Page<ReviewDTO> getReviews(Member member, Pageable pageable);
 
     default Review dtoToEntity(ReviewDTO reviewDTO) {
         Review review = Review.builder()

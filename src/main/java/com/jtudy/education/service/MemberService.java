@@ -8,6 +8,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public interface MemberService {
 
     void logout(String email);
 
-    Page<MemberDTO> getMembers(Long acaNum);
+    Page<MemberDTO> getMembers(Long acaNum, Pageable pageable);
 
     LocalDateTime getJoinedDate(Long acaNum, Long memNum);
 

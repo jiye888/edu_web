@@ -32,8 +32,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping("/list")
-    public void list(@RequestParam("academy") Long acaNum, Model model) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
+    public void list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "revNum"));
         Page<ReviewDTO> reviewDTO = reviewService.getAll(acaNum, pageable);
         model.addAttribute("academy", acaNum);
         model.addAttribute("review", reviewDTO);
@@ -92,12 +92,13 @@ public class ReviewController {
     }
 
     @GetMapping("/by")
-    public ResponseEntity reviews(@RequestParam("member") Long memNum, @AuthenticationPrincipal SecurityMember securityMember, Model model, HttpServletRequest request) {
+    public ResponseEntity reviews(@RequestParam("member") Long memNum, @RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember securityMember, Model model, HttpServletRequest request) {
         //model.addAttribute("member", member);
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "revNum");
         System.out.println(memNum);
         try {
             if (memNum.equals(securityMember.getMember().getMemNum())) {
-                Page<ReviewDTO> review = reviewService.getReviews(securityMember.getMember());
+                Page<ReviewDTO> review = reviewService.getReviews(securityMember.getMember(), pageable);
                 model.addAttribute("review", review);
             } else {
                 String message = "본인이 아닙니다. 권한이 없습니다.";

@@ -11,6 +11,9 @@ import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -144,9 +147,10 @@ public class MemberController {
 
     @GetMapping("/joined")
     public Page<Object> getMembers(@RequestParam("id") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model){
+        Pageable pageable = PageRequest.of(page-1, 10);
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         model.addAttribute("name", academyDTO.getAcaName());
-        Page<MemberDTO> member = memberService.getMembers(acaNum);
+        Page<MemberDTO> member = memberService.getMembers(acaNum, pageable);
         model.addAttribute("member", member);
         Page<Object> date = member.map(e -> memberService.getJoinedDate(acaNum, e.getMemNum()));
         model.addAttribute("date", date);

@@ -44,7 +44,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Page<ReviewDTO> getAll(Long acaNum, Pageable pageable) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
         Page<Review> review = reviewRepository.findByAcademy(academy, pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;
@@ -83,8 +82,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Page<ReviewDTO> getReviews(Member member) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
+    public Page<ReviewDTO> getReviews(Member member, Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
         Page<Review> review = reviewRepository.findByCreatedBy(member.getEmail(), pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;

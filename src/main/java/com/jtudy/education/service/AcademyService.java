@@ -24,9 +24,9 @@ public interface AcademyService {
 
     void delete(Long acaNum);
 
-    Page<AcademyDTO> getAcademies(Long memNum);
+    Page<AcademyDTO> getAcademies(Long memNum, Pageable pageable);
 
-    Page<AcademyDTO> search(String category, String keyword);
+    Page<AcademyDTO> search(String category, String keyword, Pageable pageable);
 
     default Academy formToEntity(AcademyFormDTO academyFormDTO) {
         Academy academy = Academy.builder()

@@ -108,9 +108,9 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public Page<MemberDTO> getMembers(Long acaNum) {
+    public Page<MemberDTO> getMembers(Long acaNum, Pageable pageable) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<AcademyMember> academyMemberList = academyMemberRepository.findByAcademy(academy);
         List<Member> memberList = academyMemberList.stream().map(e -> e.getMember()).collect(Collectors.toList());
         List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());

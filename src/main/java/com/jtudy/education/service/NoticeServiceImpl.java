@@ -32,8 +32,8 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Page<NoticeDTO> getAll(Long acaNum) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "notNum"));
+    public Page<NoticeDTO> getAll(Long acaNum, Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "notNum"));
         Page<Notice> notice = noticeRepository.findByAcaNum(pageable, acaNum);
         Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
         return noticeDTO;
@@ -69,8 +69,8 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Page<NoticeDTO> search(String category, String keyword) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+    public Page<NoticeDTO> search(String category, String keyword, Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<Notice> notice = null;
         if (category.equals("title")) {
             notice = noticeRepository.findByTitleContaining(keyword, pageable);

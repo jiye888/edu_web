@@ -139,12 +139,13 @@ public class AcademyController {
     }
 
     @GetMapping("/joined")
-    public void getAcademies(@RequestParam("number") Long number, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void getAcademies(@RequestParam("number") Long number, @RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
         String name = member.getMember().getName();
         model.addAttribute("name", name);
         Long memNum = member.getMember().getMemNum();
         if (academyService.validateMember(memNum, member)){
-            Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum);
+            Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
             model.addAttribute("academy", academyDTO);
         } else {
             model.addAttribute("msg", "권한이 없습니다.");
@@ -152,8 +153,9 @@ public class AcademyController {
     }
 
     @GetMapping("/search")
-    public void search(@RequestParam String category, @RequestParam String keyword, Model model) {
-        Page<AcademyDTO> academy = academyService.search(category, keyword);
+    public void search(@RequestParam String category, @RequestParam String keyword, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
+        Page<AcademyDTO> academy = academyService.search(category, keyword, pageable);
         model.addAttribute("academy", academy);
     }
 

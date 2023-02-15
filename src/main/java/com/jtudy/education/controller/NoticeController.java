@@ -9,7 +9,9 @@ import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,8 +31,9 @@ public class NoticeController {
     private final AcademyService academyService;
 
     @GetMapping("/list")
-    public void list(@RequestParam("academy") Long acaNum, Model model) {
-        Page<NoticeDTO> noticeDTO = noticeService.getAll(acaNum);
+    public void list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
+        Page<NoticeDTO> noticeDTO = noticeService.getAll(acaNum, pageable);
         model.addAttribute("notice", noticeDTO);
         model.addAttribute("academy", acaNum);
     }
@@ -90,6 +93,13 @@ public class NoticeController {
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
+    }
+
+    @GetMapping("/search")
+    public void search(@RequestParam String category, @RequestParam String keyword, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
+        Page<NoticeDTO> notice = noticeService.search(category, keyword, pageable);
+        model.addAttribute("notice", notice);
     }
 
 }

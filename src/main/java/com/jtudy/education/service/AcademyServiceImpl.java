@@ -34,7 +34,6 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     public Page<AcademyDTO> getAll(Pageable pageable) {
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<AcademyDTO> academy = academyRepository.getAllAcademyWithReviewInfo(pageable);
         return academy;
     }
@@ -47,9 +46,9 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
-    public Page<AcademyDTO> getAcademies(Long memNum) {
+    public Page<AcademyDTO> getAcademies(Long memNum, Pageable pageable) {
         Member member = memberRepository.findByMemNum(memNum);
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member);
         List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
         List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
@@ -82,8 +81,8 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
-    public Page<AcademyDTO> search(String category, String keyword) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+    public Page<AcademyDTO> search(String category, String keyword, Pageable pageable) {
+        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<Academy> academy = null;
         if (category.equals("name")) {
             academy = academyRepository.findByAcaNameContaining(keyword, pageable);

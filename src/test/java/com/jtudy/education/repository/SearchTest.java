@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,8 +30,9 @@ public class SearchTest {
     @Test
     public void search() {
         Academy aa = academyRepository.findByAcaNum(Long.parseLong("1"));
+        Pageable pageable = PageRequest.of(0, 10);
         logger.info(aa);
-        Page<AcademyDTO> academy = academyService.search("location", "S");
+        Page<AcademyDTO> academy = academyService.search("location", "S", pageable);
         logger.info(academy);
         assertNotEquals(academy, null);
 
