@@ -32,4 +32,9 @@ public class RequestAuth {
 
         return email;
     }
+
+    public void process(boolean processed) {
+        this.processed = processed;
+    }
+
 }

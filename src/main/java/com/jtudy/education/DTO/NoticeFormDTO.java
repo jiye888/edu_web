@@ -14,23 +14,14 @@ import java.util.Map;
 @NoArgsConstructor
 public class NoticeFormDTO {
 
-    private Long notNum;
+    private Long number;
 
-    private Long acaNum;
+    private Long academy;
 
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
 
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
-
-    public NoticeFormDTO(Map<String, String> form) {
-        if (form.get("number") != null) {
-            this.notNum = Long.parseLong(form.get("number"));
-        }
-        this.acaNum = Long.valueOf(form.get("academy"));
-        this.title = form.get("title");
-        this.content = form.get("content");
-    }
 
 }

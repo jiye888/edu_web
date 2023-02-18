@@ -2,36 +2,23 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
-import com.jtudy.education.config.AuditorAwareImpl;
-import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.Review;
 import com.jtudy.education.repository.AcademyRepository;
-import com.jtudy.education.repository.AcademyRepositoryImpl;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.ReviewRepository;
 import groovy.util.logging.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.logging.LoggerFactory;
-import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Log4j2
 @SpringBootTest
@@ -48,9 +35,6 @@ class AcademyServiceImplTest {
 
     @Autowired
     private AcademyRepository academyRepository;
-
-    @Autowired
-    private AcademyRepositoryImpl academyRepositoryImpl;
 
     private final Logger logger = LogManager.getLogger(AcademyServiceImplTest.class);
 

@@ -44,10 +44,11 @@ public interface NoticeService {
 
     default Notice formToEntity(NoticeFormDTO noticeFormDTO) {
         Academy academy = Academy.builder()
-                .acaNum(noticeFormDTO.getAcaNum())
+                .acaNum(noticeFormDTO.getAcademy())
                 .build();
 
         Notice notice = Notice.builder()
+                .notNum(noticeFormDTO.getNumber())
                 .academy(academy)
                 .content(noticeFormDTO.getContent())
                 .title(noticeFormDTO.getTitle())

@@ -42,7 +42,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void rejectAuth(String email, Roles roles) {
-
+        Member member = memberRepository.findByEmail(email);
+        Optional<RequestAuth> requestAuth = requestAuthRepository.findById(email);
+        if (requestAuth.isPresent()) {
+            RequestAuth request = requestAuth.get();
+            request.process(true);
+        }
     }
 
     @Override

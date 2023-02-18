@@ -54,11 +54,10 @@ public class NoticeController {
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody Map<String, String> form, RedirectAttributes redirectAttributes,
+    public void register(@RequestBody @Valid NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal SecurityMember member) {
-        Long acaNum = Long.valueOf(form.get("academy"));
+        Long acaNum = noticeFormDTO.getAcademy();
         if (noticeService.validateMember(acaNum, member)) {
-            NoticeFormDTO noticeFormDTO = new NoticeFormDTO(form);
             Long notNum = noticeService.register(noticeFormDTO, acaNum);
             redirectAttributes.addFlashAttribute("message", notNum);
         } else {
@@ -78,8 +77,7 @@ public class NoticeController {
     }
 
     @PostMapping("/modify")
-    public String modify(@RequestBody Map<String, String> form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        NoticeFormDTO noticeFormDTO = new NoticeFormDTO(form);
+    public String modify(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         Long notNum = noticeService.update(noticeFormDTO);
         redirectAttributes.addFlashAttribute("message", notNum);
         return "redirect:/notice/list";

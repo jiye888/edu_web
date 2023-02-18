@@ -46,7 +46,5 @@ public interface AcademyRepository extends JpaRepository<Academy, Long>, JpaSpec
 
     Page<Academy> findByLocationContaining(String keyword, Pageable pageable);
 
-    List<Academy> findBySubjectList(EnumSet<Subject> subjectList);
-
 
 }
