@@ -10,6 +10,8 @@ import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Map;
+
 public interface AcademyService {
 
     boolean validateMember(Long acaNum, SecurityMember member);
@@ -26,7 +28,7 @@ public interface AcademyService {
 
     Page<AcademyDTO> getAcademies(Long memNum, Pageable pageable);
 
-    Page<AcademyDTO> search(String category, String keyword, Pageable pageable);
+    Page<AcademyDTO> search(Map<String, Object> search, Pageable pageable);
 
     default Academy formToEntity(AcademyFormDTO academyFormDTO) {
         Academy academy = Academy.builder()

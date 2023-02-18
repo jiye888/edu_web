@@ -32,9 +32,9 @@ public class SearchTest {
         Academy aa = academyRepository.findByAcaNum(Long.parseLong("1"));
         Pageable pageable = PageRequest.of(0, 10);
         logger.info(aa);
-        Page<AcademyDTO> academy = academyService.search("location", "S", pageable);
-        logger.info(academy);
-        assertNotEquals(academy, null);
+        //Page<AcademyDTO> academy = academyService.search("location", "S", pageable);
+        //logger.info(academy);
+        //assertNotEquals(academy, null);
 
     }
 }

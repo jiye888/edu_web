@@ -9,6 +9,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import com.jtudy.education.repository.AcademyRepository;
+import com.jtudy.education.repository.AcademyRepositoryImpl;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.ReviewRepository;
 import groovy.util.logging.Log4j2;
@@ -27,9 +28,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,42 +49,11 @@ class AcademyServiceImplTest {
     @Autowired
     private AcademyRepository academyRepository;
 
+    @Autowired
+    private AcademyRepositoryImpl academyRepositoryImpl;
+
     private final Logger logger = LogManager.getLogger(AcademyServiceImplTest.class);
-/*
-    @Test
-    public void dummyData() {
-        Member member2 = Member.builder()
-                .name("Jeong")
-                .address("DaeJeon")
-                .email("je@gmail.com")
-                .password("55555")
-                .build();
-        member2.addRoles(Roles.STUDENT);
-        memberRepository.save(member2);
 
-        Member member = memberRepository.findByMemNum(Long.parseLong("2"));
-
-        Academy academy2 = Academy.builder()
-                .acaName("welcome")
-                .location("Goyang")
-                .subject(EnumSet.of(Subject.MATH, Subject.KOREAN))
-                .build();
-        academyRepository.save(academy2);
-
-        //Academy academy = academyRepository.findByAcaNum(Long.parseLong("1"));
-
-        Review review = Review.builder()
-                .academy(academy2)
-                .title("review3")
-                .content("review3")
-                .writer(member2)
-                .grade(5)
-                .build();
-
-        reviewRepository.save(review);
-    }
-
- */
     @Test
     public void getAllTest() {
 
@@ -149,6 +118,60 @@ class AcademyServiceImplTest {
         academyService.update(academyFormDTO);
         Academy academy2 = academyRepository.findByAcaNum(Long.parseLong("4"));
         System.out.println(academy2.getAcaName());
+    }
+
+    @Test
+    public void searchWithSpecification() {
+        Map<String, Object> search = new HashMap<>();
+        search.put("name", "수학");
+        //search.put("location", "강서구");
+        List<Subject> sub = new ArrayList<>();
+        //EnumSet<Subject> sub = EnumSet.noneOf(Subject.class);
+        sub.add(Subject.MATH);
+        sub.add(Subject.KOREAN);
+        search.put("subject", sub);
+        System.out.println("test subject type: "+sub.getClass());
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<AcademyDTO> academy = academyService.search(search, pageable);
+        System.out.println(academy.getContent());
+        //System.out.println(academy.iterator().toString());
+
+        //EnumSet<Subject> sub = EnumSet.of(Subject.MATH, Subject.KOREAN);
+        //EnumSet<Subject> academy = academyRepositoryImpl.findBySubjectList(sub);
+        System.out.println(academy);
+
+    }
+
+    @Test
+    public void searchWithRepository() {
+        List<String> list = new ArrayList<>();
+        Set<Subject> set = new HashSet<>();
+        EnumSet<Subject> enumSet = EnumSet.noneOf(Subject.class);
+        list.add(Subject.MATH.toString());
+        list.add(Subject.KOREAN.toString());
+        set.add(Subject.MATH);
+        set.add(Subject.KOREAN);
+        enumSet.add(Subject.MATH);
+        enumSet.add(Subject.KOREAN);
+
+        //Page<Academy> page = academyRepository.findBySubjectContaining(list, PageRequest.of(0, 10));
+        //Page<Academy> page = academyRepository.findBySubjectContaining(Subject.KOREAN.toString(), PageRequest.of(0,10));
+        List<Academy> academies = academyRepository.findBySubjectContaining(list.get(1));
+        System.out.println(academies);
+        //System.out.println(page.getSize());
+    }
+
+    @Test
+    public void listTest() {
+        List<String> list = new ArrayList<>();
+        list.add(Subject.MATH.toString());
+        list.add(Subject.KOREAN.toString());
+        List<Subject> subjectList = new ArrayList<>();
+        subjectList.add(Subject.MATH);
+        subjectList.add(Subject.KOREAN);
+        System.out.println(list.toString());
+        System.out.println(subjectList);
     }
 
 }

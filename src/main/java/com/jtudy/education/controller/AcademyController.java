@@ -31,6 +31,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -56,7 +57,7 @@ public class AcademyController {
     public void list(Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
         //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         //model.addAttribute("page", page);
-        Pageable pageable = PageRequest.of(page-1, 10);
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<AcademyDTO> academyDTO = academyService.getAll(pageable);
         model.addAttribute("academy", academyDTO);
     }
@@ -144,18 +145,14 @@ public class AcademyController {
         String name = member.getMember().getName();
         model.addAttribute("name", name);
         Long memNum = member.getMember().getMemNum();
-        if (academyService.validateMember(memNum, member)){
-            Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
-            model.addAttribute("academy", academyDTO);
-        } else {
-            model.addAttribute("msg", "권한이 없습니다.");
-        }
+        Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
+        model.addAttribute("academy", academyDTO);
     }
 
     @GetMapping("/search")
-    public void search(@RequestParam String category, @RequestParam String keyword, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    public void search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
-        Page<AcademyDTO> academy = academyService.search(category, keyword, pageable);
+        Page<AcademyDTO> academy = academyService.search(search, pageable);
         model.addAttribute("academy", academy);
     }
 
