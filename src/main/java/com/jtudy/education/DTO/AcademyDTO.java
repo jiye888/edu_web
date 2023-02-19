@@ -14,7 +14,6 @@ import java.util.EnumSet;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Validated
 public class AcademyDTO {
 
     private Long acaNum;

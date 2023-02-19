@@ -6,10 +6,14 @@ import com.jtudy.education.entity.RequestAuth;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.RequestAuthRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Service
@@ -18,12 +22,25 @@ public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
     private final RequestAuthRepository requestAuthRepository;
+    private final RedisTemplate redisTemplate;
 
 
     @Override
     public void requestAuth(String email, Roles roles){
         RequestAuth requestAuth = new RequestAuth(email, roles);
         requestAuthRepository.save(requestAuth);
+    }
+
+    @Override
+    public RequestAuth getOne(String email, Roles roles) {
+        RequestAuth requestAuth = requestAuthRepository.findByEmailAndRoles(email, roles);
+        return requestAuth;
+    }
+
+    @Override
+    public Slice<RequestAuth> requestedAuths(Pageable pageable) {
+        Slice<RequestAuth> requestAuth = requestAuthRepository.findByProcessedFalse(pageable);
+        return requestAuth;
     }
 
     @Override
@@ -37,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
                 requestAuthRepository.save(request);
                 member.getRolesList().add(roles);
             }
+            redisTemplate.expire(request, 60*60*24, TimeUnit.SECONDS);
         }
     }
 
@@ -47,12 +65,14 @@ public class AuthServiceImpl implements AuthService {
         if (requestAuth.isPresent()) {
             RequestAuth request = requestAuth.get();
             request.process(true);
+            redisTemplate.expire(request, 60*60*24, TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void deleteAuth(String email, Roles roles) {
-
+        Member member = memberRepository.findByEmail(email);
+        member.removeRoles(roles);
     }
 
 }

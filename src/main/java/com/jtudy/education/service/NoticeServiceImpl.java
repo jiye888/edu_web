@@ -57,7 +57,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public Long update(NoticeFormDTO noticeFormDTO) {
-        Notice notice = noticeRepository.findByNotNum(noticeFormDTO.getNotNum());
+        Notice notice = noticeRepository.findByNotNum(noticeFormDTO.getNumber());
         notice.changeNotice(noticeFormDTO.getTitle(), noticeFormDTO.getContent());
         noticeRepository.save(notice);
         return notice.getNotNum();

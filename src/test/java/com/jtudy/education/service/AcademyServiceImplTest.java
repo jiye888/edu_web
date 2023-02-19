@@ -108,7 +108,7 @@ class AcademyServiceImplTest {
     public void searchWithSpecification() {
         Map<String, Object> search = new HashMap<>();
         search.put("name", "수학");
-        //search.put("location", "강서구");
+        search.put("location", "송파구");
         List<Subject> sub = new ArrayList<>();
         //EnumSet<Subject> sub = EnumSet.noneOf(Subject.class);
         sub.add(Subject.MATH);
@@ -125,37 +125,6 @@ class AcademyServiceImplTest {
         //EnumSet<Subject> academy = academyRepositoryImpl.findBySubjectList(sub);
         System.out.println(academy);
 
-    }
-
-    @Test
-    public void searchWithRepository() {
-        List<String> list = new ArrayList<>();
-        Set<Subject> set = new HashSet<>();
-        EnumSet<Subject> enumSet = EnumSet.noneOf(Subject.class);
-        list.add(Subject.MATH.toString());
-        list.add(Subject.KOREAN.toString());
-        set.add(Subject.MATH);
-        set.add(Subject.KOREAN);
-        enumSet.add(Subject.MATH);
-        enumSet.add(Subject.KOREAN);
-
-        //Page<Academy> page = academyRepository.findBySubjectContaining(list, PageRequest.of(0, 10));
-        //Page<Academy> page = academyRepository.findBySubjectContaining(Subject.KOREAN.toString(), PageRequest.of(0,10));
-        List<Academy> academies = academyRepository.findBySubjectContaining(list.get(1));
-        System.out.println(academies);
-        //System.out.println(page.getSize());
-    }
-
-    @Test
-    public void listTest() {
-        List<String> list = new ArrayList<>();
-        list.add(Subject.MATH.toString());
-        list.add(Subject.KOREAN.toString());
-        List<Subject> subjectList = new ArrayList<>();
-        subjectList.add(Subject.MATH);
-        subjectList.add(Subject.KOREAN);
-        System.out.println(list.toString());
-        System.out.println(subjectList);
     }
 
 }
