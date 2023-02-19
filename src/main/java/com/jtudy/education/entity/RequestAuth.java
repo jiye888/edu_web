@@ -2,6 +2,7 @@ package com.jtudy.education.entity;
 
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.RolesConverter;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -9,6 +10,7 @@ import org.springframework.data.redis.core.RedisHash;
 import javax.persistence.Convert;
 
 @Getter
+@Builder
 @RedisHash(value = "requestAuth")
 public class RequestAuth {
 

@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.RequestAuth;
@@ -32,9 +33,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RequestAuth getOne(String email, Roles roles) {
-        RequestAuth requestAuth = requestAuthRepository.findByEmailAndRoles(email, roles);
-        return requestAuth;
+    public AuthDTO getOne(Member member, Roles roles) {
+        RequestAuth requestAuth = requestAuthRepository.findByEmailAndRoles(member.getEmail(), roles);
+        AuthDTO authDTO = entityToDTO(requestAuth, member);
+        return authDTO;
     }
 
     @Override

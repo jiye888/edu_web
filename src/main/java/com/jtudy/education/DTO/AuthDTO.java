@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthDTO {
 
+    private String name;
     private String email;
     private boolean processed;
     private Roles roles;
