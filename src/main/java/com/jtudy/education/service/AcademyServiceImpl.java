@@ -45,7 +45,6 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     public AcademyDTO getOne(Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
         AcademyDTO academyDTO = academyRepository.getOneAcademyWithReviewInfo(acaNum);
         return academyDTO;
     }
@@ -53,7 +52,6 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public Page<AcademyDTO> getAcademies(Long memNum, Pageable pageable) {
         Member member = memberRepository.findByMemNum(memNum);
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member);
         List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
         List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());

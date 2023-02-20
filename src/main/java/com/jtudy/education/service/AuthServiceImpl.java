@@ -7,14 +7,17 @@ import com.jtudy.education.entity.RequestAuth;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.RequestAuthRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -27,22 +30,27 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public void requestAuth(String email, Roles roles){
-        RequestAuth requestAuth = new RequestAuth(email, roles);
+    public void requestAuth(String email, Roles roles, String content){
+        RequestAuth requestAuth = new RequestAuth(email, roles, content);
         requestAuthRepository.save(requestAuth);
     }
 
     @Override
     public AuthDTO getOne(Member member, Roles roles) {
         RequestAuth requestAuth = requestAuthRepository.findByEmailAndRoles(member.getEmail(), roles);
-        AuthDTO authDTO = entityToDTO(requestAuth, member);
+        if (requestAuth == null) {
+            return null;
+        }
+        AuthDTO authDTO = entityToDTO(requestAuth);
         return authDTO;
     }
 
     @Override
-    public Slice<RequestAuth> requestedAuths(Pageable pageable) {
-        Slice<RequestAuth> requestAuth = requestAuthRepository.findByProcessedFalse(pageable);
-        return requestAuth;
+    public Slice<AuthDTO> requestedAuths(Pageable pageable) {
+        List<RequestAuth> requestAuth = requestAuthRepository.findByProcessedFalse(pageable);
+        List<AuthDTO> authList = requestAuth.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+        Slice<AuthDTO> authDTO = new PageImpl<>(authList, pageable, authList.size());
+        return authDTO;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
             if (request.getRoles() == roles && !request.isProcessed()) {
                 request.acceptAuth(email, roles);
                 requestAuthRepository.save(request);
-                member.getRolesList().add(roles);
+                member.addRoles(roles);
             }
             redisTemplate.expire(request, 60*60*24, TimeUnit.SECONDS);
         }

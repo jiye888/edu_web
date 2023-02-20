@@ -158,9 +158,9 @@ public class MemberController {
     }
 
     @GetMapping("/request_auth")
-    public void requestAuth(@RequestParam String roles, @AuthenticationPrincipal SecurityMember member) {
+    public void requestAuth(@RequestParam String roles, @RequestParam String content, @AuthenticationPrincipal SecurityMember member) {
         String email = member.getMember().getEmail();
-        authService.requestAuth(email, Roles.valueOf(roles));
+        authService.requestAuth(email, Roles.valueOf(roles), content);
     }
 
     @PostMapping("/accept_auth")

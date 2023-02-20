@@ -4,13 +4,16 @@ import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.RolesConverter;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.Convert;
+import java.time.LocalDateTime;
 
 @Getter
-@Builder
 @RedisHash(value = "requestAuth")
 public class RequestAuth {
 
@@ -21,10 +24,17 @@ public class RequestAuth {
 
     private Roles roles;
 
-    public RequestAuth(String email, Roles roles) {
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    private String content;
+
+    public RequestAuth(String email, Roles roles, String content) {
         this.email = email;
         this.processed = false;
         this.roles = roles;
+        this.createdAt = null;
+        this.content = content;
     }
 
     public String acceptAuth(String email, Roles roles) {

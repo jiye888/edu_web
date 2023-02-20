@@ -9,11 +9,11 @@ import org.springframework.data.domain.Slice;
 
 public interface AuthService {
 
-    void requestAuth(String email, Roles roles);
+    void requestAuth(String email, Roles roles, String content);
 
     AuthDTO getOne(Member member, Roles roles);
 
-    Slice<RequestAuth> requestedAuths(Pageable pageable);
+    Slice<AuthDTO> requestedAuths(Pageable pageable);
 
     void acceptAuth(String email, Roles roles);
 
@@ -21,21 +21,19 @@ public interface AuthService {
 
     void deleteAuth(String email, Roles roles);
 
-    default AuthDTO entityToDTO(RequestAuth requestAuth, Member member) {
+    default AuthDTO entityToDTO(RequestAuth requestAuth) {
         AuthDTO authDTO = AuthDTO.builder()
-                .name(member.getName())
                 .email(requestAuth.getEmail())
                 .processed(requestAuth.isProcessed())
                 .roles(requestAuth.getRoles())
+                .createdAt(requestAuth.getCreatedAt())
+                .content(requestAuth.getContent())
                 .build();
         return authDTO;
     }
 
     default RequestAuth DTOToEntity(AuthDTO authDTO) {
-        RequestAuth requestAuth = RequestAuth.builder()
-                .email(authDTO.getEmail())
-                .roles(authDTO.getRoles())
-                .build();
+        RequestAuth requestAuth = new RequestAuth(authDTO.getEmail(), authDTO.getRoles(), authDTO.getContent());
         return  requestAuth;
     }
 
