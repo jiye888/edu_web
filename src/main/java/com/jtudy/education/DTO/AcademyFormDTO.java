@@ -1,5 +1,6 @@
 package com.jtudy.education.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.constant.SubjectConverter;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,8 @@ import java.util.Map;
 @Validated
 public class AcademyFormDTO {
 
-    private Long number;
+    @JsonProperty("number")
+    private Long acaNum;
 
     @NotBlank(message = "학원명을 입력해주세요.")
     private String acaName;

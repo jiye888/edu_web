@@ -9,9 +9,11 @@ import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class AcademyMemberServiceImpl implements AcademyMemberService {

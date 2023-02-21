@@ -14,10 +14,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
@@ -26,12 +28,14 @@ public class NoticeServiceImpl implements NoticeService {
     private final AcademyRepository academyRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public boolean validateMember(Long acaNum, SecurityMember member) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         return academy.getCreatedBy().equals(member.getUsername());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<NoticeDTO> getAll(Long acaNum, Pageable pageable) {
         //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "notNum"));
         Page<Notice> notice = noticeRepository.findByAcaNum(pageable, acaNum);
@@ -40,6 +44,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public NoticeDTO getOne(Long notNum) {
         Notice notice = noticeRepository.findByNotNum(notNum);
         NoticeDTO noticeDTO = entityToDTO(notice);
@@ -69,8 +74,8 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<NoticeDTO> search(String category, String keyword, Pageable pageable) {
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<Notice> notice = null;
         if (category.equals("title")) {
             notice = noticeRepository.findByTitleContaining(keyword, pageable);

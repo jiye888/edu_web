@@ -54,6 +54,7 @@ public class NoticeController {
     }
 
     @PostMapping("/register")
+    @ResponseBody
     public void register(@RequestBody @Valid NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes,
                            @AuthenticationPrincipal SecurityMember member) {
         Long acaNum = noticeFormDTO.getAcademy();
@@ -77,6 +78,7 @@ public class NoticeController {
     }
 
     @PostMapping("/modify")
+    @ResponseBody
     public String modify(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         Long notNum = noticeService.update(noticeFormDTO);
         redirectAttributes.addFlashAttribute("message", notNum);
@@ -84,6 +86,7 @@ public class NoticeController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public void delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {

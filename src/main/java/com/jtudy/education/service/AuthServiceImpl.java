@@ -36,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthDTO getOne(Member member, Roles roles) {
         RequestAuth requestAuth = requestAuthRepository.findByEmailAndRoles(member.getEmail(), roles);
         if (requestAuth == null) {
@@ -46,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Slice<AuthDTO> requestedAuths(Pageable pageable) {
         List<RequestAuth> requestAuth = requestAuthRepository.findByProcessedFalse(pageable);
         List<AuthDTO> authList = requestAuth.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());

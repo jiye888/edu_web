@@ -55,8 +55,6 @@ public class AcademyController {
 
     @GetMapping("/list")
     public void list(Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
-        //model.addAttribute("page", page);
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         Page<AcademyDTO> academyDTO = academyService.getAll(pageable);
         model.addAttribute("academy", academyDTO);
@@ -108,15 +106,17 @@ public class AcademyController {
     }
 
     @PostMapping("/modify")
-    public void modify(@RequestBody @Valid /*Map<String, Object> form*/AcademyFormDTO academyFormDTO, Model model) {
-        //AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
-        //model.addAttribute("number", academyFormDTO.getAcaNum());
-        model.addAttribute("number", academyFormDTO.getNumber());
+    @ResponseBody
+    public void modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, Model model) {
+        System.out.println("main point" + academyFormDTO.getAcaNum());
+        System.out.println(academyFormDTO);
+        model.addAttribute("number", academyFormDTO.getAcaNum());
         model.addAttribute("academy", academyFormDTO);
         academyService.update(academyFormDTO);
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         if (academyService.validateMember(acaNum, member)) {
@@ -128,12 +128,14 @@ public class AcademyController {
     }
 
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         Long memNum = member.getMember().getMemNum();
         academyMemberService.join(memNum, acaNum);
     }
 
     @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public void withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         Long memNum = member.getMember().getMemNum();
         academyMemberService.withdraw(memNum, acaNum);

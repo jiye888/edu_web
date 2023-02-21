@@ -10,6 +10,7 @@ import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +20,7 @@ public interface MemberService {
 
     MemberDTO getOne(Long memNum);
 
-    Member findOne(String email);
+    Member findByEmail(String email);
 
     Long createMember(MemberFormDTO memberFormDTO);
 

@@ -51,6 +51,7 @@ public class MemberController {
     }
 
     @PostMapping("/join")
+    @ResponseBody
     public String join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "member/registerForm";
@@ -108,6 +109,7 @@ public class MemberController {
     }
 
     @PostMapping("/modify")
+    @ResponseBody
     public String modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
         if (bindingResult.hasErrors()){
             return "member/modifyForm";
@@ -117,6 +119,7 @@ public class MemberController {
     }
 
     @PostMapping("/withdraw")
+    @ResponseBody
     public void withdraw(@RequestParam("number") Long memNum) {
         memberService.withdraw(memNum);
     }
@@ -141,6 +144,7 @@ public class MemberController {
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public void logout(@AuthenticationPrincipal SecurityMember member) {
             memberService.logout(member.getUsername());
     }
@@ -156,7 +160,7 @@ public class MemberController {
         model.addAttribute("date", date);
         return date;
     }
-
+/*
     @GetMapping("/request_auth")
     public void requestAuth(@RequestParam String roles, @RequestParam String content, @AuthenticationPrincipal SecurityMember member) {
         String email = member.getMember().getEmail();
@@ -168,7 +172,7 @@ public class MemberController {
         if (member.getAuthorities().contains("ADMIN")) {
             authService.acceptAuth(email, Roles.valueOf(roles));
         }
-    }
+    }*/
 
 
 }

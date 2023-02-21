@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/auth")
@@ -53,22 +50,26 @@ public class AuthController {
     }
 
     @PostMapping("/request")
+    @ResponseBody
     public void requestAuth(@RequestParam Roles roles, @RequestParam String content, @AuthenticationPrincipal SecurityMember member) {
         String email = member.getMember().getEmail();
         authService.requestAuth(email, roles, content);
     }
 
     @PostMapping("/accept")
+    @ResponseBody
     public void acceptAuth(@RequestParam Roles roles, @RequestParam String email) {
         authService.acceptAuth(email, roles);
     }
 
     @PostMapping("/reject")
+    @ResponseBody
     public void rejectRequest(@RequestParam Roles roles, @RequestParam String email) {
         authService.rejectAuth(email, roles);
     }
 
     @PostMapping("/delete")
+    @ResponseBody
     public void deleteAuth(@RequestParam Roles roles, @RequestParam String email) {
         authService.deleteAuth(email, roles);
 

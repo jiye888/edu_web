@@ -33,12 +33,14 @@ public class MemberServiceImpl implements MemberService{
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public boolean validateMember(Long memNum, SecurityMember securityMember) {
         Member member = memberRepository.findByMemNum(memNum);
         return member.getEmail().equals(securityMember.getUsername());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberDTO getOne(Long memNum) {
         Member member = memberRepository.findByMemNum(memNum);
         MemberDTO memberDTO = entityToDTO(member);
@@ -46,7 +48,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public Member findOne(String email) {
+    @Transactional(readOnly = true)
+    public Member findByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
         return member;
     }
@@ -108,6 +111,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<MemberDTO> getMembers(Long acaNum, Pageable pageable) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
@@ -119,6 +123,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LocalDateTime getJoinedDate(Long acaNum, Long memNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Member member = memberRepository.findByMemNum(memNum);

@@ -17,6 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public SecurityMember loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email);
         if (member == null) {
@@ -25,6 +26,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         SecurityMember securityMember = new SecurityMember(member);
         return securityMember;
     }
-
 
 }

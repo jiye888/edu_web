@@ -8,7 +8,7 @@
         <h3>수정 화면</h3>
         <form th:object="${academy}">
 
-            <input type="hidden" th:field="*{acaNum}">
+            <input type="hidden" th:field="*{acaNum}" id="number">
             학원 이름<input type="text" th:field="*{acaName}">
             <p th:if="${#fields.hasErrors('acaName')}" th:errors="*{acaName}" class="fieldError"></p><br>
             학원 위치
@@ -58,7 +58,7 @@
         }
 
         function modify() {
-            var acaNum = $('#acaNum').val();
+            var number = $('#number').val();
             var acaName = $('#acaName').val();
             var location = '';
             $('input[name=location]').map(function(){
@@ -82,8 +82,8 @@
                     type: "POST",
                     contentType: "application/json",
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                    data: JSON.stringify({
-                        "acaNum":acaNum,
+                    data:JSON.stringify({
+                        "number":parseInt(number),
                         "acaName":acaName,
                         "subject":subject,
                         "location":location,

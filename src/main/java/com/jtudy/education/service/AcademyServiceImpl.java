@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class AcademyServiceImpl implements AcademyService{
@@ -32,24 +33,28 @@ public class AcademyServiceImpl implements AcademyService{
     private final MemberRepository memberRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public boolean validateMember(Long acaNum, SecurityMember member) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         return academy.getCreatedBy().equals(member.getUsername());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<AcademyDTO> getAll(Pageable pageable) {
         Page<AcademyDTO> academy = academyRepository.getAllAcademyWithReviewInfo(pageable);
         return academy;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AcademyDTO getOne(Long acaNum) {
         AcademyDTO academyDTO = academyRepository.getOneAcademyWithReviewInfo(acaNum);
         return academyDTO;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<AcademyDTO> getAcademies(Long memNum, Pageable pageable) {
         Member member = memberRepository.findByMemNum(memNum);
         List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member);
@@ -68,22 +73,23 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     public Long update(AcademyFormDTO academyFormDTO) {
-        //Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
-        Academy academy = academyRepository.findByAcaNum(academyFormDTO.getNumber());
+        System.out.println("Number: "+academyFormDTO.getAcaNum());
+        Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
+        System.out.println("Academy: "+academy);
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
                 academyFormDTO.getLocation());
+        System.out.println(academyFormDTO);
         academyRepository.save(academy);
         return academy.getAcaNum();
     }
 
     @Override
-    @Transactional
     public void delete(Long acaNum) {
-        //Academy academy = academyRepository.findByAcaNum(acaNum);
         academyRepository.deleteById(acaNum);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<AcademyDTO> search(Map<String, Object> search, Pageable pageable) {
         Iterator<Map.Entry<String, Object>> iterator = search.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -133,25 +139,6 @@ public class AcademyServiceImpl implements AcademyService{
         List<Academy> academyList = academyRepository.findAll(spec);
         System.out.println("findAll(spec): "+academyList);
         Page<Academy> academy = new PageImpl<>(academyList, pageable, academyList.size());
-
-
-
-        /*
-
-        Page<Academy> academy = null;
-        for (String category : categories) {
-            Set<Page<Academy>> =
-            if (category.contains("name")) {
-                Page<Academy> name = academyRepository.findByAcaNameContaining(search.get("name").toString(), pageable);
-            } else if (category.contains("subject")) {
-                Page<Academy> subject = academyRepository.findBySubjectContaining(search.get("subject").toString(), pageable);
-            } else if (category.contains("location")) {
-                Page<Academy> location = academyRepository.findByLocationContaining(search.get("location").toString(), pageable);
-            }
-
-            List<Academy> academyList = Stream.concat(name, );
-        }
-         */
 
         Page<AcademyDTO> academyDTO = academy.map(e -> entityToDTO(e));
         return academyDTO;

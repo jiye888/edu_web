@@ -77,6 +77,7 @@ public class ReviewController {
     }
 
     @PostMapping("/modify")
+    @ResponseBody
     public void modify(@RequestBody @Valid ReviewFormDTO reviewFormDTO, @AuthenticationPrincipal SecurityMember member, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("msg", "모든 항목을 입력해주세요.");
@@ -85,6 +86,7 @@ public class ReviewController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public void delete(@RequestParam("number") Long revNum, Model model) {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
         model.addAttribute("academy", reviewDTO.getAcaNum());

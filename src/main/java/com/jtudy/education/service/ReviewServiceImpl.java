@@ -17,11 +17,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
@@ -31,6 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final AcademyMemberRepository academyMemberRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public boolean validateMember(Long revNum, SecurityMember member) {
         Review review = reviewRepository.findByRevNum(revNum);
         Academy academy = review.getAcademy();
@@ -42,6 +45,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ReviewDTO> getAll(Long acaNum, Pageable pageable) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Page<Review> review = reviewRepository.findByAcademy(academy, pageable);
@@ -50,6 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ReviewDTO getOne(Long revNum) {
         Review review = reviewRepository.findByRevNum(revNum);
         ReviewDTO reviewDTO = entityToDTO(review);
@@ -82,8 +87,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ReviewDTO> getReviews(Member member, Pageable pageable) {
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "revNum"));
         Page<Review> review = reviewRepository.findByCreatedBy(member.getEmail(), pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;
