@@ -6,7 +6,8 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">[[${name}]] 학원의 수강생 목록입니다.</h3>
-    <div th:if = "${!academy.isEmpty()}">
+    <input type="hidden" th:value="${number}" id="number">
+    <div th:if = "${!member.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
             <tr>
@@ -21,26 +22,26 @@
                 <td><a th:text="${mem.name}">이름</a></td>
                 <td><span th:text="${mem.email}">이메일</span></td>
                 <td><span th:text="${mem.address}" style="font-size:50%">주소</span></td>
-                <td><a th:each="">등록일</a></td>
+                <td><a th:text="${mem.joinedDate}">등록일</a></td>
 
             </tr>
             </tbody>
         </table>
 
-        <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
-                            totalPages=${academy.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+        <nav th:with = "pageNumber=${member.pageable.pageNumber}, pageSize=${member.pageable.pageSize},
+                            totalPages=${member.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
              aria-label="Page-navigation">
             <ul class="pagination">
                 <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/academy/list?(page=1)}">
+                    <a class="page-link" th:href="@{/member/joined?(number=${number}, page=1)}">
                         <span>&laquo;</span>
                         <span class="sr-only">첫페이지로</span>
                     </a>
                 </li>
 
-                <li th:classappend="${academy.first}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${academy.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<10?@{/academy/list?(page=1)}:@{/academy/list?(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)}+1)})"
+                <li th:classappend="${member.first}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${member.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<10?@{/member/joined?(number=${number}, page=1)}:@{/member/joined?(number=${number}, page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)}+1)})"
                        aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                         <span class="sr-only">이전 페이지</span>
@@ -49,11 +50,11 @@
                 </li>
 
                 <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
-                    <a th:text="${page}" class="page-link" th:href="@{/academy/list?(page=${page})}"></a>
+                    <a th:text="${page}" class="page-link" th:href="@{/member/joined?(number=${number}, page=${page})}"></a>
                 </li>
 
-                <li th:classappend="${academy.last}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${academy.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/academy/list?(page=${#numbers.formatDecimal(startPage+pageSize, 0, -1)})}:@{/academy/list?(page=${endPage})})"
+                <li th:classappend="${member.last}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${member.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/member/joined?(number=${number}, page=${#numbers.formatDecimal(startPage+pageSize, 0, -1)})}:@{/member/joined?(number=${number}, page=${endPage})})"
                        aria-label="Next">
                         <span aria-hidden="true">&gt;</span>
                         <span class="sr-only">다음 페이지</span>
@@ -61,7 +62,7 @@
                 </li>
 
                 <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/academy/list?(page=${totalPages})}">
+                    <a class="page-link" th:href="@{/member/joined?(number=${number}, page=${totalPages})}">
                         <span>&raquo;</span>
                         <span class="sr-only">마지막으로</span>
                     </a>

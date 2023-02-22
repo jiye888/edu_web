@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
@@ -12,6 +13,9 @@ import groovy.util.logging.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -74,6 +78,14 @@ class MemberServiceImplTest {
         Long am1 = academyMemberService.join(member1.getMemNum(), academy.getAcaNum());
         Long am2 = academyMemberService.join(member2.getMemNum(), academy.getAcaNum());
 
+    }
+
+    @Test
+    public void getMembers() {
+        Long acaNum = Long.parseLong("3");
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<MemberDTO> memberDTO = memberService.getMembers(acaNum, pageable);
+        System.out.println(memberDTO.getContent());
     }
 
 }

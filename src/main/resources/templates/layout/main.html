@@ -37,47 +37,56 @@
 <div th:insert="fragments/footer :: footer"></div>
 <script th:inline="javascript">
     $(function() {
+
+        $.ajaxSetup({
+            statusCode: {
+                400: function() {
+                    jwtFilter();
+                }
+            },
+        });
+
         document.addEventListener("click", jwtFilter);
     });
 
             function jwtFilter() {
-            var token = localStorage.getItem("jwt");
+                var token = localStorage.getItem("jwt");
 
-            if (token) {
-                var cookies = document.cookie.split(".");
-                var cookieName = "Matched_Token";
-                var cookieValue = "";
-                for (var i=0; i<cookies.length; i++) {
-                    var cookie = cookies[i];
-                    while (cookie.charAt(0) == ' '){
-                        cookie = cookie.substring(1);
-                    }
-                    if (cookie.indexOf(cookieName) == 0) {
-                        cookieValue = cookie.substring(cookieName.length+1);
-
-                        if (cookieValue == "not_matched") {
-                            localStorage.removeItem("jwt");
-
-                            var now = new Date();
-                            now.setMonth(now.getMonth()-1);
-                            var expires = "expires="+now.toUTCString();
-
-                            //var expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                            document.cookie = cookieName + "=; " + expires;
-
-                            if (confirm("로그인 정보가 유효하지 않습니다. 다시 로그인하시겠습니까?")) {
-                                window.location.href = "/member/login";
-                            } else {
-                                window.location.href = location.href;
-                            }
+                if (token) {
+                    var cookies = document.cookie.split(".");
+                    var cookieName = "Matched_Token";
+                    var cookieValue = "";
+                    for (var i=0; i<cookies.length; i++) {
+                        var cookie = cookies[i];
+                        while (cookie.charAt(0) == ' '){
+                            cookie = cookie.substring(1);
                         }
+                        if (cookie.indexOf(cookieName) == 0) {
+                            cookieValue = cookie.substring(cookieName.length+1);
 
-                        break;
+                            if (cookieValue == "not_matched") {
+                                localStorage.removeItem("jwt");
 
+                                var now = new Date();
+                                now.setMonth(now.getMonth()-1);
+                                var expires = "expires="+now.toUTCString();
+
+                                //var expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+                                document.cookie = cookieName + "=; " + expires;
+
+                                if (confirm("로그인 정보가 유효하지 않습니다. 다시 로그인하시겠습니까?")) {
+                                    window.location.href = "/member/login";
+                                } else {
+                                    window.location.href = location.href;
+                                }
+                            }
+
+                            break;
+
+                        }
                     }
-                }
 
-            }
+                }
             }
 
 </script>

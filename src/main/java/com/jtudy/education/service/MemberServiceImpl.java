@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -114,26 +115,24 @@ public class MemberServiceImpl implements MemberService{
     @Transactional(readOnly = true)
     public Page<MemberDTO> getMembers(Long acaNum, Pageable pageable) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
         List<AcademyMember> academyMemberList = academyMemberRepository.findByAcademy(academy);
         List<Member> memberList = academyMemberList.stream().map(e -> e.getMember()).collect(Collectors.toList());
-        List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+        List<MemberDTO> memberDTOList = memberList.stream().map(e -> entityToDTO(e, e.getAcademyMemberByAcademy(academy))).collect(Collectors.toList());
         Page<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
         return page;
     }
-
+/*
     @Override
     @Transactional(readOnly = true)
-    public LocalDateTime getJoinedDate(Long acaNum, Long memNum) {
+    public MemberDTO getJoinedDate(Long acaNum, Long memNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Member member = memberRepository.findByMemNum(memNum);
         Optional<AcademyMember> academyMember = academyMemberRepository.findByAcademyAndMember(academy, member);
-        LocalDateTime date = null;
         if (academyMember.isPresent()) {
-            date = academyMember.get().getCreatedAt();
+            MemberDTO memberDTO = entityToDTO(member, academyMember.get().getCreatedAt());
+            return memberDTO;
         }
-        return date;
-    }
+    }*/
 
 }
 

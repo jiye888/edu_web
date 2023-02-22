@@ -42,7 +42,6 @@ public class ReviewController {
     @GetMapping("/register")
     public String register(@RequestParam("academy") Long acaNum, Model model) {
         model.addAttribute("review", new ReviewFormDTO());
-        //model.addAttribute("academy", acaNum);
         return "/review/registerForm";
     }
 
@@ -94,8 +93,8 @@ public class ReviewController {
     }
 
     @GetMapping("/by")
-    public ResponseEntity reviews(@RequestParam("member") Long memNum, @RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember securityMember, Model model, HttpServletRequest request) {
-        //model.addAttribute("member", member);
+    public ResponseEntity reviews(@RequestParam("member") Long memNum, @RequestParam(value = "page", defaultValue = "1") int page,
+                                  @AuthenticationPrincipal SecurityMember securityMember, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "revNum");
         System.out.println(memNum);
         try {

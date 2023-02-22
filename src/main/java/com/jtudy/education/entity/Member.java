@@ -64,4 +64,13 @@ public class Member {
         this.rolesList.remove(roles);
     }
 
+    public AcademyMember getAcademyMemberByAcademy(Academy academy) {
+        for(AcademyMember am : academyMember) {
+            if (am.getAcademy() == academy) {
+                return am;
+            }
+        }
+        return null;
+    }
+
 }

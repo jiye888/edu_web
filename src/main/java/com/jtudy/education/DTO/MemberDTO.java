@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -20,5 +21,7 @@ public class MemberDTO {
     private String name;
 
     private String address;
+
+    private LocalDateTime joinedDate;
 
 }

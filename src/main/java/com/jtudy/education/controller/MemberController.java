@@ -150,15 +150,15 @@ public class MemberController {
     }
 
     @GetMapping("/joined")
-    public Page<Object> getMembers(@RequestParam("id") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model){
+    public void getMembers(@RequestParam("number") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model){
         Pageable pageable = PageRequest.of(page-1, 10);
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         model.addAttribute("name", academyDTO.getAcaName());
         Page<MemberDTO> member = memberService.getMembers(acaNum, pageable);
         model.addAttribute("member", member);
-        Page<Object> date = member.map(e -> memberService.getJoinedDate(acaNum, e.getMemNum()));
-        model.addAttribute("date", date);
-        return date;
+        //Page<Object> pageObject = member.map(e -> memberService.getJoinedDate(acaNum, e.getMemNum()));
+        //model.addAttribute("object", pageObject);
+        //return pageObject;
     }
 /*
     @GetMapping("/request_auth")

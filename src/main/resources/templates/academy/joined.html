@@ -8,7 +8,7 @@
     <h3 align="center">[[${name}]]님께서 가입하신 학원 목록입니다.</h3>
     <button type="button" class="register" id="registerBtn">학원등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
 
-    <div th:if = "${!academy.isEmpty()}">
+    <div th:if = "${!object.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
             <tr>
