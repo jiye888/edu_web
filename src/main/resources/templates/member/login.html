@@ -42,6 +42,8 @@
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(json),
+                    beforeSend: function(xhr) {
+                    },
                 }).then((response) => {
                     var token = response.token;
                     if (token != null) {

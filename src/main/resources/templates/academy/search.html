@@ -94,7 +94,6 @@
         });
 
         function search() {
-            var token = localStorage.getItem("jwt");
             var category = $('#category').val();
 
             if (keyword) {
@@ -110,9 +109,6 @@
                 data: {
                     "category":category,
                     "keyword":keyword,
-                }
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
                 },
                 success: function() {
                     location.href="/academy/register";

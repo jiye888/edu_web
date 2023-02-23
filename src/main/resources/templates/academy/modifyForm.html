@@ -8,7 +8,7 @@
         <h3>수정 화면</h3>
         <form th:object="${academy}">
 
-            <input type="hidden" th:field="*{acaNum}" id="number">
+            <input type="hidden" th:value="${academy.acaNum}" id="number">
             학원 이름<input type="text" th:field="*{acaName}">
             <p th:if="${#fields.hasErrors('acaName')}" th:errors="*{acaName}" class="fieldError"></p><br>
             학원 위치
@@ -91,6 +91,7 @@
                     success: function() {
                         history.back();
                     },
+
                 });
             } else {
                 alert('모든 항목을 입력해주세요.');

@@ -36,7 +36,6 @@
         });
 
         function modify() {
-            var token = localStorage.getItem("jwt");
             var number = [[${notice.notNum}]];
             var academy = [[${academy}]];
 
@@ -44,9 +43,6 @@
                 url: '/notice/modify?number='+number,
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     location.href="/notice/modify?number="+number;
@@ -55,16 +51,12 @@
         }
 
         function delete_notice() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
                 url: '/notice/delete?number='+number,
                 type: 'POST',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     alert("삭제가 완료되었습니다.");

@@ -39,14 +39,17 @@
     $(function() {
 
         $.ajaxSetup({
-            statusCode: {
-                400: function() {
-                    jwtFilter();
+            beforeSend: function(xhr) {
+                var token = localStorage.getItem("jwt");
+                if(token) {
+                    xhr.setRequestHeader("X-AUTH-TOKEN", token);
                 }
             },
+            error: function(xhr) {
+                jwtFilter();
+                xhr.getRequestBody;
+            }
         });
-
-        document.addEventListener("click", jwtFilter);
     });
 
             function jwtFilter() {
@@ -71,7 +74,6 @@
                                 now.setMonth(now.getMonth()-1);
                                 var expires = "expires="+now.toUTCString();
 
-                                //var expires = "expires=Thu, 01 Jan 1970 00:00:00 UTC;";
                                 document.cookie = cookieName + "=; " + expires;
 
                                 if (confirm("로그인 정보가 유효하지 않습니다. 다시 로그인하시겠습니까?")) {

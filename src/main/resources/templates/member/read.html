@@ -41,16 +41,12 @@
         });
 
         function modify() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
                 url: '/member/modify?number='+number,
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     location.href='/member/modify?number='+number;
@@ -59,7 +55,6 @@
         }
 
         function delete_member() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             var result = confirm("회원 탈퇴를 진행하시겠습니까?");
@@ -69,9 +64,6 @@
                     url: '/member/withdraw?number='+number,
                     type: 'POST',
                     contentType: "application/json",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                    },
                     data: {"number":number},
                     success: function() {
                         location.href='/academy/main';
@@ -81,16 +73,12 @@
         }
 
         function academyList() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
                 url: '/academy/joined?number='+number,
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     location.href="/academy/joined?number="+number;
@@ -99,16 +87,12 @@
         }
 
         function reviews() {
-            var token = localStorage.getItem("jwt");
             var member = $('#number').val();
 
             $.ajax({
                 url: '/review/by',
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"member":member},
                 success: function() {
                     location.href='/review/by?member='+member;

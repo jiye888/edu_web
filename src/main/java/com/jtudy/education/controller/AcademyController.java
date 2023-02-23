@@ -16,17 +16,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
@@ -67,24 +70,17 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal Member member, Model model, HttpServletRequest request) {
-        //AcademyFormDTO academyFormDTO = new AcademyFormDTO(form);
+    public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult,
+                                   RedirectAttributes redirectAttributes, @AuthenticationPrincipal Member member, Model model, HttpServletRequest request) {
         model.addAttribute("academy", new AcademyFormDTO());
         if (bindingResult.hasErrors()) {
         }
         Long number = academyService.register(academyFormDTO);
         model.addAttribute("number", number);
-        //URI baseUri = new URI(request.getRequestURI().toString());
-        HttpHeaders headers = new HttpHeaders();
-        String location = "/academy/read?number="+number;
-        //headers.setLocation(URI.create(location));
         String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
-        //URI newLocation = URI.create(current+"/read?number="+number);
         String newLocation = current+"/read?number="+number;
         Context context = new Context();
         context.setVariables(model.asMap());
-        //String html = templateEngine.process("/read/number?="+number, context);
-        //return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, location).build();
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION, newLocation).build();
     }
 
@@ -99,12 +95,33 @@ public class AcademyController {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         if (academyService.validateMember(acaNum, member)) {
             model.addAttribute("academy", academyDTO);
+            return "academy/modifyForm";
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "exception";
         }
-        return "academy/modifyForm";
     }
-
+/*
+    @GetMapping("/modify")
+    public ResponseEntity modify(@RequestParam(value = "number") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+        AcademyDTO academyDTO = academyService.getOne(acaNum);
+        if (academyService.validateMember(acaNum, member)) {
+            //model.addAttribute("academy", academyDTO);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_HTML);
+            Context context = new Context();
+            context.setVariable("academy", academyDTO);
+            String content = templateEngine.process("academy/modifyForm", context);
+            //ModelAndView modelAndView = new ModelAndView();
+            //modelAndView.addObject("academy", academyDTO);
+            //modelAndView.setViewName("academy/modifyForm");
+            return ResponseEntity.status(HttpStatus.OK).body(content);
+        } else {
+            String msg = "관리자 권한이 없습니다.";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(msg);
+        }
+    }
+*/
     @PostMapping("/modify")
     @ResponseBody
     public void modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, Model model) {

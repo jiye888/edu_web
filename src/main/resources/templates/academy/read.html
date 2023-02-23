@@ -61,16 +61,12 @@
         });
 
         function memberList() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
                 url: '/member/joined',
                 type: 'GET',
                 contentType: 'application/json',
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     location.href='/member/joined?number='+number;
@@ -80,34 +76,33 @@
         }
 
         function modify() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
                 url: '/academy/modify',
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     location.href='/academy/modify?number='+number;
                 },
+                                    error: function(xhr) {
+                        var responseBody = xhr.response;
+                        jwtFilter();
+                        if (xhr.status == 401) {
+                            alert(responseBody);
+                        }
+                    },
             });
         }
 
         function delete_academy() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
 
             $.ajax({
                 url: '/academy/delete',
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"number":number},
                 success: function() {
                     location.href='/academy/main';
@@ -116,7 +111,6 @@
         }
 
         function join() {
-            var token = localStorage.getItem("jwt");
             var number = $('#number').val();
             var name = document.getElementById("academy_name").innerHTML;
 
@@ -127,9 +121,6 @@
                     url: '/academy/join?number='+number,
                     type: 'POST',
                     contentType: "application/json",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                    },
                     data: JSON.stringify({"number":number}),
                     success: function() {
                         alert("등록이 완료되었습니다.");

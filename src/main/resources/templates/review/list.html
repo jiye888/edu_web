@@ -77,15 +77,11 @@
         });
 
         function register() {
-            var token = localStorage.getItem("jwt");
             var academy = $('#academy').val();
             $.ajax({
                 url: '/review/register?academy='+academy,
                 type: 'GET',
                 contentType: "application/json",
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                },
                 data: {"academy":academy},
                 success: function() {
                     location.href="/review/register?academy="+academy;
