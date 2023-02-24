@@ -41,6 +41,7 @@ public class ReviewController {
 
     @GetMapping("/register")
     public String register(@RequestParam("academy") Long acaNum, Model model) {
+        model.addAttribute("academy", acaNum);
         model.addAttribute("review", new ReviewFormDTO());
         return "/review/registerForm";
     }
@@ -96,7 +97,6 @@ public class ReviewController {
     public ResponseEntity reviews(@RequestParam("member") Long memNum, @RequestParam(value = "page", defaultValue = "1") int page,
                                   @AuthenticationPrincipal SecurityMember securityMember, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "revNum");
-        System.out.println(memNum);
         try {
             if (memNum.equals(securityMember.getMember().getMemNum())) {
                 Page<ReviewDTO> review = reviewService.getReviews(securityMember.getMember(), pageable);

@@ -86,13 +86,6 @@
                 success: function() {
                     location.href='/academy/modify?number='+number;
                 },
-                                    error: function(xhr) {
-                        var responseBody = xhr.response;
-                        jwtFilter();
-                        if (xhr.status == 401) {
-                            alert(responseBody);
-                        }
-                    },
             });
         }
 

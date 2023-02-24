@@ -49,17 +49,16 @@
                 contentType: "application/json",
                 headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                 data: JSON.stringify({
-                    "academy":academy,
+                    "academy":parseInt(academy),
                     "title":title,
                     "content":content,
                     "grade":grade,
                 }),
                 success: function() {
+                    alert(academy);
                     history.back();
                 },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                },
+
             });
         } else {
             alert('모든 항목을 입력해주세요.');

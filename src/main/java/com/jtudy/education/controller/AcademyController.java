@@ -2,6 +2,7 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Member;
@@ -64,9 +65,13 @@ public class AcademyController {
     }
 
     @GetMapping("/register")
-    public String register(Model model) {
-        model.addAttribute("academy", new AcademyFormDTO());
-        return "academy/registerForm";
+    public String register(@AuthenticationPrincipal SecurityMember member, Model model) {
+        if (member != null) {
+            model.addAttribute("academy", new AcademyFormDTO());
+            return "academy/registerForm";
+        } else {
+            return "redirect:/member/login";
+        }
     }
 
     @PostMapping("/register")
@@ -101,27 +106,7 @@ public class AcademyController {
             return "exception";
         }
     }
-/*
-    @GetMapping("/modify")
-    public ResponseEntity modify(@RequestParam(value = "number") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
-        AcademyDTO academyDTO = academyService.getOne(acaNum);
-        if (academyService.validateMember(acaNum, member)) {
-            //model.addAttribute("academy", academyDTO);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_HTML);
-            Context context = new Context();
-            context.setVariable("academy", academyDTO);
-            String content = templateEngine.process("academy/modifyForm", context);
-            //ModelAndView modelAndView = new ModelAndView();
-            //modelAndView.addObject("academy", academyDTO);
-            //modelAndView.setViewName("academy/modifyForm");
-            return ResponseEntity.status(HttpStatus.OK).body(content);
-        } else {
-            String msg = "관리자 권한이 없습니다.";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(msg);
-        }
-    }
-*/
+
     @PostMapping("/modify")
     @ResponseBody
     public void modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, Model model) {
@@ -171,8 +156,14 @@ public class AcademyController {
     @GetMapping("/search")
     public void search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
-        Page<AcademyDTO> academy = academyService.search(search, pageable);
-        model.addAttribute("academy", academy);
+        try {
+            Page<AcademyDTO> academy = academyService.search(search, pageable);
+            model.addAttribute("academy", academy);
+        } catch (NullPointerException e) {
+            e.getStackTrace();
+        } catch (Exception e) {
+
+        }
     }
 
 }

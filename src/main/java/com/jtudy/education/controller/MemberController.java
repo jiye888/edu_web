@@ -51,7 +51,6 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    @ResponseBody
     public String join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "member/registerForm";
@@ -160,19 +159,5 @@ public class MemberController {
         //model.addAttribute("object", pageObject);
         //return pageObject;
     }
-/*
-    @GetMapping("/request_auth")
-    public void requestAuth(@RequestParam String roles, @RequestParam String content, @AuthenticationPrincipal SecurityMember member) {
-        String email = member.getMember().getEmail();
-        authService.requestAuth(email, Roles.valueOf(roles), content);
-    }
-
-    @PostMapping("/accept_auth")
-    public void acceptAuth(@RequestParam String email, @RequestParam String roles, @AuthenticationPrincipal SecurityMember member) {
-        if (member.getAuthorities().contains("ADMIN")) {
-            authService.acceptAuth(email, Roles.valueOf(roles));
-        }
-    }*/
-
 
 }

@@ -4,6 +4,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Notice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,8 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Page<Notice> findByAcaNum(Pageable pageable, Long acaNum);
 
     Notice findByNotNum(Long notNum);
+
+    Page<Notice> findAll(Specification<Notice> spec, Pageable pageable);
 
     Page<Notice> findByTitleContaining(String keyword, Pageable pageable);
 

@@ -97,9 +97,9 @@ public class NoticeController {
     }
 
     @GetMapping("/search")
-    public void search(@RequestParam String category, @RequestParam String keyword, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    public void search(@RequestBody Map<String, String> map, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
-        Page<NoticeDTO> notice = noticeService.search(category, keyword, pageable);
+        Page<NoticeDTO> notice = noticeService.search(map, pageable);
         model.addAttribute("notice", notice);
     }
 

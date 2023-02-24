@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @GetMapping("/get")
-    public void getRequested(@RequestParam Roles roles, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void getRequestedOne(@RequestParam Roles roles, @AuthenticationPrincipal SecurityMember member, Model model) {
         AuthDTO authDTO = authService.getOne(member.getMember(), roles);
         model.addAttribute("auth", authDTO);
     }

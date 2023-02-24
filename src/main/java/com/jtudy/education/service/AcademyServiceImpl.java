@@ -2,26 +2,21 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
-import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.*;
-import com.jtudy.education.repository.specification.AcademySpecs;
+import com.jtudy.education.repository.specification.AcademySpecification;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.type.EnumType;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -106,40 +101,26 @@ public class AcademyServiceImpl implements AcademyService{
 
         Specification<Academy> spec = Specification.where(null);
         for (String category : categories) {
-            if(category.equals("name")) {
-                if(search.get("name") != null) {
-                    spec = spec.and(AcademySpecs.nameContaining(search.get("name").toString()));
-                }
-            } else if(category.equals("location")) {
-                if(search.get("location") != null) {
-                    spec = spec.and(AcademySpecs.locationContaining(search.get("location").toString()));
-                }
-            } else if(category.equals("subject")) {
+            if(category.contains("name")) {
+                spec = spec.and(AcademySpecification.nameContaining(search.get("name").toString()));
+            }
+            if(category.contains("location")) {
+                spec = spec.and(AcademySpecification.locationContaining(search.get("location").toString()));
+            }
+            if(category.contains("subject")) {
                 List<Subject> subjectList = (List<Subject>) search.get("subject");
-                List<String> stringList = (List<String>) search.get("subject");
-                System.out.println("subjectList type: "+subjectList.getClass());
                 EnumSet enumSet = EnumSet.noneOf(Subject.class);
                 for (Object s : subjectList) {
                     Subject sub = (Subject) s;
                     enumSet.add(sub);
                 }
-                System.out.println("enumSet: "+enumSet.getClass());
                 enumSet.stream().map(e-> e.getClass()).forEach(System.out::println);
                 if(subjectList != null && !subjectList.isEmpty()) {
-                    //EnumSet.of((subjectList.stream().map(s -> EnumSet.add("Subject."+s)));
-                    //spec = spec.and(AcademySpecs.subjectAllContaining(EnumSet.copyOf(subjectList)));
-                    spec = spec.and(AcademySpecs.subjectAllContaining(subjectList));
-                    System.out.println("copy of: "+EnumSet.copyOf(subjectList).getClass());
-                    //List<Academy> academy = academyRepository.findBySubjectList(subjectList);
-                    //System.out.println("size of the result: " + academyRepository.findAll(spec).size());
+                    spec = spec.and(AcademySpecification.subjectAllContaining(subjectList));
                 }
             }
         }
-        System.out.println("spec: "+spec);
-        List<Academy> academyList = academyRepository.findAll(spec);
-        System.out.println("findAll(spec): "+academyList);
-        Page<Academy> academy = new PageImpl<>(academyList, pageable, academyList.size());
-
+        Page<Academy> academy = academyRepository.findAll(spec, pageable);
         Page<AcademyDTO> academyDTO = academy.map(e -> entityToDTO(e));
         return academyDTO;
     }

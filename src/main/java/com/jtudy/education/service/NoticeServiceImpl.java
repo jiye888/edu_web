@@ -7,16 +7,21 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.NoticeRepository;
+import com.jtudy.education.repository.specification.NoticeSpecification;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -75,15 +80,30 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NoticeDTO> search(String category, String keyword, Pageable pageable) {
-        Page<Notice> notice = null;
-        if (category.equals("title")) {
-            notice = noticeRepository.findByTitleContaining(keyword, pageable);
-        } else if (category.equals("content")) {
-            notice = noticeRepository.findByContentContaining(keyword, pageable);
-        } else if (category.equals("title&content")) {
-            notice = noticeRepository.findByTitleOrContentContaining(keyword, keyword, pageable);
+    public Page<NoticeDTO> search(Map<String, String> map, Pageable pageable) {
+        Iterator<Map.Entry<String, String>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> entry = iterator.next();
+            if(entry.getValue() == null) {
+                iterator.remove();
+            }
         }
+
+        List<String> categories = new ArrayList<>(map.keySet());
+        if (categories.isEmpty()) {
+            throw new NullPointerException("검색어를 입력해주세요.");
+        }
+
+        Specification<Notice> spec = Specification.where(null);
+        for (String category : categories) {
+            if (category.contains("title")) {
+                spec = spec.and(NoticeSpecification.titleContaining(map.get("title").toString()));
+            }
+            if (category.equals("content")) {
+                spec = spec.and(NoticeSpecification.contentContaining(map.get("content").toString()));
+            }
+        }
+        Page<Notice> notice = noticeRepository.findAll(spec, pageable);
         Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
         return noticeDTO;
     }

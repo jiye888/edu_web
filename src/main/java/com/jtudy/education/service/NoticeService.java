@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NoticeService {
 
@@ -25,7 +26,7 @@ public interface NoticeService {
 
     void delete(Long notNum);
 
-    Page<NoticeDTO> search(String category, String keyword, Pageable pageable);
+    Page<NoticeDTO> search(Map<String, String> map, Pageable pageable);
 
     default Notice dtoToEntity(NoticeDTO noticeDTO) {
         Academy academy = Academy.builder()

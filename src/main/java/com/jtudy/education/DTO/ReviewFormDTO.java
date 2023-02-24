@@ -19,6 +19,7 @@ public class ReviewFormDTO {
 
     private Long number;
 
+    @NotNull
     private Long academy;
 
     @NotBlank(message = "제목을 입력해주세요.")
