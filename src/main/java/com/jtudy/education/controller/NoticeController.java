@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
+import java.util.HashMap;
 import java.util.Map;
 
 @Controller
@@ -85,22 +87,32 @@ public class NoticeController {
         return "redirect:/notice/list";
     }
 
-    @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
+    @PostMapping("/delete")
     @ResponseBody
     public void delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
             noticeService.delete(notNum);
         } else {
-            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+            //throw new IllegalArgumentException("관리자 권한이 없습니다.");
         }
     }
 
-    @GetMapping("/search")
-    public void search(@RequestBody Map<String, String> map, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    @RequestMapping(value = "/search", method = {RequestMethod.GET/*, RequestMethod.POST*/})
+    public String search(@RequestParam(value="academy") Long acaNum, @RequestParam String title, @RequestParam String content, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
-        Page<NoticeDTO> notice = noticeService.search(map, pageable);
-        model.addAttribute("notice", notice);
+        try {
+            Map<String, String> map = new HashMap<>();
+            map.put("title", title);
+            map.put("content", content);
+            Page<NoticeDTO> notice = noticeService.search(acaNum, map, pageable);
+            model.addAttribute("notice", notice);
+            return "notice/search";
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            model.addAttribute("msg", msg);
+            return "exception";
+        }
     }
 
 }

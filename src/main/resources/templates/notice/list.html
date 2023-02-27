@@ -24,6 +24,12 @@
             </tbody>
         </table>
 
+        <form class="d-flex" role="search" id="searchForm">
+            <label for="title_keyword"><input type="text" id="title_keyword" class="form-control me-2"></label>
+            <label for="content_keyword"><input type="text" id="content_keyword" class="form-control me-2"></label>
+            <button class="btn btn-outline-success" type="button" id="noticeSearchBtn">Search</button>
+        </form>
+
         <nav th:with = "pageNumber=${notice.pageable.pageNumber}, pageSize=${notice.pageable.pageSize},
                             totalPages=${notice.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
@@ -71,6 +77,10 @@
             $('#registerBtn').click(function(){
                 register();
             });
+
+            $('#noticeSearchBtn').click(function() {
+                noticeSearch();
+            });
         });
 
         function register() {
@@ -86,6 +96,26 @@
                 },
             });
         }
+
+        function noticeSearch() {
+            var title = $('#title_keyword').val();
+            var content = $('#content_keyword').val();
+            var academy = $('#academy').val();
+
+            $.ajax({
+                url: '/notice/search',
+                type: 'GET',
+                contentType:"application/json",
+                data: {
+                    "title":title,
+                    "content":content,
+                },
+                success: function() {
+                    location.href="/notice/search";
+                }
+            });
+        }
+
 
     </script>
 </div>

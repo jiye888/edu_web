@@ -1,10 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
 <body>
+<div layout:fragment="content">
 
+    <h3 align="center">Notice</h3>
+    <input type="hidden" th:value="${academy}" id="academy">
+
+    <label for="title_keyword"><input type="text" id="title_keyword"></label>
+    <label for="content_keyword"><input type="text" id="content_keyword"></label>
+
+    <button type="button" class="search" id="searchBtn">공지사항 검색</button>
+
+    <div th:if = "${!notice.isEmpty()}">
+        <table class="table table-borderless">
+            <thead align="center">
+            <tr>
+                <th scope="col">제목</th>
+                <th scope="col">작성일</th>
+            </tr>
+            </thead>
+            <tbody align="center">
+            <tr th:each="not : ${notice}">
+                <td><a th:text="${not.title}" th:href="@{/notice/search?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
+                <td><a th:text="${not.createdAt}"></a></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <nav th:with = "pageNumber=${notice.pageable.pageNumber}, pageSize=${notice.pageable.pageSize},
+                            totalPages=${notice.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+                            tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
+             aria-label="Page-navigation">
+            <ul class="pagination">
+                <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/notice/search(page=1)}">
+                        <span>&laquo;</span>
+                        <span class="sr-only">첫페이지로</span>
+                    </a>
+                </li>
+
+                <li th:classappend="${notice.first}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${notice.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<10?@{/notice/search(page=1)}:@{/notice/search(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)}+1)})"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                        <span class="sr-only">이전 페이지</span>
+                    </a>
+                </li>
+                </li>
+
+                <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
+                    <a th:text="${page}" class="page-link" th:href="@{/notice/search(page=${page})}"></a>
+                </li>
+
+                <li th:classappend="${notice.last}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${notice.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/notice/search(page=${#numbers.formatDecimal(startPage+pageSize, 0, -1)})}:@{/notice/search(page=${endPage})})"
+                       aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                        <span class="sr-only">다음 페이지</span>
+                    </a>
+                </li>
+
+                <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/notice/search(page=${totalPages})}">
+                        <span>&raquo;</span>
+                        <span class="sr-only">마지막으로</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+            $('#searchBtn').click(function(){
+            search();
+
+            });
+        });
+
+        function search() {
+            var title = $('#title_keyword').val();
+            var content = $('#content_keyword').val();
+            var academy = $('#academy').val();
+
+            $.ajax({
+                url: '/notice/search',
+                type: 'GET',
+                contentType:"application/json",
+                data: {
+                    "title":title,
+                    "content":content,
+                },
+                success: function() {
+                    location.href="/notice/search";
+                }
+            });
+        }
+
+    </script>
+</div>
 </body>
 </html>

@@ -26,7 +26,7 @@ public interface NoticeService {
 
     void delete(Long notNum);
 
-    Page<NoticeDTO> search(Map<String, String> map, Pageable pageable);
+    Page<NoticeDTO> search(Long acaNum, Map<String, String> map, Pageable pageable);
 
     default Notice dtoToEntity(NoticeDTO noticeDTO) {
         Academy academy = Academy.builder()

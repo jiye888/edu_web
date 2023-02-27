@@ -6,19 +6,23 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface NoticeRepository extends JpaRepository<Notice, Long> {
+import java.util.List;
 
-    @Query("select n from Notice n left outer join Academy a on n.academy = a where a.acaNum = :acaNum")
+@Repository
+public interface NoticeRepository extends JpaRepository<Notice, Long>, JpaSpecificationExecutor<Notice> {
+
+    @Query("select n from Notice n left outer join n.academy a where a.acaNum = :acaNum")
     Page<Notice> findByAcaNum(Pageable pageable, Long acaNum);
 
-    Notice findByNotNum(Long notNum);
-
     Page<Notice> findAll(Specification<Notice> spec, Pageable pageable);
+
+    Notice findByNotNum(Long notNum);
 
     Page<Notice> findByTitleContaining(String keyword, Pageable pageable);
 

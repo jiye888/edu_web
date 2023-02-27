@@ -80,7 +80,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NoticeDTO> search(Map<String, String> map, Pageable pageable) {
+    public Page<NoticeDTO> search(Long acaNum, Map<String, String> map, Pageable pageable) {
         Iterator<Map.Entry<String, String>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, String> entry = iterator.next();
@@ -97,10 +97,10 @@ public class NoticeServiceImpl implements NoticeService {
         Specification<Notice> spec = Specification.where(null);
         for (String category : categories) {
             if (category.contains("title")) {
-                spec = spec.and(NoticeSpecification.titleContaining(map.get("title").toString()));
+                spec = spec.and(NoticeSpecification.titleContaining(map.get("title"), acaNum));
             }
             if (category.equals("content")) {
-                spec = spec.and(NoticeSpecification.contentContaining(map.get("content").toString()));
+                spec = spec.and(NoticeSpecification.contentContaining(map.get("content"), acaNum));
             }
         }
         Page<Notice> notice = noticeRepository.findAll(spec, pageable);

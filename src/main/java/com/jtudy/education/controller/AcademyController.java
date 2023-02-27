@@ -78,8 +78,6 @@ public class AcademyController {
     public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult,
                                    RedirectAttributes redirectAttributes, @AuthenticationPrincipal Member member, Model model, HttpServletRequest request) {
         model.addAttribute("academy", new AcademyFormDTO());
-        if (bindingResult.hasErrors()) {
-        }
         Long number = academyService.register(academyFormDTO);
         model.addAttribute("number", number);
         String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
@@ -110,8 +108,6 @@ public class AcademyController {
     @PostMapping("/modify")
     @ResponseBody
     public void modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, Model model) {
-        System.out.println("main point" + academyFormDTO.getAcaNum());
-        System.out.println(academyFormDTO);
         model.addAttribute("number", academyFormDTO.getAcaNum());
         model.addAttribute("academy", academyFormDTO);
         academyService.update(academyFormDTO);
@@ -120,11 +116,12 @@ public class AcademyController {
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
-        AcademyDTO academyDTO = academyService.getOne(acaNum);
+        //AcademyDTO academyDTO = academyService.getOne(acaNum);
         if (academyService.validateMember(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "exception";
         }
         return "redirect:/academy/list";
     }
@@ -154,15 +151,16 @@ public class AcademyController {
     }
 
     @GetMapping("/search")
-    public void search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    public String search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
         try {
             Page<AcademyDTO> academy = academyService.search(search, pageable);
             model.addAttribute("academy", academy);
-        } catch (NullPointerException e) {
-            e.getStackTrace();
+            return "academy/search";
         } catch (Exception e) {
-
+            String msg = e.getMessage();
+            model.addAttribute("msg", msg);
+            return "exception";
         }
     }
 
