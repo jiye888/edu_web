@@ -94,13 +94,13 @@ public class NoticeServiceImpl implements NoticeService {
             throw new NullPointerException("검색어를 입력해주세요.");
         }
 
-        Specification<Notice> spec = Specification.where(null);
+        Specification<Notice> spec = NoticeSpecification.findByAcademy(acaNum);
         for (String category : categories) {
             if (category.contains("title")) {
-                spec = spec.and(NoticeSpecification.titleContaining(map.get("title"), acaNum));
+                spec = spec.and(NoticeSpecification.titleContaining(map.get("title")));
             }
             if (category.equals("content")) {
-                spec = spec.and(NoticeSpecification.contentContaining(map.get("content"), acaNum));
+                spec = spec.and(NoticeSpecification.contentContaining(map.get("content")));
             }
         }
         Page<Notice> notice = noticeRepository.findAll(spec, pageable);
