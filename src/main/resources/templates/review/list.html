@@ -61,7 +61,7 @@
                     </li>
 
                     <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{/review?by(page=${totalPages})}">
+                        <a class="page-link" th:href="@{/review/list(academy=${academy}, page=${totalPages})}">
                             <span>&raquo;</span>
                             <span class="sr-only">마지막으로</span>
                         </a>

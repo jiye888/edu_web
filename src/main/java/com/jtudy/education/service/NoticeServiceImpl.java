@@ -42,7 +42,6 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional(readOnly = true)
     public Page<NoticeDTO> getAll(Long acaNum, Pageable pageable) {
-        //Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "notNum"));
         Page<Notice> notice = noticeRepository.findByAcaNum(pageable, acaNum);
         Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
         return noticeDTO;

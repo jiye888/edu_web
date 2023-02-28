@@ -53,12 +53,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Cookie cookie = new Cookie("Matched_Token", "not_matched");
                 cookie.setMaxAge(60*60*6);
                 response.addCookie(cookie);
-            } catch (Exception e) {
+            } /*catch (Exception e) {
                 System.out.println(e.getMessage());
                 Cookie cookie = new Cookie("Matched_Token", "not_matched");
                 cookie.setMaxAge(60*60*6);
                 response.addCookie(cookie);
-            }
+            }*/
 
         }
 

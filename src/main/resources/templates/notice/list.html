@@ -8,6 +8,9 @@
     <h3 align="center">Notice</h3>
     <button type="button" class="register" id="registerBtn">공지사항 등록</button>
     <input type="hidden" th:value="${academy}" id="academy">
+    <div th:if = "${notice == null}">
+        null
+    </div>
     <div th:if = "${!notice.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
@@ -17,33 +20,35 @@
             </tr>
             </thead>
             <tbody align="center">
-            <tr th:each="not : ${notice}">
-                <td align="center"><a th:value="${not.title}" th:href="@{/notice/read?number={number}(number=${notice.notNum})}">학원 이름</a></td>
-                <td><span th:text="${not.createdAt}">작성일</span></td>
-            </tr>
+            <div th:if = "${notices != null}">
+                <tr th:each="not : ${notices}">
+                    <!--<td align="center"><a th:text="${not.title}" th:href="@{/notice/read?number={number}(number=${not.notNum})}">학원 이름</a></td>
+                    <td><span th:text="${not.createdAt}">작성일</span></td>-->
+                </tr>
+            </div>
             </tbody>
         </table>
-
+<!--
         <form class="d-flex" role="search" id="searchForm">
             <label for="title_keyword"><input type="text" id="title_keyword" class="form-control me-2"></label>
             <label for="content_keyword"><input type="text" id="content_keyword" class="form-control me-2"></label>
             <button class="btn btn-outline-success" type="button" id="noticeSearchBtn">Search</button>
-        </form>
-
+        </form>-->
+<!--
         <nav th:with = "pageNumber=${notice.pageable.pageNumber}, pageSize=${notice.pageable.pageSize},
                             totalPages=${notice.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
              aria-label="Page-navigation">
             <ul class="pagination">
                 <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/notice/list?(page=1)}">
+                    <a class="page-link" th:href="@{/notice/list(academy=${academy}, page=1)}">
                         <span>&laquo;</span>
                         <span class="sr-only">첫페이지로</span>
                     </a>
                 </li>
 
                 <li th:classappend="${notice.first}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${notice.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/notice/list?(page=1)}:@{/notice/list?(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
+                    <a class="page-link" th:href="${notice.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/notice/list(academy=${academy}, page=1)}:@{/notice/list(academy=${academy}, page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
                        aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                         <span class="sr-only">이전 페이지</span>
@@ -51,11 +56,11 @@
                 </li>
 
                 <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
-                    <a th:text="${page}" class="page-link" th:href="@{/notice/list?(page=${page})}"></a>
+                    <a th:text="${page}" class="page-link" th:href="@{/notice/list(academy=${academy}, page=${page})}"></a>
                 </li>
 
                 <li th:classappend="${notice.last}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${notice.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/notice/list?(page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/notice/list?(page=${endPage})})"
+                    <a class="page-link" th:href="${notice.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/notice/list(academy=${academy}, page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/notice/list(academy=${academy}, page=${endPage})})"
                        aria-label="Next">
                         <span aria-hidden="true">&gt;</span>
                         <span class="sr-only">다음 페이지</span>
@@ -63,13 +68,13 @@
                 </li>
 
                 <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="@{/notice?by(page=${totalPages})}">
+                    <a class="page-link" th:href="@{/notice/list(academy=${academy}, page=${totalPages})}">
                         <span>&raquo;</span>
                         <span class="sr-only">마지막으로</span>
                     </a>
                 </li>
             </ul>
-        </nav>
+        </nav> -->
     </div>
     <script th:inline="javascript">
         $(function() {
@@ -77,10 +82,10 @@
             $('#registerBtn').click(function(){
                 register();
             });
-
+/*
             $('#noticeSearchBtn').click(function() {
                 noticeSearch();
-            });
+            });*/
         });
 
         function register() {
@@ -96,7 +101,7 @@
                 },
             });
         }
-
+/*
         function noticeSearch() {
             var title = $('#title_keyword').val();
             var content = $('#content_keyword').val();
@@ -109,13 +114,14 @@
                 data: {
                     "title":title,
                     "content":content,
+                    "academy":academy,
                 },
                 success: function() {
-                    location.href="/notice/search";
+                    location.href="/notice/search?academy="+academy+"&title="+title+"&content="+content;
                 }
             });
         }
-
+*/
 
     </script>
 </div>

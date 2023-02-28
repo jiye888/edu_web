@@ -20,10 +20,6 @@ public class NoticeDTO {
 
     private String content;
 
-    private Long managerNum;
-
-    private String managerName;
-
     private String managerEmail;
 
     private Long acaNum;

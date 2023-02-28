@@ -21,7 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -30,13 +32,18 @@ import java.util.Map;
 public class NoticeController {
 
     private final NoticeService noticeService;
-    private final AcademyService academyService;
 
     @GetMapping("/list")
     public void list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
         Page<NoticeDTO> noticeDTO = noticeService.getAll(acaNum, pageable);
+        List<String> noticeDTOList = new ArrayList<>();
+        noticeDTOList.add("1");
+        noticeDTOList.add("2");
+        for(NoticeDTO n : noticeDTO){System.out.println("null?"+n == null);};
+        System.out.println(noticeDTO.getContent());
         model.addAttribute("notice", noticeDTO);
+        model.addAttribute("notices", noticeDTOList);
         model.addAttribute("academy", acaNum);
     }
 

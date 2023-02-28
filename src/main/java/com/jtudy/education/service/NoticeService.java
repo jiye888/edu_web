@@ -65,6 +65,7 @@ public interface NoticeService {
                 .content(notice.getContent())
                 .acaNum(notice.getAcademy().getAcaNum())
                 .acaName(notice.getAcademy().getAcaName())
+                .managerEmail(notice.getCreatedBy())
                 .createdAt(notice.getCreatedAt())
                 .modifiedAt(notice.getModifiedAt())
                 .build();
