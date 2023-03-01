@@ -20,10 +20,10 @@
             </tr>
             </thead>
             <tbody align="center">
-            <div th:if = "${notices != null}">
-                <tr th:each="not : ${notices}">
-                    <!--<td align="center"><a th:text="${not.title}" th:href="@{/notice/read?number={number}(number=${not.notNum})}">학원 이름</a></td>
-                    <td><span th:text="${not.createdAt}">작성일</span></td>-->
+            <div th:if = "${notice != null}">
+                <tr th:each="not : ${notice}">
+                    <td align="center"><a th:text="${not.title}" th:href="@{/notice/read?number={number}(number=${not.notNum})}">학원 이름</a></td>
+                    <td><span th:text="${not.createdAt}">작성일</span></td>
                 </tr>
             </div>
             </tbody>

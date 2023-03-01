@@ -34,17 +34,12 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     @GetMapping("/list")
-    public void list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
+    public String list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10);
         Page<NoticeDTO> noticeDTO = noticeService.getAll(acaNum, pageable);
-        List<String> noticeDTOList = new ArrayList<>();
-        noticeDTOList.add("1");
-        noticeDTOList.add("2");
-        for(NoticeDTO n : noticeDTO){System.out.println("null?"+n == null);};
-        System.out.println(noticeDTO.getContent());
         model.addAttribute("notice", noticeDTO);
-        model.addAttribute("notices", noticeDTOList);
         model.addAttribute("academy", acaNum);
+        return "notice/list";
     }
 
     @GetMapping("/read")
