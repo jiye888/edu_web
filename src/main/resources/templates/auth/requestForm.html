@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
 <body>
+<div layout:fragment="content">
+    <h3>권한 요청</h3>
 
+    <form th:object="${auth}">
+        권한
+        <div th:field="*{roles}" id="role">
+            <input type="radio" name="roles" th:value="${roles.manager}">
+            <label th:text="학원 관리자"></label>
+        </div>
+        내용<input type="text" th:field="*{content}" id="content">
+    </form>
+
+    <script th:inline="javascript">
+
+    </script>
+</div>
 </body>
 </html>

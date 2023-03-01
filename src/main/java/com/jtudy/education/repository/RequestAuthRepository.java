@@ -16,6 +16,6 @@ public interface RequestAuthRepository extends CrudRepository<RequestAuth, Strin
 
     List<RequestAuth> findByProcessedFalse(Pageable pageable);
 
-    RequestAuth findByEmailAndRoles(String email, Roles roles);
+    RequestAuth findByEmail(String email);
 
 }

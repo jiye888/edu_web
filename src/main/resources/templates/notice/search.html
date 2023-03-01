@@ -23,9 +23,9 @@
             </tr>
             </thead>
             <tbody align="center">
-            <tr th:each="not : ${notice}">
-                <td><a th:text="${not.title}" th:href="@{/notice/search?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
-                <td><a th:text="${not.createdAt}"></a></td>
+            <tr th:each="notice1 : ${notice}">
+                <td><a th:text="${notice1.title}" th:href="@{/notice/search?number={number}(number=${notice1.notNum})}">학원 이름</a></td>
+                <td><a th:text="${notice1.createdAt}"></a></td>
             </tr>
             </tbody>
         </table>

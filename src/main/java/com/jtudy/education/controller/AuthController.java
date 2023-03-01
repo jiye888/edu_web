@@ -25,6 +25,11 @@ public class AuthController {
     private final AuthService authService;
     private final MemberService memberService;
 
+    @ModelAttribute("roles")
+    public Roles[] roles() {
+        return Roles.values();
+    }
+
     @GetMapping("/requested")
     public void requestedAuth(Model model) {
         Pageable pageable = PageRequest.of(0, 10);
@@ -33,19 +38,19 @@ public class AuthController {
     }
 
     @GetMapping("/get")
-    public void getRequestedOne(@RequestParam Roles roles, @AuthenticationPrincipal SecurityMember member, Model model) {
-        AuthDTO authDTO = authService.getOne(member.getMember(), roles);
+    public void getRequestedOne(@RequestParam String email, @AuthenticationPrincipal SecurityMember member, Model model) {
+        AuthDTO authDTO = authService.getOne(member.getMember());
         model.addAttribute("auth", authDTO);
     }
 
     @GetMapping("/request")
-    public String requestAuth(@RequestParam Roles roles, @RequestParam String content, @AuthenticationPrincipal SecurityMember member, Model model) {
-        AuthDTO authDTO = authService.getOne(member.getMember(), roles);
+    public String requestAuth(@AuthenticationPrincipal SecurityMember member, Model model) {
+        AuthDTO authDTO = authService.getOne(member.getMember());
         if (authDTO == null) {
             return "academy/requestForm";
         } else {
-            String message = "이미 사용자 권한을 요청중입니다.";
-            return message;
+            model.addAttribute("msg","이미 사용자 권한을 요청중입니다.");
+            return "exception";
         }
     }
 

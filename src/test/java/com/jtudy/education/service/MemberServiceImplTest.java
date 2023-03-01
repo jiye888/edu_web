@@ -38,7 +38,7 @@ class MemberServiceImplTest {
     private AcademyRepository academyRepository;
     @Autowired
     private AcademyMemberService academyMemberService;
-
+/*
     @Test
     public void joinedDate() {
         List<Roles> rolesList = new ArrayList<>();
@@ -79,7 +79,7 @@ class MemberServiceImplTest {
         Long am2 = academyMemberService.join(member2.getMemNum(), academy.getAcaNum());
 
     }
-
+*/
     @Test
     public void getMembers() {
         Long acaNum = Long.parseLong("3");

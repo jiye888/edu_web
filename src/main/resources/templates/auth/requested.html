@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
 <body>
+<div layout:fragment="content">
+    <h3>All Requested Auth</h3>
+    <div th:if="${!auth.isEmpty()}">
+        <table class="table table-borderless">
+            <thead align="center">
+            <tr>
+                <th scope="col">이름</th>
+                <th scope="col">이메일</th>
+                <th scope="col">요청 권한</th>
+                <th scope="col">요청일</th>
+            </tr>
+            </thead>
+            <tbody align="center">
+            <tr th:each="auth1:${auth}">
+                <div th:href="@{/auth/get?email={email}(email=${auth1.email})}">
+                <td><a th:text="${auth1.name}"></a></td>
+                <td><a th:text="${auth1.email}"></a></td>
+                <td><a th:text="${auth1.roles}"></a></td>
+                <td><a th:text="${auth1.createdAt}"></a></td>
+                </div>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
+    <script th:inline="javascript">
+
+    </script>
+</div>
 </body>
 </html>

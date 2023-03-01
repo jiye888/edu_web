@@ -37,8 +37,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public AuthDTO getOne(Member member, Roles roles) {
-        RequestAuth requestAuth = requestAuthRepository.findByEmailAndRoles(member.getEmail(), roles);
+    public AuthDTO getOne(Member member) {
+        RequestAuth requestAuth = requestAuthRepository.findByEmail(member.getEmail());
         if (requestAuth == null) {
             return null;
         }
