@@ -63,14 +63,13 @@
                     url: '/academy/register',
                     type: "POST",
                     contentType: "application/json",
-                    headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                     data: JSON.stringify({
                         "acaName":acaName,
                         "subject":subject,
                         "location":location,
                     }),
 
-                    success: function(data, status, xhr, responseBody) {
+                    success: function(xhr) {
                         var header = xhr.getResponseHeader("Location");
                         window.location.href = header;
                     },

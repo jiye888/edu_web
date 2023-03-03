@@ -9,14 +9,28 @@
 
     <span th:text="${auth.name}">이름</span>
     <span th:text="${auth.email}">이메일</span>
-    <span th:text="${auth.roles}">요청 권한</span>
-    <span th:text="${auth.content}">요청 내용</span>
+    <span th:text="${auth.roles}" id="roles">요청 권한</span>
+    <span th:text="${auth.content}" id="content">요청 내용</span>
     <span th:text="${auth.createdAt}">요청일</span>
 
     <span th:text="${auth.processed}">처리 여부</span>
 
-    <script th:inline="javascript">
+    <button type="button" id="modifyBtn">수정</button>
 
+    <script th:inline="javascript">
+        $(function() {
+            $('#modifyBtn').on("click", function() {
+                modify();
+            });
+        });
+
+        function modify() {
+            var roles = $('#roles').val();
+            var content = $('#content').val();
+
+            $.ajax({
+            });
+        }
     </script>
 </div>
 </body>

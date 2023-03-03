@@ -29,8 +29,32 @@
         </table>
     </div>
 
-    <script th:inline="javascript">
+    <div th:if="${!auth.last}">
+        <button type="button" th:attr="data-page=${auth.number+1}" id="showBtn">더보기</button>
+    </div>
 
+    <script th:inline="javascript">
+        $(function() {
+            $('#showBtn').on("click",function() {
+                showMore();
+            });
+        });
+
+        function showMore() {
+            var page = button.getAttribute("data-page");
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if(xhr.status == 200) {
+                    var response = xhr.responseText;
+                    var tbody = document.querySelector("table tbody");
+                    tbody.innerHTML += response;
+                    var nextPage = Number(page)+1;
+                    button.setAttribute("data-page", nextPage);
+                }
+                xhr.open("GET", "/requested", true);
+                xhr.send();
+            };
+        }
     </script>
 </div>
 </body>

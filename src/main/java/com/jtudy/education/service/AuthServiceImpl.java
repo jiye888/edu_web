@@ -30,8 +30,15 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public void requestAuth(String email, Roles roles, String content){
-        RequestAuth requestAuth = new RequestAuth(email, roles, content);
+    public void requestAuth(String email, Roles roles, String content) {
+        RequestAuth requestAuth = new   RequestAuth(email, roles, content);
+        requestAuthRepository.save(requestAuth);
+    }
+
+    @Override
+    public void modifyRequest(String email, Roles roles, String content) {
+        RequestAuth requestAuth = requestAuthRepository.findByEmail(email);
+        requestAuth.modifyRequest(roles, content);
         requestAuthRepository.save(requestAuth);
     }
 

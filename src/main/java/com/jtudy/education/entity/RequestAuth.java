@@ -37,6 +37,11 @@ public class RequestAuth {
         this.content = content;
     }
 
+    public void modifyRequest(Roles roles, String content) {
+        this.roles = roles;
+        this.content = content;
+    }
+
     public String acceptAuth(String email, Roles roles) {
         this.email = email;
         this.processed = true;

@@ -11,6 +11,8 @@ public interface AuthService {
 
     void requestAuth(String email, Roles roles, String content);
 
+    void modifyRequest(String email, Roles roles, String content);
+
     AuthDTO getOne(Member member);
 
     Slice<AuthDTO> requestedAuths(Pageable pageable);

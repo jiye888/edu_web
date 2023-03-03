@@ -63,7 +63,7 @@
                             url: '/member/logout',
                             type: 'POST',
                             contentType: "application/json",
-                            success: function() {
+                            /*success: function() {
                                 localStorage.removeItem("jwt");
                                 alert("로그아웃이 완료되었습니다.");
                                 location.href = "/academy/main";
@@ -73,7 +73,12 @@
                                 jwtCookie();
                                 alert("로그아웃이 완료되었습니다.");
                                 location.href = "/academy/main";
-                            },
+                            },*/
+                        }).always(function() {
+                            localStorage.removeItem("jwt");
+                            jwtCookie();
+                            alert("로그아웃이 완료되었습니다.");
+                            location.href = "/academy/main";
                         });
 
                     });

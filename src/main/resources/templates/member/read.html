@@ -16,6 +16,7 @@
     <button type="button" id="reviewBtn">작성한 학원 리뷰</button>
 
     <button type="button" id="modifyBtn">회원 정보 수정</button>
+    <button type="button" id="authBtn">회원 권한 요청</button>
     <button type="button" id="deleteBtn">회원 탈퇴</button>
 
     <script th:inline="javascript">
@@ -36,6 +37,10 @@
 
             $('#reviewBtn').on("click", function() {
                 reviews();
+            });
+
+            $('#authBtn').on("click", function() {
+                requestAuth();
             });
 
         });
@@ -98,6 +103,17 @@
                     location.href='/review/by?member='+member;
                 },
 
+            });
+        }
+
+        function requestAuth() {
+            $.ajax({
+                url: '/auth/request',
+                type: 'GET',
+                contentType: "application/json",
+                success: function() {
+                    location.href = '/auth/request';
+                },
             });
         }
 

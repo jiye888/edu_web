@@ -5,33 +5,32 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>권한 요청</h3>
+    <h3>[[${auth.name}]]님의 권한 요청</h3>
     <input type="hidden" th:value="${email}" id="email">
     <form th:object="${auth}">
         권한
-        <!--<div th:field="*{roles}" id="role">-->
-            <input type="radio" name="roles" th:value="${roles[3]}" id="manager">
-            <label for="manager" text="학원 관리자"></label>
-        <!--</div>-->
+        <div th:field="*{roles}" id="role">
+            <input type="radio" name="roles" th:value="${roles.manager}">
+            <label th:text="학원 관리자"></label>
+        </div>
         내용<input type="text" th:field="*{content}" id="content">
-        <button type="button" id="requestBtn">등록</button>
+        <button type="button" id="modifyBtn">수정</button>
     </form>
 
     <script th:inline="javascript">
-
         $(function() {
-            $('#requestBtn').on("click", function() {
-                requestAuth();
+            $('#modifyBtn').on("click", function() {
+                modify();
             });
         });
 
-        function requestAuth() {
+        function modify() {
             var roles = $('#roles').val();
             var content = $('#content').val();
             var email = $('#email').val();
 
             $.ajax({
-                url: '/auth/request',
+                url: '/auth/modify',
                 type: "POST",
                 contentType: "application/json",
                 data: {"roles":roles, "content":content},
@@ -39,9 +38,7 @@
                     location.href = '/auth/get?email='+email;
                 },
             });
-
         }
-
     </script>
 </div>
 </body>
