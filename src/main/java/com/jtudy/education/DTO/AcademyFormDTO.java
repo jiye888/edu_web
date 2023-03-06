@@ -34,17 +34,5 @@ public class AcademyFormDTO {
 
     @NotBlank(message = "학원의 위치를 입력해주세요.")
     private String location;
-/*
-    public AcademyFormDTO(Map<String, Object> form) {
-        ArrayList<String> subjects = (ArrayList<String>) form.get("subject");
-        EnumSet<Subject> subject = EnumSet.noneOf(Subject.class);
-        for (String s : subjects) {
-            subject.add(Subject.valueOf(s));
-        }
-        this.acaNum = Long.valueOf(form.get("acaNum").toString());
-        this.acaName = form.get("acaName").toString();
-        this.subject = subject;
-        this.location = form.get("location").toString();
-    }*/
 
 }

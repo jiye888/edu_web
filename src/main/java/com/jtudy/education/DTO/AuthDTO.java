@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AuthDTO {
 
+    private Long authId;
     private String name;
     private String email;
     private boolean processed;

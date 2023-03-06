@@ -7,13 +7,13 @@
 <div layout:fragment="content">
     <h3>권한 요청</h3>
     <input type="hidden" th:value="${email}" id="email">
-    <form th:object="${auth}">
+    <form>
         권한
         <!--<div th:field="*{roles}" id="role">-->
             <input type="radio" name="roles" th:value="${roles[3]}" id="manager">
             <label for="manager" text="학원 관리자"></label>
         <!--</div>-->
-        내용<input type="text" th:field="*{content}" id="content">
+        내용<input type="text" id="content">
         <button type="button" id="requestBtn">등록</button>
     </form>
 
@@ -26,15 +26,18 @@
         });
 
         function requestAuth() {
-            var roles = $('#roles').val();
+            var roles = $('input[name="roles"]').val();
+            console.log(roles);
             var content = $('#content').val();
             var email = $('#email').val();
+            console.log(content);
+            console.log(typeof(content));
 
             $.ajax({
                 url: '/auth/request',
                 type: "POST",
                 contentType: "application/json",
-                data: {"roles":roles, "content":content},
+                data: JSON.stringify({"roles":roles, "content":content}),
                 success: function() {
                     location.href = '/auth/get?email='+email;
                 },

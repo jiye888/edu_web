@@ -37,7 +37,7 @@
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="keyword">
                         <button class="btn btn-outline-success" type="button" id="searchBtn">Search</button>
                     </form>
-                    <button align="right" class="btn btn-outline-warning" type="button" id="loginBtn_nav" onclick="location.href='/member/login';">Login</button>
+                    <button align="right" class="btn btn-outline-warning" type="button" id="loginBtn_nav">Login</button>
                 </div>
             </div>
         </nav>
@@ -45,6 +45,10 @@
             $(function() {
 
                 member();
+                $('#loginBtn_nav').on("click", function() {
+                    //jwtFilter();
+                    location.href = '/member/login';
+                });
                 $('#searchBtn').on("click", function() {
                     search();
                 });
@@ -62,23 +66,15 @@
                         $.ajax({
                             url: '/member/logout',
                             type: 'POST',
-                            contentType: "application/json",
-                            /*success: function() {
-                                localStorage.removeItem("jwt");
-                                alert("로그아웃이 완료되었습니다.");
-                                location.href = "/academy/main";
-                            },
-                            error: function(){
-                                localStorage.removeItem("jwt");
-                                jwtCookie();
-                                alert("로그아웃이 완료되었습니다.");
-                                location.href = "/academy/main";
+                            contentType: "application/json",/*
+                            error: function(xhr) {
+                                console.log(xhr.responseText);
                             },*/
                         }).always(function() {
                             localStorage.removeItem("jwt");
-                            jwtCookie();
+                            /*jwtCookie();
                             alert("로그아웃이 완료되었습니다.");
-                            location.href = "/academy/main";
+                            location.href = "/academy/main";*/
                         });
 
                     });
@@ -134,6 +130,7 @@
                                 var expires = "expires="+now.toUTCString();
 
                                 document.cookie = cookieName + "=; " + expires;
+                                alert('not matched 토큰 처리');
                             }
 
                             break;

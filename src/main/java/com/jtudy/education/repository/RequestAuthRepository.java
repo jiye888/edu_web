@@ -14,8 +14,4 @@ import java.util.List;
 @Repository
 public interface RequestAuthRepository extends CrudRepository<RequestAuth, String> {
 
-    List<RequestAuth> findByProcessedFalse(Pageable pageable);
-
-    RequestAuth findByEmail(String email);
-
 }

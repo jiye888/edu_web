@@ -42,8 +42,19 @@ public class AuthController {
     @GetMapping("/get")
     public String getRequestedOne(@AuthenticationPrincipal SecurityMember member, Model model) {
         AuthDTO authDTO = authService.getOne(member.getMember());
-        model.addAttribute("auth", authDTO);
-        return "auth/get";
+        if(authDTO != null) {
+            if (authDTO.getEmail().equals(member.getUsername())){
+            model.addAttribute("auth", authDTO);
+            return "auth/get";
+            }
+            else {
+                model.addAttribute("msg", "본인이 아닙니다.");
+                return "exception";
+            }
+        } else {
+            model.addAttribute("msg", "요청된 권한이 없습니다.");
+            return "exception";
+        }
     }
 
     @GetMapping("/modify")
@@ -84,6 +95,8 @@ public class AuthController {
         String email = member.getMember().getEmail();
         Roles roles = Roles.valueOf(map.get("roles"));
         String content = map.get("content");
+        System.out.println("Request Auth"+roles);
+        System.out.println("Request Auth"+content);
         authService.requestAuth(email, roles, content);
     }
 

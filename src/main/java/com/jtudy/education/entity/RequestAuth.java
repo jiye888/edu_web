@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.Convert;
 import java.time.LocalDateTime;
+import java.util.SortedSet;
 
 @Getter
 @RedisHash(value = "requestAuth")
@@ -20,7 +21,7 @@ public class RequestAuth {
     @Id
     private String email;
 
-    private boolean processed;
+    private SortedSet<Integer> processed;
 
     private Roles roles;
 
@@ -31,7 +32,7 @@ public class RequestAuth {
 
     public RequestAuth(String email, Roles roles, String content) {
         this.email = email;
-        this.processed = false;
+        this.processed.add(0);
         this.roles = roles;
         this.createdAt = null;
         this.content = content;
@@ -44,14 +45,15 @@ public class RequestAuth {
 
     public String acceptAuth(String email, Roles roles) {
         this.email = email;
-        this.processed = true;
+        this.processed.add(1);
         this.roles = roles;
 
         return email;
     }
 
     public void process(boolean processed) {
-        this.processed = processed;
+        this.processed.clear();
+        this.processed.add(1);
     }
 
 }
