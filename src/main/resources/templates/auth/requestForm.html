@@ -27,19 +27,16 @@
 
         function requestAuth() {
             var roles = $('input[name="roles"]').val();
-            console.log(roles);
             var content = $('#content').val();
-            var email = $('#email').val();
-            console.log(content);
-            console.log(typeof(content));
 
             $.ajax({
                 url: '/auth/request',
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({"roles":roles, "content":content}),
-                success: function() {
-                    location.href = '/auth/get?email='+email;
+                success: function(xhr) {
+                    var number = xhr.responseText;
+                    location.href = '/auth/get?number='+number;
                 },
             });
 

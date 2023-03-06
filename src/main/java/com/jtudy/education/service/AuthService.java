@@ -2,6 +2,7 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
+import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.RequestAuth;
 import org.springframework.data.domain.Pageable;
@@ -9,9 +10,9 @@ import org.springframework.data.domain.Slice;
 
 public interface AuthService {
 
-    void requestAuth(String email, Roles roles, String content);
+    Long requestAuth(Member member, Roles roles, String content);
 
-    void modifyRequest(String email, Roles roles, String content);
+    void modifyRequest(Member member, Roles roles, String content);
 
     AuthDTO getOne(Member member);
 
@@ -23,20 +24,21 @@ public interface AuthService {
 
     void deleteAuth(String email, Roles roles);
 
-    default AuthDTO entityToDTO(RequestAuth requestAuth) {
+    default AuthDTO entityToDTO(Auth auth) {
         AuthDTO authDTO = AuthDTO.builder()
-                .email(requestAuth.getEmail())
-                .processed(requestAuth.isProcessed())
-                .roles(requestAuth.getRoles())
-                .createdAt(requestAuth.getCreatedAt())
-                .content(requestAuth.getContent())
+                .authId(auth.getAuthId())
+                .email(auth.getMember().getEmail())
+                .processed(auth.isProcessed())
+                .roles(auth.getRoles())
+                .createdAt(auth.getCreatedAt())
+                .content(auth.getContent())
                 .build();
         return authDTO;
     }
 
-    default RequestAuth DTOToEntity(AuthDTO authDTO) {
-        RequestAuth requestAuth = new RequestAuth(authDTO.getEmail(), authDTO.getRoles(), authDTO.getContent());
-        return  requestAuth;
+    default Auth DTOToEntity(AuthDTO authDTO, Member member) {
+        Auth auth = new Auth(member, authDTO.getRoles(), authDTO.getContent());
+        return auth;
     }
 
 }

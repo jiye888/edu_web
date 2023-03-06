@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Auth {
 
@@ -32,5 +31,21 @@ public class Auth {
     private LocalDateTime createdAt;
 
     private String content;
+
+    public Auth(Member member, Roles roles, String content) {
+        this.member = member;
+        this.roles = roles;
+        this.content = content;
+        this.isProcessed = false;
+    }
+
+    public void changeRequest(Roles roles, String content) {
+        this.roles = roles;
+        this.content = content;
+    }
+
+    public void process() {
+        this.isProcessed = true;
+    }
 
 }

@@ -18,7 +18,8 @@
             </thead>
             <tbody align="center">
             <tr th:each="auth1:${auth}">
-                <div th:href="@{/auth/get?email={email}(email=${auth1.email})}">
+                <!--<div th:href="@{/auth/get?email={email}(email=${auth1.email})}">-->
+                <div th:href="@{/auth/get?number={number}(number=${auth1.authId})}">
                 <td><a th:text="${auth1.name}"></a></td>
                 <td><a th:text="${auth1.email}"></a></td>
                 <td><a th:text="${auth1.roles}"></a></td>

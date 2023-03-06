@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -33,14 +35,14 @@ public class AuthController {
     }
 
     @GetMapping("/requested")
-    public void requestedAuths(Model model) {
-        Pageable pageable = PageRequest.of(0, 10);
+    public void requestedAuths(/*@RequestParam(defaultValue = "1") int page*/ Pageable pageable, Model model) {
+        //Pageable pageable = PageRequest.of(page-1, 10);
         Slice<AuthDTO> authDTO = authService.requestedAuths(pageable);
         model.addAttribute("auth", authDTO);
     }
 
     @GetMapping("/get")
-    public String getRequestedOne(@AuthenticationPrincipal SecurityMember member, Model model) {
+    public String getRequestedOne(@RequestParam(value="number") Long authId, @AuthenticationPrincipal SecurityMember member, Model model) {
         AuthDTO authDTO = authService.getOne(member.getMember());
         if(authDTO != null) {
             if (authDTO.getEmail().equals(member.getUsername())){
@@ -68,7 +70,7 @@ public class AuthController {
     public void modifyRequest(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
         Roles roles = (Roles) map.get("roles");
         String content = map.get("content").toString();
-        authService.modifyRequest(member.getUsername(), roles, content);
+        authService.modifyRequest(member.getMember(), roles, content);
     }
 
     @GetMapping("/request")
@@ -82,6 +84,7 @@ public class AuthController {
             } else {
                 model.addAttribute("msg", "이미 사용자 권한을 요청중입니다.");
                 return "auth/get";
+                // 체크 필수
             }
         }catch(Exception e) {
             System.out.println(e.getMessage());
@@ -91,13 +94,13 @@ public class AuthController {
 
     @PostMapping("/request")
     @ResponseBody
-    public void requestAuth(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
-        String email = member.getMember().getEmail();
+    public ResponseEntity requestAuth(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
         Roles roles = Roles.valueOf(map.get("roles"));
         String content = map.get("content");
         System.out.println("Request Auth"+roles);
         System.out.println("Request Auth"+content);
-        authService.requestAuth(email, roles, content);
+        Long authId = authService.requestAuth(member.getMember(), roles, content);
+        return ResponseEntity.status(HttpStatus.OK).body(authId);
     }
 
     @PostMapping("/accept")

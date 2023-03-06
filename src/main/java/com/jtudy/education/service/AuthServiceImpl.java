@@ -2,8 +2,10 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
+import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.RequestAuth;
+import com.jtudy.education.repository.AuthRepository;
 import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.RequestAuthRepository;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -27,72 +29,56 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
-    private final RequestAuthRepository requestAuthRepository;
-    private final RedisTemplate redisTemplate;
-    private final RedisCommands<String, Integer> redisCommands;
-
+    private final AuthRepository authRepository;
 
     @Override
-    public void requestAuth(String email, Roles roles, String content) {
-        RequestAuth requestAuth = new   RequestAuth(email, roles, content);
-        requestAuthRepository.save(requestAuth);
+    public Long requestAuth(Member member, Roles roles, String content) {
+        Auth auth = new Auth(member, roles, content);
+        auth = authRepository.save(auth);
+        return auth.getAuthId();
     }
 
     @Override
-    public void modifyRequest(String email, Roles roles, String content) {
-        Optional<RequestAuth> requestAuth = requestAuthRepository.findById(email);
-        if (requestAuth != null) {
-            RequestAuth auth = requestAuth.get();
-            auth.modifyRequest(roles, content);
-            requestAuthRepository.save(auth);
+    public void modifyRequest(Member member, Roles roles, String content) {
+        Auth auth = authRepository.findByEmail(member.getEmail());
+        if (auth != null) {
+            auth.changeRequest(roles, content);
+            authRepository.save(auth);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
     public AuthDTO getOne(Member member) {
-        Optional<RequestAuth> requestAuth = requestAuthRepository.findById(member.getEmail());
-        if (requestAuth == null) {
-            return null;
-        }
-        AuthDTO authDTO = entityToDTO(requestAuth.get());
+        Auth auth = authRepository.findByEmail(member.getEmail());
+        AuthDTO authDTO = entityToDTO(auth);
         return authDTO;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Slice<AuthDTO> requestedAuths(Pageable pageable) {
-        /*List<Integer> unprocessed = redisCommands.zrange("process", 0, 0);
-        List<RequestAuth> requestAuth = requestAuthRepository.findByProcessedFalse(pageable);*/
-        List<RequestAuth> requestAuth = (List<RequestAuth>) requestAuthRepository.findAll();
-        List<AuthDTO> authList = requestAuth.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-        Slice<AuthDTO> authDTO = new PageImpl<>(authList, pageable, authList.size());
+        Slice<Auth> auth = authRepository.findByIsProcessed(false, pageable);
+        Slice<AuthDTO> authDTO = auth.map(e -> entityToDTO(e));
         return authDTO;
     }
 
     @Override
     public void acceptAuth(String email, Roles roles){
         Member member = memberRepository.findByEmail(email);
-        Optional<RequestAuth> requestAuth = requestAuthRepository.findById(email);
-        if (requestAuth.isPresent()) {
-            RequestAuth request = requestAuth.get();
-            if (request.getRoles() == roles && request.getProcessed().contains(0)) {
-                request.acceptAuth(email, roles);
-                requestAuthRepository.save(request);
-                member.addRoles(roles);
-            }
-            redisTemplate.expire(request, 60*60*24, TimeUnit.SECONDS);
+        Auth auth = authRepository.findByEmail(email);
+        if (auth != null) {
+            member.addRoles(roles);
+            auth.process();
         }
     }
 
     @Override
     public void rejectAuth(String email, Roles roles) {
         Member member = memberRepository.findByEmail(email);
-        Optional<RequestAuth> requestAuth = requestAuthRepository.findById(email);
-        if (requestAuth.isPresent()) {
-            RequestAuth request = requestAuth.get();
-            request.process(true);
-            redisTemplate.expire(request, 60*60*24, TimeUnit.SECONDS);
+        Auth auth = authRepository.findByEmail(email);
+        if (auth != null) {
+            auth.process();
         }
     }
 
