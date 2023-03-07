@@ -141,7 +141,7 @@ public class AcademyController {
     }
 
     @GetMapping("/joined")
-    public void getAcademies(@RequestParam("number") Long number, @RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void getAcademies(@RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
         String name = member.getMember().getName();
         model.addAttribute("name", name);
