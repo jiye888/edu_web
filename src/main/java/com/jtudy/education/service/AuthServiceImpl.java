@@ -4,24 +4,15 @@ import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.RequestAuth;
 import com.jtudy.education.repository.AuthRepository;
 import com.jtudy.education.repository.MemberRepository;
-import com.jtudy.education.repository.RequestAuthRepository;
-import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.redis.core.RedisCommand;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -51,6 +42,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public AuthDTO getOne(Member member) {
         Auth auth = authRepository.findByEmail(member.getEmail());
+        if (auth == null) {
+            return null;
+        }
         AuthDTO authDTO = entityToDTO(auth);
         return authDTO;
     }

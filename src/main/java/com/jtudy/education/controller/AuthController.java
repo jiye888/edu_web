@@ -2,13 +2,11 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
-import com.jtudy.education.entity.RequestAuth;
-import com.jtudy.education.repository.RequestAuthRepository;
+import com.jtudy.education.entity.Auth;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +16,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/auth")
@@ -28,6 +30,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final MemberService memberService;
+    private final TemplateEngine templateEngine;
 
     @ModelAttribute("roles")
     public Roles[] roles() {
@@ -61,8 +64,15 @@ public class AuthController {
 
     @GetMapping("/modify")
     public String modifyRequest(@AuthenticationPrincipal SecurityMember member, Model model) {
-        AuthDTO authDTO = authService.getOne(member.getMember());
-        model.addAttribute("auth", authDTO);
+        try {
+            AuthDTO authDTO = authService.getOne(member.getMember());
+            if(authDTO != null) {
+                model.addAttribute("auth", authDTO);
+            }
+        } catch (Exception e) {
+            model.addAttribute("msg", e.getMessage());
+            return "exception";
+        }
         return "auth/modifyForm";
     }
 
@@ -74,21 +84,31 @@ public class AuthController {
     }
 
     @GetMapping("/request")
-    public String requestAuth(@AuthenticationPrincipal SecurityMember member, Model model) {
+    public ResponseEntity requestAuth(@AuthenticationPrincipal SecurityMember member, Model model) {
         model.addAttribute("email", member.getUsername());
         try {
             if (authService.getOne(member.getMember()) == null) {
                 AuthDTO authDTO = new AuthDTO();
                 model.addAttribute("auth", authDTO);
-                return "auth/requestForm";
+                Context context = new Context();
+                context.setVariables(model.asMap());
+                String template = templateEngine.process("auth/requestForm", context);
+                return ResponseEntity.ok().body(template);
             } else {
-                model.addAttribute("msg", "이미 사용자 권한을 요청중입니다.");
-                return "auth/get";
+                Long authId = authService.getOne(member.getMember()).getAuthId();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("number", authId.toString());
+                Map<String, String> map = new HashMap<>();
+                map.put("number", authId.toString());
+                return ResponseEntity.ok().body(map);
                 // 체크 필수
             }
         }catch(Exception e) {
-            System.out.println(e.getMessage());
-            return "exception";
+            model.addAttribute("msg", e.getMessage());
+            Context context = new Context();
+            context.setVariables(model.asMap());
+            String template = templateEngine.process("exception", context);
+            return ResponseEntity.ok().body(template);
         }
     }
 

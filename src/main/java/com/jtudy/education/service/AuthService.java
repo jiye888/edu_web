@@ -4,7 +4,6 @@ import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.RequestAuth;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 

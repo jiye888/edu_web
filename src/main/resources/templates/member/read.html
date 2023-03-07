@@ -111,8 +111,17 @@
                 url: '/auth/request',
                 type: 'GET',
                 contentType: "application/json",
-                success: function() {
-                    location.href = '/auth/request';
+                success: function(response) {
+                var number = Number(response.number);
+                    if (number != undefined && !isNaN(number)) {
+                        console.log(number);
+                        if (confirm("요청한 권한이 존재합니다. 확인하시겠습니까?")) {
+                            window.location.href = "/auth/get?number="+number;
+                        }
+                    } else {
+                        console.log("other");
+                        $('#content').html(response);
+                    }
                 },
             });
         }

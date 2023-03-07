@@ -3,8 +3,6 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
-import com.jtudy.education.constant.Roles;
-import com.jtudy.education.entity.RequestAuth;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.AuthService;
@@ -13,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,9 +24,6 @@ import org.thymeleaf.context.Context;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
-import java.security.SignatureException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,8 +77,8 @@ public class MemberController {
                 model.addAttribute("memberDTO", memberDTO);
                 Context context = new Context();
                 context.setVariables(model.asMap());
-                String html = templateEngine.process("member/read", context);
-                return ResponseEntity.ok().body(html);
+                String template = templateEngine.process("member/read", context);
+                return ResponseEntity.ok().body(template);
             } else {
                 String message = "권한이 없습니다.";
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);

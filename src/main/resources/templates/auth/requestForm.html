@@ -35,7 +35,7 @@
                 contentType: "application/json",
                 data: JSON.stringify({"roles":roles, "content":content}),
                 success: function(xhr) {
-                    var number = xhr.responseText;
+                    var number = Number(xhr.responseText);
                     location.href = '/auth/get?number='+number;
                 },
             });
