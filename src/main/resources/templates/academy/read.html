@@ -131,12 +131,9 @@
 
             if (result) {
                 $.ajax({
-                    url: '/academy/withdraw?number='+number,
+                    url: '/academy/withdraw',
                     type: 'POST',
                     contentType: "application/json",
-                    beforeSend: function(xhr){
-                        xhr.setRequestHeader("X-AUTH-TOKEN", token)
-                    },
                     data: JSON.stringify({"number":number}),
                     success: function() {
                         alert("탙퇴가 완료되었습니다.");

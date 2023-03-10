@@ -6,23 +6,29 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Academy</h3>
+    <!--
     <select name="category" id="category">
         <option value="name">학원명</option>
         <option value="subject">과목</option>
         <option value="location">학원 위치</option>
     </select>
+    -->
+    학원명<input type="text" id="name_keyword">
+    학원 위치<input type="text" id="location_keyword">
 
-    <div th:if="${#strings.equal(param.category, 'subject')}">
-        <div th:each="sub:${subject}">
+    <!--<div th:if="${#strings.equal(param.category, 'subject')}">-->
+    <a text="과목">
+        <div th:each="sub, subStat:${subject}">
             <input type="checkbox" th:value="${sub}" th:name="subject_checkbox" id="subject_keyword">
-            <label th:for="${#ids.prev('subject')}" th:text="${sub.description}"></label>
+            <label th:for="'subject_keyword'+${subStat.index}" th:text="${sub.description}"></label>
         </div>
-    </div>
+    <!--</div>-->
+    </a>
 
-    <input type="text" id="keyword">
-    <button type="button" class="search" id="searchBtn">학원 검색</button>
+    <!--<input type="text" id="keyword">-->
+    <button type="button" class="search" id="academySearchBtn">학원 검색</button>
 
-    <div th:if = "${!academy.isEmpty()}">
+    <div th:if = "${!academy.isEmpty()}" id="searchResult">
         <table class="table table-borderless">
             <thead align="center">
             <tr>
@@ -87,32 +93,65 @@
     <script th:inline="javascript">
         $(document).ready(function() {
 
-            $('#searchBtn').click(function(){
-            search();
-
+            $('#academySearchBtn').click(function(){
+            academySearch();
             });
         });
 
-        function search() {
-            var category = $('#category').val();
-
-            if (keyword) {
-                var keyword = $('#keyword').val();
-            } else if (subject_keyword) {
-                var keyword = $('#subject_keyword').val();
+        function getSubject() {
+            var subject = [];
+            var subjects = $("input[name=subject_checkbox]:checkbox");
+            for ( var i = 0; i < subjects.length; i++) {
+                if (subjects[i].checked == true ) {
+                    subject.push(subjects[i].value);
+                }
             }
+            return subject;
+        }
+
+        function academySearch() {
+            var name = $('#name_keyword').val();
+            var location =$('#location_keyword').val();
+            var subject = getSubject();
+            console.log(subject);
+            console.log(typeof(subject));
+            var categories = [{"name":name}, {"location":location}, {"subject":subject}];
+            var searchData = {};
+            var urlString = "";
+
+            for (var i=0; i<categories.length; i++) {
+                for (var category in categories[i]) {
+                    if (categories[i][category] !== "" && categories[i][category].length > 0) {
+                        console.log("category: "+category);
+                        searchData[category] = categories[i][category];
+                        urlString += category + "=" + categories[i][category] + "&";
+                    }
+                }
+            }
+
+            if (urlString !== "") {
+                urlString = urlString.slice(0,-1);
+            } else {
+                alert("검색어를 입력해주세요.");
+            }
+
+            console.log(searchData.name);
+            console.log(searchData.subject);
+            console.log(searchData.location);
+            console.log("urlString: "+urlString);
 
             $.ajax({
                 url: '/academy/search',
                 type: 'GET',
                 contentType:"application/json",
                 data: {
-                    "category":category,
-                    "keyword":keyword,
+                    "name":searchData.name,
+                    "subject":searchData.subject,
+                    "location":searchData.location,
                 },
                 success: function() {
-                    location.href="/academy/register";
-                }
+                    window.location.href="/academy/search?"+urlString;
+                },
             });
         }
 

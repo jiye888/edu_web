@@ -101,7 +101,6 @@ public class AuthController {
                 Map<String, String> map = new HashMap<>();
                 map.put("number", authId.toString());
                 return ResponseEntity.ok().body(map);
-                // 체크 필수
             }
         }catch(Exception e) {
             model.addAttribute("msg", e.getMessage());
@@ -117,10 +116,14 @@ public class AuthController {
     public ResponseEntity requestAuth(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
         Roles roles = Roles.valueOf(map.get("roles"));
         String content = map.get("content");
-        System.out.println("Request Auth"+roles);
-        System.out.println("Request Auth"+content);
         Long authId = authService.requestAuth(member.getMember(), roles, content);
         return ResponseEntity.status(HttpStatus.OK).body(authId);
+    }
+
+    @PostMapping("/cancel")
+    @ResponseBody
+    public void cancelRequest(@RequestParam(value = "number") Long authId, @AuthenticationPrincipal SecurityMember member) {
+        authService.cancelRequest(authId);
     }
 
     @PostMapping("/accept")

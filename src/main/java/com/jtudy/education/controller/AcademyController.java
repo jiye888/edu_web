@@ -33,10 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/academy")
@@ -149,19 +146,43 @@ public class AcademyController {
         Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
         model.addAttribute("academy", academyDTO);
     }
-
-    @GetMapping("/search")
-    public String search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+/*
+    @RequestMapping(value = "/search", method = {RequestMethod.POST})
+    public ResponseEntity search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
         try {
             Page<AcademyDTO> academy = academyService.search(search, pageable);
             model.addAttribute("academy", academy);
-            return "academy/search";
+            Context context = new Context();
+            context.setVariables(model.asMap());
+            String template = templateEngine.process("academy/search", context);
+            return ResponseEntity.ok().body(template);
         } catch (Exception e) {
-            String msg = e.getMessage();
-            model.addAttribute("msg", msg);
-            return "exception";
+            model.addAttribute("msg", e.getMessage());
+            Context context = new Context();
+            context.setVariables(model.asMap());
+            String template = templateEngine.process("exception", context);
+            return ResponseEntity.ok().body(template);
         }
+    }*/
+
+    @GetMapping("/search")
+    public String search(@RequestParam(value="name", required = false) String name, @RequestParam(value="subject", required = false) String[] subject,
+                         @RequestParam(value="location", required = false) String location, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10);
+        List<Subject> subjectList = new ArrayList<>();
+        if (subject != null) {
+            for (String sub : subject) {
+                subjectList.add(Subject.valueOf(sub));
+            }
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("subject", subjectList);
+        map.put("location", location);
+        Page<AcademyDTO> academy = academyService.search(map, pageable);
+        model.addAttribute("academy", academy);
+        return "academy/search";
     }
 
 }

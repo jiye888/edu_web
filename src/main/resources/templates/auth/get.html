@@ -7,29 +7,50 @@
 <div layout:fragment="content">
     <h3>[[${auth.name}]]님의 권한 요청</h3>
 
-    <span th:text="${auth.name}">이름</span>
-    <span th:text="${auth.email}">이메일</span>
-    <span th:text="${auth.roles}" id="roles">요청 권한</span>
-    <span th:text="${auth.content}" id="content">요청 내용</span>
-    <span th:text="${auth.createdAt}">요청일</span>
+    이름<span th:text="${auth.name}"/>
+    이메일<span th:text="${auth.email}"/>
+    요청 권한<span th:text="${auth.roles}" id="roles"/>
+    요청 내용<span th:text="${auth.content}" id="content"/>
+    요청일<span th:text="${auth.createdAt}"/>
 
-    <span th:text="${auth.processed}">처리 여부</span>
+    처리 여부<span th:text="${auth.processed}"/>
 
     <button type="button" id="modifyBtn">수정</button>
+    <button type="button" id="cancelBtn">삭제</button>
 
     <script th:inline="javascript">
         $(function() {
             $('#modifyBtn').on("click", function() {
                 modify();
             });
+            $('#cancelBtn').on("click", function() {
+                cancelRequest();
+            });
         });
 
         function modify() {
-            var roles = $('#roles').val();
-            var content = $('#content').val();
 
             $.ajax({
+                url: "/auth/modify",
+                type: "GET",
+                contentType: "application/json",
+                success: function() {
+                    window.location.href="/auth/modify";
+                },
             });
+        }
+
+        function cancelRequest() {
+            if (confirm("권한 요청을 취소하시겠습니까?")) {
+                $.ajax({
+                    url: "/auth/cancel",
+                    type: "POST",
+                    contentType: "application/json",
+                    success: function() {
+                        history.back();
+                    },
+                });
+            }
         }
     </script>
 </div>

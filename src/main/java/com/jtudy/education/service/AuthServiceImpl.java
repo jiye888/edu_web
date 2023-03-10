@@ -39,6 +39,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void cancelRequest(Long authId) {
+        authRepository.deleteById(authId);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public AuthDTO getOne(Member member) {
         Auth auth = authRepository.findByEmail(member.getEmail());

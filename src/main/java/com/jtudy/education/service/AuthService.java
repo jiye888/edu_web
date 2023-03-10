@@ -13,6 +13,8 @@ public interface AuthService {
 
     void modifyRequest(Member member, Roles roles, String content);
 
+    void cancelRequest(Long authId);
+
     AuthDTO getOne(Member member);
 
     Slice<AuthDTO> requestedAuths(Pageable pageable);

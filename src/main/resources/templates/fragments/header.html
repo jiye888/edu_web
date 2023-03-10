@@ -30,9 +30,9 @@
                     </ul>
                     <form class="d-flex" role="search" id="searchForm">
                         <select name="category">
-                            <option value="name">학원명</option>
-                            <option value="subject">과목명</option>
-                            <option value="location">학원 위치</option>
+                            <option name="category" value="name">학원명</option>
+                            <option name="category" value="location">학원 위치</option>
+                            <option name="category" value="name&location">학원명+위치</option>
                         </select>
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="keyword">
                         <button class="btn btn-outline-success" type="button" id="searchBtn">Search</button>
@@ -46,11 +46,10 @@
 
                 member();
                 $('#loginBtn_nav').on("click", function() {
-                    //jwtFilter();
                     location.href = '/member/login';
                 });
                 $('#searchBtn').on("click", function() {
-                    search();
+                    searchAcademy();
                 });
             });
 
@@ -94,20 +93,45 @@
                 }
             }
 
-            function search() {
-                var category = $('option[name=category]').val();
+            function searchAcademy() {
+                var category = $("option[name=category]:selected").val();
                 var keyword = $('#keyword').val();
+                var searchData = {};
+                var urlString = "";
+
+                if (keyword === "") {
+                    alert("검색어를 입력해주세요.");
+                }
+
+                if (category == "name") {
+                    searchData.name = keyword;
+                } else if (category == "location") {
+                    searchData.location = keyword;
+                } else if (category == "name&location") {
+                    searchData.name = keyword;
+                    searchData.location = keyword;
+                }
+
+                for (var property in searchData) {
+                    if (searchData[property] !== undefined && searchData[property] !== "") {
+                        urlString += property + "=" + searchData[property] + "&";
+                    }
+                }
+
+                if (urlString !== "") {
+                    urlString = urlString.slice(0,-1);
+                }
 
                 $.ajax({
-                    url: '/academy/search?category='+category+'&keyword='+keyword,
+                    url: '/academy/search',
                     type: 'GET',
                     contentType: "application/json",
                     data: {
-                        "category":category,
-                        "keyword":keyword,
-                    },
+                        "name":searchData.name,
+                        "location":searchData.location,
+                        },
                     success: function() {
-                        location.href='/academy/search?category='+category+'&keyword='+keyword;
+                        location.href='/academy/search?'+urlString;
                     },
                 });
             }
