@@ -113,8 +113,6 @@
             var name = $('#name_keyword').val();
             var location =$('#location_keyword').val();
             var subject = getSubject();
-            console.log(subject);
-            console.log(typeof(subject));
             var categories = [{"name":name}, {"location":location}, {"subject":subject}];
             var searchData = {};
             var urlString = "";
@@ -122,7 +120,6 @@
             for (var i=0; i<categories.length; i++) {
                 for (var category in categories[i]) {
                     if (categories[i][category] !== "" && categories[i][category].length > 0) {
-                        console.log("category: "+category);
                         searchData[category] = categories[i][category];
                         urlString += category + "=" + categories[i][category] + "&";
                     }
@@ -134,11 +131,6 @@
             } else {
                 alert("검색어를 입력해주세요.");
             }
-
-            console.log(searchData.name);
-            console.log(searchData.subject);
-            console.log(searchData.location);
-            console.log("urlString: "+urlString);
 
             $.ajax({
                 url: '/academy/search',

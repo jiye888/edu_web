@@ -8,8 +8,9 @@
     <h3>회원 가입</h3>
     <form th:object="${member}">
 
-        이메일<input type="email" th:field="*{email}">
-        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p><br>
+        이메일<input type="email" th:field="*{email}" th:id="email">
+        <!--<p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p><br>
+        <p th:if="${emailError}" th:text="${emailError}"></p>-->
         비밀번호<input type="password" th:field="*{password}">
         <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p><br>
         비밀번호 확인<input type="password" id="password2"><br>
@@ -68,7 +69,21 @@
                     "address":address,
                     }),
                     success: function() {
-                        history.back();
+                            history.back();
+                    },
+                    error: function(xhr, response) {
+                        jwtFilter();
+                        if (response.BindingResultError) {
+                            for (var res in response) {
+                                if (document.getByElement(res)) {
+                                    var pTag = document.createElement("p");
+                                    var node = document.createNode(response[res]);
+                                    pTag.appendChild(node);
+                                    document.getByElement(pTag).append(res);
+                                }
+                            }
+                        }
+                        console.log(xhr.getResponseBody);
                     },
                 });
             } else {

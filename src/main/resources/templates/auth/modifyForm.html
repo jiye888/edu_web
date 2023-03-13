@@ -9,10 +9,11 @@
     <input type="hidden" th:value="${email}" id="email">
     <form th:object="${auth}">
         권한
-        <div th:field="*{roles}" id="role">
-            <input type="radio" name="roles" th:value="${roles.manager}">
-            <label th:text="학원 관리자"></label>
+        <div th:each="role : ${roles}">
+            <input type="radio" name="role" th:field="*{role}" th:value="${role}">
+            <label th:for="${#ids.prev('roles')}" th:text="${role}"></label>
         </div>
+
         내용<input type="text" th:field="*{content}" id="content">
         <button type="button" id="modifyBtn">수정</button>
     </form>
@@ -25,7 +26,7 @@
         });
 
         function modify() {
-            var roles = $('#roles').val();
+            var roles = $('#role').val();
             var content = $('#content').val();
             var email = $('#email').val();
 

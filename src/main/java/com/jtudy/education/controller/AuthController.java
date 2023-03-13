@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.management.relation.Role;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class AuthController {
 
     @ModelAttribute("roles")
     public Roles[] roles() {
-        return Roles.values();
+        return new Roles[] {Roles.STUDENT, Roles.MANAGER};
     }
 
     @GetMapping("/requested")

@@ -28,6 +28,7 @@ public interface AuthService {
     default AuthDTO entityToDTO(Auth auth) {
         AuthDTO authDTO = AuthDTO.builder()
                 .authId(auth.getAuthId())
+                .name(auth.getMember().getName())
                 .email(auth.getMember().getEmail())
                 .processed(auth.isProcessed())
                 .roles(auth.getRoles())

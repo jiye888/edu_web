@@ -5,14 +5,14 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>권한 요청</h3>
+    <h3>[[${auth.name}]]님의 권한 요청</h3>
     <input type="hidden" th:value="${email}" id="email">
     <form>
         권한
-        <!--<div th:field="*{roles}" id="role">-->
-            <input type="radio" name="roles" th:value="${roles[3]}" id="manager">
-            <label for="manager" text="학원 관리자"></label>
-        <!--</div>-->
+        <div th:each="role : ${roles}">
+            <input type="radio" name="role" th:value="${role}"><!--th:field="*{role}"-->
+            <label th:for="${#ids.prev('roles')}" th:text="${role}"></label>
+        </div>
         내용<input type="text" id="content">
         <button type="button" id="requestBtn">등록</button>
     </form>
@@ -34,8 +34,8 @@
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({"roles":roles, "content":content}),
-                success: function(xhr) {
-                    var number = Number(xhr.responseText);
+                success: function(response) {
+                    var number = Number(response);
                     location.href = '/auth/get?number='+number;
                 },
             });
