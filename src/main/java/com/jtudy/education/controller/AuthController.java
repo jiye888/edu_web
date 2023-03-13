@@ -86,7 +86,7 @@ public class AuthController {
 
     @GetMapping("/request")
     public ResponseEntity requestAuth(@AuthenticationPrincipal SecurityMember member, Model model) {
-        model.addAttribute("email", member.getUsername());
+        model.addAttribute("member", memberService.getOne(member.getMember().getMemNum()));
         try {
             if (authService.getOne(member.getMember()) == null) {
                 AuthDTO authDTO = new AuthDTO();
@@ -115,6 +115,7 @@ public class AuthController {
     @PostMapping("/request")
     @ResponseBody
     public ResponseEntity requestAuth(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
+        System.out.println("map!"+map);
         Roles roles = Roles.valueOf(map.get("roles"));
         String content = map.get("content");
         Long authId = authService.requestAuth(member.getMember(), roles, content);

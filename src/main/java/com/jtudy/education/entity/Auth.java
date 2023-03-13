@@ -1,11 +1,13 @@
 package com.jtudy.education.entity;
 
 import com.jtudy.education.constant.Roles;
+import com.jtudy.education.constant.RolesConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners({AuditingEntityListener.class})
 public class Auth {
 
     @Id
@@ -26,6 +29,7 @@ public class Auth {
     @ManyToOne
     private Member member;
 
+    @Convert(converter = RolesConverter.class)
     private Roles roles;
 
     @CreatedDate

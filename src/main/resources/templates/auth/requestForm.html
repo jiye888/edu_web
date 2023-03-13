@@ -5,13 +5,13 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>[[${auth.name}]]님의 권한 요청</h3>
-    <input type="hidden" th:value="${email}" id="email">
-    <form>
+    <h3>[[${member.name}]]님의 권한 요청</h3>
+    <input type="hidden" th:value="${member.email}" id="email">
+    <form th:object="${auth}">
         권한
         <div th:each="role : ${roles}">
-            <input type="radio" name="role" th:value="${role}"><!--th:field="*{role}"-->
-            <label th:for="${#ids.prev('roles')}" th:text="${role}"></label>
+            <input type="radio" name="role" th:value="${role}" id="${role}">
+            <label th:for="${role}" th:text="${role}"></label>
         </div>
         내용<input type="text" id="content">
         <button type="button" id="requestBtn">등록</button>
@@ -26,7 +26,7 @@
         });
 
         function requestAuth() {
-            var roles = $('input[name="roles"]').val();
+            var roles = $('input[name="role"]:checked').val();
             var content = $('#content').val();
 
             $.ajax({
