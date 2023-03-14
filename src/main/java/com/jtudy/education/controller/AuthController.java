@@ -34,8 +34,11 @@ public class AuthController {
     private final TemplateEngine templateEngine;
 
     @ModelAttribute("roles")
-    public Roles[] roles() {
-        return new Roles[] {Roles.STUDENT, Roles.MANAGER};
+    public Map<Roles, String> roles() {
+        Map<Roles, String> map = new HashMap<>();
+        map.put(Roles.STUDENT, "학생");
+        map.put(Roles.MANAGER, "학원 관리자");
+        return map;
     }
 
     @GetMapping("/requested")
@@ -78,8 +81,9 @@ public class AuthController {
     }
 
     @PostMapping("/modify")
-    public void modifyRequest(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
-        Roles roles = (Roles) map.get("roles");
+    @ResponseBody
+    public void modifyRequest(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
+        Roles roles = Roles.valueOf(map.get("roles"));
         String content = map.get("content").toString();
         authService.modifyRequest(member.getMember(), roles, content);
     }
@@ -115,7 +119,6 @@ public class AuthController {
     @PostMapping("/request")
     @ResponseBody
     public ResponseEntity requestAuth(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
-        System.out.println("map!"+map);
         Roles roles = Roles.valueOf(map.get("roles"));
         String content = map.get("content");
         Long authId = authService.requestAuth(member.getMember(), roles, content);

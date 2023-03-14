@@ -52,6 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println("JWT couldn't be matched. "+e.getMessage());
                 Cookie cookie = new Cookie("Matched_Token", "not_matched");
                 cookie.setMaxAge(60*60*6);
+                cookie.setPath("/");
                 response.addCookie(cookie);
             } /*catch (Exception e) {
                 System.out.println(e.getMessage());

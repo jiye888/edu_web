@@ -6,12 +6,12 @@
 <body>
 <div layout:fragment="content">
     <h3>[[${auth.name}]]님의 권한 요청</h3>
-    <input type="hidden" th:value="${auth.email}" id="email">
+    <input type="hidden" th:value="${auth.authId}" id="number">
     <form th:object="${auth}">
         권한
         <div th:each="role : ${roles}">
-            <input type="radio" name="role" th:field="*{role}" th:value="${role}">
-            <label th:for="${#ids.prev('roles')}" th:text="${role}"></label>
+            <input type="radio" name="role" th:value="${role.key}" id="${role.key}" th:checked="${role.key} == ${auth.roles}">
+            <label th:for="${role}" th:text="${role.value}"></label>
         </div>
 
         내용<input type="text" th:field="*{content}" id="content">
@@ -26,17 +26,17 @@
         });
 
         function modify() {
-            var roles = $('input[name="roles"]:checked').val();
+            var roles = $('input[name="role"]:checked').val();
             var content = $('#content').val();
-            var email = $('#email').val();
+            var number = $('#number').val();
 
             $.ajax({
                 url: '/auth/modify',
                 type: "POST",
                 contentType: "application/json",
-                data: {"roles":roles, "content":content},
+                data: JSON.stringify({"roles":roles, "content":content}),
                 success: function() {
-                    location.href = '/auth/get?email='+email;
+                    location.href = '/auth/get?number='+number;
                 },
             });
         }

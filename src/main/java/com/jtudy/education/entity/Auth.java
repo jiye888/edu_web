@@ -29,7 +29,6 @@ public class Auth {
     @ManyToOne
     private Member member;
 
-    @Convert(converter = RolesConverter.class)
     private Roles roles;
 
     @CreatedDate

@@ -8,10 +8,10 @@
     <h3>[[${auth.name}]]님의 권한 요청</h3>
 
     이름<span th:text="${auth.name}"/>
-    이메일<span th:text="${auth.email}"/>
-    요청 권한<span th:text="${auth.roles}" id="roles"/>
-    요청 내용<span th:text="${auth.content}" id="content"/>
-    요청일<span th:text="${auth.createdAt}"/>
+    이메일<span th:text="${auth.email}"/><br/>
+    요청 권한<span th:text="${auth.roles}" id="roles"/><br/>
+    요청 내용<span th:text="${auth.content}" id="content"/><br/>
+    요청일<span th:text="${auth.createdAt}"/><br/>
 
     처리 여부<span th:text="${auth.processed}"/>
 

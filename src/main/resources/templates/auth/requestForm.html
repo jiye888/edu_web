@@ -10,8 +10,8 @@
     <form th:object="${auth}">
         권한
         <div th:each="role : ${roles}">
-            <input type="radio" name="role" th:value="${role}" id="${role}">
-            <label th:for="${role}" th:text="${role}"></label>
+            <input type="radio" name="role" th:value="${role.key}" id="${role.key}">
+            <label th:for="${role}" th:text="${role.value}"></label>
         </div>
         내용<input type="text" id="content">
         <button type="button" id="requestBtn">등록</button>
