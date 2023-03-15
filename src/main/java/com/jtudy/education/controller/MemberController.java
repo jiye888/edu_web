@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -165,17 +166,14 @@ public class MemberController {
     }
 
     @PostMapping("/loginCheck")
-    public ResponseEntity<Map<String, String>> loginCheck(@RequestBody Map<String, String> member, Model model, HttpSession session, HttpServletRequest request) {
-        HashMap<String, String> map = new HashMap<>();
+    public ResponseEntity loginCheck(@RequestBody Map<String, String> member) {
         try {
             String email = member.get("email");
             String password = member.get("password");
             String token = memberService.login(email, password);
-            map.put("token", token);
-            return new ResponseEntity<>(map, HttpStatus.OK);
+            return ResponseEntity.ok().body(token);
         } catch (Exception e) {
-            map.put("message", e.getMessage());
-            return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

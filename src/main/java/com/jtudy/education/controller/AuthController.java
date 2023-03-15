@@ -50,18 +50,17 @@ public class AuthController {
 
     @GetMapping("/get")
     public String getRequestedOne(@RequestParam(value="number") Long authId, @AuthenticationPrincipal SecurityMember member, Model model) {
-        AuthDTO authDTO = authService.getOne(member.getMember());
-        if(authDTO != null) {
-            if (authDTO.getEmail().equals(member.getUsername())){
-            model.addAttribute("auth", authDTO);
-            return "auth/get";
-            }
-            else {
-                model.addAttribute("msg", "본인이 아닙니다.");
-                return "exception";
-            }
+        if (authService.validateMember(authId, member)) {
+            AuthDTO authDTO = authService.getOne(member.getMember());
+                if (authDTO != null) {
+                    model.addAttribute("auth", authDTO);
+                    return "auth/get";
+                } else {
+                    model.addAttribute("msg", "요청된 권한이 없습니다.");
+                    return "exception";
+                }
         } else {
-            model.addAttribute("msg", "요청된 권한이 없습니다.");
+            model.addAttribute("msg", "접근 권한이 없습니다.");
             return "exception";
         }
     }

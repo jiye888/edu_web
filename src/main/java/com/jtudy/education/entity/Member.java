@@ -7,9 +7,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@EntityListeners({AuditingEntityListener.class})
 public class Member {
 
     @Id
@@ -34,7 +37,8 @@ public class Member {
     @Column(nullable = false)
     private String name;
 
-    @Column
+    private LocalDateTime createdAt;
+
     private String address;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, orphanRemoval = true)

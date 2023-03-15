@@ -44,16 +44,18 @@
                     data: JSON.stringify(json),
                     beforeSend: function(xhr) {
                     },
-                }).then((response) => {
-                    var token = response.token;
-                    if (token != null) {
-                        alert('로그인 성공');
-                        localStorage.setItem("jwt", token);
-                        history.back();
-                    } else {
-                        //console.log(response.message);
-                        alert('로그인 실패');
-                    }
+                    success: function(response) {
+                        var token = response;
+                        if (token != null) {
+                            localStorage.setItem("jwt", token);
+                            history.back();
+                        }
+                    },
+                    error: function(response) {
+                        jwtFilter();
+                        alert("아이디나 비밀번호를 다시 확인해주세요.");
+                        console.log(response);
+                    },
                 });
             }
         }

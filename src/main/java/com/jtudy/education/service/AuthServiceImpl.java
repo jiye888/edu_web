@@ -6,13 +6,12 @@ import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.AuthRepository;
 import com.jtudy.education.repository.MemberRepository;
+import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Transactional
 @Service
@@ -21,6 +20,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
     private final AuthRepository authRepository;
+
+    @Override
+    public boolean validateMember(Long authId, SecurityMember member) {
+        Auth auth = authRepository.findByAuthId(authId);
+        Long authNum = auth.getMember().getMemNum();
+        Long memNum = member.getMember().getMemNum();
+        return authNum.equals(memNum);
+    }
 
     @Override
     public Long requestAuth(Member member, Roles roles, String content) {

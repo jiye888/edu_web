@@ -6,27 +6,9 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Academy</h3>
-    <!--
-    <select name="category" id="category">
-        <option value="name">학원명</option>
-        <option value="subject">과목</option>
-        <option value="location">학원 위치</option>
-    </select>
-    -->
-    학원명<input type="text" id="name_keyword">
-    학원 위치<input type="text" id="location_keyword">
-
-    <!--<div th:if="${#strings.equal(param.category, 'subject')}">-->
-    <a text="과목">
-        <div th:each="sub, subStat:${subject}">
-            <input type="checkbox" th:value="${sub}" th:name="subject_checkbox" id="subject_keyword">
-            <label th:for="'subject_keyword'+${subStat.index}" th:text="${sub.description}"></label>
-        </div>
-    <!--</div>-->
-    </a>
-
-    <!--<input type="text" id="keyword">-->
-    <button type="button" class="search" id="academySearchBtn">학원 검색</button>
+    <div th:if = "${academy.isEmpty()}" id="searchResult_null">
+        검색 결과가 존재하지 않습니다.
+    </div>
 
     <div th:if = "${!academy.isEmpty()}" id="searchResult">
         <table class="table table-borderless">
@@ -47,6 +29,18 @@
             </tr>
             </tbody>
         </table>
+
+        학원명<input type="text" id="name_keyword">
+        학원 위치<input type="text" id="location_keyword">
+
+        <a text="과목">
+            <div th:each="sub, subStat:${subject}">
+                <input type="checkbox" th:value="${sub}" th:name="subject_checkbox" id="subject_keyword">
+                <label th:for="'subject_keyword'+${subStat.index}" th:text="${sub.description}"></label>
+            </div>
+        </a>
+
+            <button type="button" class="search" id="academySearchBtn">학원 검색</button>
 
         <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
                             totalPages=${academy.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
@@ -94,8 +88,9 @@
         $(document).ready(function() {
 
             $('#academySearchBtn').click(function(){
-            academySearch();
+                academySearch();
             });
+
         });
 
         function getSubject() {

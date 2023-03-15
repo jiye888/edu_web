@@ -69,7 +69,8 @@
                     "address":address,
                     }),
                     success: function() {
-                            history.back();
+                        alert("회원 가입이 완료되었습니다.");
+                        history.back();
                     },
                     error: function(xhr, response) {
                         jwtFilter();

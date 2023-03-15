@@ -24,4 +24,6 @@ public class MemberDTO {
 
     private LocalDateTime joinedDate;
 
+    private LocalDateTime createdAt;
+
 }

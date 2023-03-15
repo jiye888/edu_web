@@ -36,6 +36,7 @@ public interface MemberService {
                 .email(member.getEmail())
                 .name(member.getName())
                 .address(member.getAddress())
+                .createdAt(member.getCreatedAt())
                 .build();
 
         return memberDTO;
@@ -48,6 +49,7 @@ public interface MemberService {
                 .name(member.getName())
                 .address(member.getAddress())
                 .joinedDate(am.getCreatedAt())
+                .createdAt(member.getCreatedAt())
                 .build();
 
         return memberDTO;

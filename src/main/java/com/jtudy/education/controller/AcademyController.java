@@ -77,11 +77,11 @@ public class AcademyController {
         model.addAttribute("academy", new AcademyFormDTO());
         Long number = academyService.register(academyFormDTO);
         model.addAttribute("number", number);
-        String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
-        String newLocation = current+"/read?number="+number;
+        //String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
+        //String newLocation = current+"/read?number="+number;
         Context context = new Context();
         context.setVariables(model.asMap());
-        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.LOCATION, newLocation).build();
+        return ResponseEntity.status(HttpStatus.OK).body(number);
     }
 
     @GetMapping("/read")

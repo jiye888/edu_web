@@ -29,7 +29,20 @@
             </tbody>
         </table>
 
-        <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
+        학원명<input type="text" id="name_keyword">
+        학원 위치<input type="text" id="location_keyword">
+
+        <a text="과목">
+            <div th:each="sub, subStat:${subject}" style="display:inline-block">
+                <input type="checkbox" th:value="${sub}" th:name="subject_checkbox" id="subject_keyword">
+                <label th:for="'subject_keyword'+${subStat.index}" th:text="${sub.description}"></label>
+            </div>
+        </a>
+
+            <button type="button" class="search" id="academySearchBtn">학원 검색</button>
+
+
+            <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
                             totalPages=${academy.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
              aria-label="Page-navigation">
@@ -75,9 +88,13 @@
         $(document).ready(function() {
 
             $('#registerBtn').click(function(){
-            register();
-
+                register();
             });
+
+            $('#academySearchBtn').click(function(){
+                academySearch();
+            });
+
         });
 
         function register() {
@@ -88,6 +105,56 @@
                 success: function() {
                     location.href="/academy/register";
                 }
+            });
+        }
+
+
+        function getSubject() {
+            var subject = [];
+            var subjects = $("input[name=subject_checkbox]:checkbox");
+            for ( var i = 0; i < subjects.length; i++) {
+                if (subjects[i].checked == true ) {
+                    subject.push(subjects[i].value);
+                }
+            }
+            return subject;
+        }
+
+        function academySearch() {
+            var name = $('#name_keyword').val();
+            var location =$('#location_keyword').val();
+            var subject = getSubject();
+            var categories = [{"name":name}, {"location":location}, {"subject":subject}];
+            var searchData = {};
+            var urlString = "";
+
+            for (var i=0; i<categories.length; i++) {
+                for (var category in categories[i]) {
+                    if (categories[i][category] !== "" && categories[i][category].length > 0) {
+                        searchData[category] = categories[i][category];
+                        urlString += category + "=" + categories[i][category] + "&";
+                    }
+                }
+            }
+
+            if (urlString !== "") {
+                urlString = urlString.slice(0,-1);
+            } else {
+                alert("검색어를 입력해주세요.");
+            }
+
+            $.ajax({
+                url: '/academy/search',
+                type: 'GET',
+                contentType:"application/json",
+                data: {
+                    "name":searchData.name,
+                    "subject":searchData.subject,
+                    "location":searchData.location,
+                },
+                success: function() {
+                    window.location.href="/academy/search?"+urlString;
+                },
             });
         }
 

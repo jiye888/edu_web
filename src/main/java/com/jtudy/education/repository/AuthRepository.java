@@ -12,6 +12,8 @@ public interface AuthRepository extends JpaRepository<Auth, Long> {
     @Query("select a from Auth a left outer join a.member m where m.email = :email")
     Auth findByEmail(String email);
 
+    Auth findByAuthId(Long authId);
+
     Slice<Auth> findByIsProcessed(boolean isProcessed, Pageable pageable);
 
 }

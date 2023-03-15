@@ -4,10 +4,13 @@ import com.jtudy.education.DTO.AuthDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface AuthService {
+
+    boolean validateMember(Long authId, SecurityMember member);
 
     Long requestAuth(Member member, Roles roles, String content);
 

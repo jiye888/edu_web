@@ -69,9 +69,9 @@
                         "location":location,
                     }),
 
-                    success: function(xhr) {
-                        var header = xhr.getResponseHeader("Location");
-                        window.location.href = header;
+                    success: function(response) {
+                        var number = Number(response);
+                        window.location.href = "/academy/read?number="+number;
                     },
                 });
         }

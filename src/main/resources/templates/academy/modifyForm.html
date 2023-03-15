@@ -27,7 +27,7 @@
 
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
-                <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="form-check-input">
+                <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="form-check-input" th:checked="${sub} == ${academy.subject}">
                 <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
             </div>
             <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}" class="fieldError"></p><br>
