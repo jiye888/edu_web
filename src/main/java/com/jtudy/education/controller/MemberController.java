@@ -190,9 +190,6 @@ public class MemberController {
         model.addAttribute("name", academyDTO.getAcaName());
         Page<MemberDTO> member = memberService.getMembers(acaNum, pageable);
         model.addAttribute("member", member);
-        //Page<Object> pageObject = member.map(e -> memberService.getJoinedDate(acaNum, e.getMemNum()));
-        //model.addAttribute("object", pageObject);
-        //return pageObject;
     }
 
 }

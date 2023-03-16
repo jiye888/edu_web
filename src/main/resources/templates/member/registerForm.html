@@ -9,10 +9,10 @@
     <form th:object="${member}">
 
         이메일<input type="email" th:field="*{email}" th:id="email">
-        <!--<p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p><br>
-        <p th:if="${emailError}" th:text="${emailError}"></p>-->
+        <p id="emailError" class="fieldError"></p>
         비밀번호<input type="password" th:field="*{password}">
         <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p><br>
+        <p id="passwordError"></p>
         비밀번호 확인<input type="password" id="password2"><br>
         이름<input type="text" th:field="*{name}">
         <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError"></p><br>
@@ -54,6 +54,19 @@
         });
         address = $.trim(address);
 
+        var jsonData = {
+            "email":email,
+            "password":password,
+            "name":name,
+            "address":address,
+        }
+
+        for (var d in jsonData) {
+            if (d == null) {
+                alert("모든 값을 입력해주세요.");
+            }
+        }
+
         if (email && password && name) {
 
             if (password == password2) {
@@ -62,25 +75,20 @@
                     url: '/member/join',
                     type: "POST",
                     contentType: "application/json",
-                    data: JSON.stringify({
-                    "email":email,
-                    "password":password,
-                    "name":name,
-                    "address":address,
-                    }),
+                    data: JSON.stringify(jsonData),
                     success: function() {
                         alert("회원 가입이 완료되었습니다.");
                         history.back();
                     },
                     error: function(xhr, response) {
+                        var errorMessage = JSON.parse(xhr.responseText);
                         jwtFilter();
-                        if (response.BindingResultError) {
-                            for (var res in response) {
-                                if (document.getByElement(res)) {
-                                    var pTag = document.createElement("p");
-                                    var node = document.createNode(response[res]);
-                                    pTag.appendChild(node);
-                                    document.getByElement(pTag).append(res);
+                        if (errorMessage.BindingResultError) {
+                            for (var err in errorMessage) {
+                                if (document.getElementById(err)) {
+                                    var errElement = document.getElementById(err);
+                                    var textNode = document.createTextNode(errorMessage[err]);
+                                    errElement.appendChild(textNode);
                                 }
                             }
                         }
