@@ -9,13 +9,12 @@
     <form th:object="${member}">
 
         이메일<input type="email" th:field="*{email}" th:id="email">
-        <p id="emailError" class="fieldError"></p>
+        <p id="emailError"></p><br>
         비밀번호<input type="password" th:field="*{password}">
-        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p><br>
         <p id="passwordError"></p>
         비밀번호 확인<input type="password" id="password2"><br>
         이름<input type="text" th:field="*{name}">
-        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError"></p><br>
+        <p id="nameError"></p><br>
         주소
         <div th:field="*{address}">
             <input type="text" name="address" id="postcode" placeholder="우편번호">
@@ -26,7 +25,7 @@
             <input type="text" name="address" id="detailAddress" placeholder="상세주소">
             <input type="text" name="address" id="extraAddress" placeholder="참고항목">
         </div><br>
-        <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError"></p><br>
+        <p id="addressError"><br>
 
         <button type="button" id="registerBtn">등록</button>
     </form>
@@ -38,8 +37,22 @@
         });
 
     });
+    function clearText() {
+        var pTag = ["emailError", "passwordError", "nameError", "addressError"];
+        for (var tag in pTag) {
+            var pElement = document.getElementById(tag);
+            if (pElement != null) {
+                console.log(pElement+" not null");
+                //pElement.innerHTML = "";
+                //var textNode = pElement.createTextNode("");
+                //pElement.appendChild(textNode);
+                pElement.textContent="";
+            }
+        }
+    }
 
     function register() {
+        clearText();
         var email = $('#email').val();
         var password = $('#password').val();
         var password2 = $('#password2').val();
@@ -61,13 +74,7 @@
             "address":address,
         }
 
-        for (var d in jsonData) {
-            if (d == null) {
-                alert("모든 값을 입력해주세요.");
-            }
-        }
-
-        if (email && password && name) {
+        if (email && password && name && address) {
 
             if (password == password2) {
 
@@ -87,8 +94,9 @@
                             for (var err in errorMessage) {
                                 if (document.getElementById(err)) {
                                     var errElement = document.getElementById(err);
-                                    var textNode = document.createTextNode(errorMessage[err]);
-                                    errElement.appendChild(textNode);
+                                    //var textNode = document.createTextNode(errorMessage[err]);
+                                    //errElement.appendChild(textNode);
+                                    errElement.textContent=errorMessage[err];
                                 }
                             }
                         }
