@@ -12,10 +12,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -51,22 +53,36 @@ public class NoticeController {
     }
 
     @GetMapping("/register")
-    public String register(@RequestParam("academy") Long acaNum, Model model) {
-        model.addAttribute("academy", acaNum);
-        model.addAttribute("notice", new NoticeFormDTO());
-        return "notice/registerForm";
+    public String register(@RequestParam("academy") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+        if (!noticeService.validateMember(acaNum, member)) {
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "exception";
+        } else {
+            model.addAttribute("academy", acaNum);
+            model.addAttribute("notice", new NoticeFormDTO());
+            return "notice/registerForm";
+        }
     }
 
     @PostMapping("/register")
-    @ResponseBody
-    public void register(@RequestBody @Valid NoticeFormDTO noticeFormDTO, RedirectAttributes redirectAttributes,
-                           @AuthenticationPrincipal SecurityMember member) {
-        Long acaNum = noticeFormDTO.getAcademy();
-        if (noticeService.validateMember(acaNum, member)) {
+    public ResponseEntity register(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult,
+                                   RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member) {
+        try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.badRequest().body(map);
+            }
+            Long acaNum = noticeFormDTO.getAcademy();
             Long notNum = noticeService.register(noticeFormDTO, acaNum);
             redirectAttributes.addFlashAttribute("message", notNum);
-        } else {
-            throw new IllegalArgumentException("관리자 권한이 없습니다.");
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -82,11 +98,23 @@ public class NoticeController {
     }
 
     @PostMapping("/modify")
-    @ResponseBody
-    public String modify(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        Long notNum = noticeService.update(noticeFormDTO);
-        redirectAttributes.addFlashAttribute("message", notNum);
-        return "redirect:/notice/list";
+    public ResponseEntity modify(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.badRequest().body(map);
+            }
+            Long notNum = noticeService.update(noticeFormDTO);
+            redirectAttributes.addFlashAttribute("message", notNum);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/delete")

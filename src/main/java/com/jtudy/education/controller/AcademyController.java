@@ -23,6 +23,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -74,14 +75,23 @@ public class AcademyController {
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult,
                                    RedirectAttributes redirectAttributes, @AuthenticationPrincipal Member member, Model model, HttpServletRequest request) {
-        model.addAttribute("academy", new AcademyFormDTO());
-        Long number = academyService.register(academyFormDTO);
-        model.addAttribute("number", number);
-        //String current = request.getRequestURI().substring(0, request.getRequestURI().lastIndexOf("/"));
-        //String newLocation = current+"/read?number="+number;
-        Context context = new Context();
-        context.setVariables(model.asMap());
-        return ResponseEntity.status(HttpStatus.OK).body(number);
+        try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.badRequest().body(map);
+            }
+            model.addAttribute("academy", new AcademyFormDTO());
+            Long number = academyService.register(academyFormDTO);
+            model.addAttribute("number", number);
+            return ResponseEntity.status(HttpStatus.OK).body(number);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/read")
@@ -103,11 +113,24 @@ public class AcademyController {
     }
 
     @PostMapping("/modify")
-    @ResponseBody
-    public void modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, Model model) {
-        model.addAttribute("number", academyFormDTO.getAcaNum());
-        model.addAttribute("academy", academyFormDTO);
-        academyService.update(academyFormDTO);
+    public ResponseEntity modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, Model model) {
+        try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.badRequest().body(map);
+            }
+            model.addAttribute("number", academyFormDTO.getAcaNum());
+            model.addAttribute("academy", academyFormDTO);
+            academyService.update(academyFormDTO);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})

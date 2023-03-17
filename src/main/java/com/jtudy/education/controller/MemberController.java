@@ -81,21 +81,17 @@ public class MemberController {
     @PostMapping("/join")
     public ResponseEntity join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         try {
-        if (bindingResult.hasErrors()) {
-            Map<String, String> map = new HashMap();
-            map.put("BindingResultError", "true");
-            //model.addAttribute("org.springframework.validation.BindingResult.registerForm", bindingResult);
-            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            for (FieldError fieldError : fieldErrors) {
-                map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
-                System.out.println(fieldError.getField()+"Error");
-                System.out.println(fieldError);
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
-        }
             memberService.createMember(memberFormDTO);
         } catch (Exception e) {
-            model.addAttribute("msg", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok().build();
@@ -127,7 +123,7 @@ public class MemberController {
                 String message = "권한이 없습니다.";
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
             }
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             String error = e.getMessage();
             return ResponseEntity.badRequest().body(error);
         }
@@ -146,13 +142,22 @@ public class MemberController {
     }
 
     @PostMapping("/modify")
-    @ResponseBody
-    public String modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
-        if (bindingResult.hasErrors()){
-            return "member/modifyForm";
+    public ResponseEntity modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
+        try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+            }
+            memberService.updateMember(memberFormDTO);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        memberService.updateMember(memberFormDTO);
-        return "redirect:/academy/main";
     }
 
     @PostMapping("/withdraw")

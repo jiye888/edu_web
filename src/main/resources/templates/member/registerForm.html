@@ -37,15 +37,12 @@
         });
 
     });
+
     function clearText() {
         var pTag = ["emailError", "passwordError", "nameError", "addressError"];
         for (var tag in pTag) {
             var pElement = document.getElementById(tag);
             if (pElement != null) {
-                console.log(pElement+" not null");
-                //pElement.innerHTML = "";
-                //var textNode = pElement.createTextNode("");
-                //pElement.appendChild(textNode);
                 pElement.textContent="";
             }
         }
@@ -94,8 +91,6 @@
                             for (var err in errorMessage) {
                                 if (document.getElementById(err)) {
                                     var errElement = document.getElementById(err);
-                                    //var textNode = document.createTextNode(errorMessage[err]);
-                                    //errElement.appendChild(textNode);
                                     errElement.textContent=errorMessage[err];
                                 }
                             }

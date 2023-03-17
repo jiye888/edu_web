@@ -9,12 +9,11 @@
     <form th:object="${member}">
 
         이메일<input type="email" th:field="*{email}" readonly>
-        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError"></p><br>
         비밀번호<input type="password" th:field="*{password}">
-        <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError"></p><br>
+        <p id="passwordError"></p>
         비밀번호 확인<input type="password" id="password2"><br>
         이름<input type="text" th:field="*{name}">
-        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError"></p><br>
+        <p id="nameError"></p><br>
         주소
         <div th:field="*{address}">
             <input type="text" name="address" id="postcode" placeholder="우편번호">
@@ -27,7 +26,7 @@
         </div><br>
         기존 주소
         <input type="text" style="width:500px;" th:value="*{address}" id="ex_address" readonly><br>
-        <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError"></p><br>
+        <p id="addressError"><br>
 
         <input type="button" id="modifyBtn" value="수정">
     </form>
@@ -42,7 +41,18 @@
 
     });
 
+    function clearText() {
+        var pTag = ["passwordError", "nameError", "addressError"];
+        for (var tag in pTag) {
+            var pElement = document.getElementById(tag);
+            if (pElement != null) {
+                pElement.textContent="";
+            }
+        }
+    }
+
     function modify() {
+        clearText();
         var token = localStorage.getItem("jwt");
         var email = $('#email').val();
         var password = $('#password').val();
@@ -78,6 +88,19 @@
                     }),
                     success: function() {
                         history.back();
+                    },
+                    error: function(xhr, response) {
+                        var errorMessage = JSON.parse(xhr.responseText);
+                        jwtFilter();
+                        if (errorMessage.BindingResultError) {
+                            for (var err in errorMessage) {
+                                if(document.getElementById(err)) {
+                                    var errElement = document.getElementById(err);
+                                    errElement.textContent=errorMessage[err];
+                                }
+                            }
+                        }
+                        console.log(xhr.getResponseBody);
                     },
                 });
             } else {

@@ -16,12 +16,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -47,19 +50,22 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid ReviewFormDTO reviewFormDTO, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public ResponseEntity register(@RequestBody @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @AuthenticationPrincipal SecurityMember member, Model model) {
         try {
-            System.out.println(reviewFormDTO);
-            Long rev = reviewService.register(reviewFormDTO);
-            System.out.println(rev);
-        } catch (NullPointerException e) {
-            String message = "Null pointer exception";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.badRequest().body(map);
+            }
+            Long revNum = reviewService.register(reviewFormDTO);
+            return ResponseEntity.ok().body(revNum);
         } catch (Exception e) {
-            String message = e.getMessage();
-            return ResponseEntity.status(HttpStatus.SEE_OTHER).body(message);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/read")
@@ -77,12 +83,22 @@ public class ReviewController {
     }
 
     @PostMapping("/modify")
-    @ResponseBody
-    public void modify(@RequestBody @Valid ReviewFormDTO reviewFormDTO, @AuthenticationPrincipal SecurityMember member, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("msg", "모든 항목을 입력해주세요.");
+    public ResponseEntity modify(@RequestBody @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @AuthenticationPrincipal SecurityMember member, Model model) {
+        try {
+            if (bindingResult.hasErrors()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("BindingResultError", "true");
+                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+                for (FieldError fieldError : fieldErrors) {
+                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                }
+                return ResponseEntity.badRequest().body(map);
+            }
+            reviewService.update(reviewFormDTO);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        reviewService.update(reviewFormDTO);
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
