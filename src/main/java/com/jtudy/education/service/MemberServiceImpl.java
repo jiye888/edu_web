@@ -7,6 +7,7 @@ import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
+import javassist.bytecode.DuplicateMemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,11 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Transactional
 @Service
@@ -64,15 +63,15 @@ public class MemberServiceImpl implements MemberService{
                 .address(memberFormDTO.getAddress())
                 .build();
         member.addRoles(Roles.USER);
-        try{
-            if(memberRepository.existsByEmail(member.getEmail())) {
-                throw new Exception("사용중인 이메일입니다.");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
         memberRepository.save(member);
         return member.getMemNum();
+    }
+
+    @Override
+    public void validateEmail(String email) throws DuplicateMemberException {
+        if(memberRepository.existsByEmail(email)) {
+            throw new DuplicateMemberException("사용중인 이메일입니다.");
+        }
     }
 
     @Override

@@ -8,7 +8,7 @@
         <h3>등록 화면</h3>
         <form th:object="${academy}">
             학원 이름<input type="text" th:field="*{acaName}">
-            <p th:if="${#fields.hasErrors('acaName')}" th:errors="*{acaName}" class="fieldError"></p><br>
+            <p id="acaNameError"></p><br>
             학원 위치
             <div th:field="*{location}">
                 <input type="text" name="location" id="postcode" placeholder="우편번호">
@@ -19,14 +19,14 @@
                 <input type="text" name="location" id="detailAddress" placeholder="상세주소">
                 <input type="text" name="location" id="extraAddress" placeholder="참고항목">
             </div>
-            <p th:if="${#fields.hasErrors('location')}" th:errors="*{location}" class="fieldError"></p><br>
+            <p id="locationError"></p><br>
 
             수강 과목<br>
             <div th:each="sub : ${subject}" class="form-check form-check line">
                 <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="form-check-input">
                 <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
             </div>
-            <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}" class="fieldError"></p><br>
+            <p id="subjectError"></p><br>
 
             <button type="button" id="registerBtn">등록</button>
         </form>
@@ -37,6 +37,16 @@
                 register();
             });
         });
+
+        function clearText() {
+            var pTag = ["acaNameError", "locationError", "subjectError"];
+            for (var tag in pTag) {
+                var pElement = document.getElementById(tag);
+                if (pElement != null) {
+                    pElement.textContent="";
+                }
+            }
+        }
 
         function getSubject() {
             var subject = [];
@@ -50,6 +60,7 @@
         }
 
         function register() {
+            clearText();
             var acaName = $('#acaName').val();
             var location = '';
             $('input[name=location]').map(function(){
@@ -58,6 +69,8 @@
             });
             location = $.trim(location);
             var subject = getSubject();
+
+            if (acaName && location && subject) {
 
                 $.ajax({
                     url: '/academy/register',
@@ -68,12 +81,30 @@
                         "subject":subject,
                         "location":location,
                     }),
-
                     success: function(response) {
                         var number = Number(response);
                         window.location.href = "/academy/read?number="+number;
                     },
+                    error: function(xhr, response) {
+                        jwtFilter();
+                        try {
+                            var errorMessage = JSON.parse(xhr.responseText);
+                            if (errorMessage.BindingResultError) {
+                                for (var err in errorMessage) {
+                                    if (document.getElementById(err)) {
+                                        var errElement = document.getElementById(err);
+                                        errElement.textContent = errorMessage[err];
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.log(xhr.responseText);
+                        }
+                    },
                 });
+            } else {
+                alert("모든 항목을 입력해주세요.");
+            }
         }
 
         </script>

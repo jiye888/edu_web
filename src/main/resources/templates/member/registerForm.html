@@ -85,17 +85,23 @@
                         history.back();
                     },
                     error: function(xhr, response) {
-                        var errorMessage = JSON.parse(xhr.responseText);
                         jwtFilter();
-                        if (errorMessage.BindingResultError) {
-                            for (var err in errorMessage) {
-                                if (document.getElementById(err)) {
-                                    var errElement = document.getElementById(err);
-                                    errElement.textContent=errorMessage[err];
+                        try {
+                            var errorMessage = JSON.parse(xhr.responseText);
+                            if (errorMessage.BindingResultError) {
+                                for (var err in errorMessage) {
+                                    if (document.getElementById(err)) {
+                                        var errElement = document.getElementById(err);
+                                        errElement.textContent = errorMessage[err];
+                                    }
                                 }
                             }
+                            if (errorMessage.EmailValidationError) {
+                                alert(errorMessage.EmailValidationError);
+                            }
+                        } catch (e) {
+                            console.log(xhr.responseText);
                         }
-                        console.log(xhr.getResponseBody);
                     },
                 });
             } else {

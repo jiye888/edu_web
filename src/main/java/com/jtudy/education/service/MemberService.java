@@ -5,6 +5,7 @@ import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
+import javassist.bytecode.DuplicateMemberException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,6 +20,8 @@ public interface MemberService {
     Member findByEmail(String email);
 
     Long createMember(MemberFormDTO memberFormDTO);
+
+    void validateEmail(String email) throws DuplicateMemberException;
 
     Long updateMember(MemberFormDTO memberFormDTO);
 

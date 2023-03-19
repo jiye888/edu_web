@@ -7,6 +7,7 @@ import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
+import javassist.bytecode.DuplicateMemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -81,16 +82,21 @@ public class MemberController {
     @PostMapping("/join")
     public ResponseEntity join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         try {
+            memberService.validateEmail(memberFormDTO.getEmail());
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap();
                 map.put("BindingResultError", "true");
                 List<FieldError> fieldErrors = bindingResult.getFieldErrors();
                 for (FieldError fieldError : fieldErrors) {
-                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                    map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
             memberService.createMember(memberFormDTO);
+        } catch (DuplicateMemberException e) {
+            Map<String, String> map = new HashMap<>();
+            map.put("EmailValidationError", e.getMessage());
+            return ResponseEntity.badRequest().body(map);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

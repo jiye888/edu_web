@@ -83,6 +83,7 @@ public class AcademyController {
                 for (FieldError fieldError : fieldErrors) {
                     map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
                 }
+                System.out.println(map);
                 return ResponseEntity.badRequest().body(map);
             }
             model.addAttribute("academy", new AcademyFormDTO());

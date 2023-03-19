@@ -9,9 +9,9 @@
     <form th:object="${notice}">
         <input type="hidden" th:value="${academy}" id="academy">
         제목<input type="text" th:field="*{title}">
-        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p><br>
+        <p id="titleError"></p><br>
         내용<input type="text" th:field="*{content}">
-        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p><br>
+        <p id="contentError"></p><br>
         <button type="button" id="registerBtn">등록</button>
     </form>
     <script th:inline="javascript">
@@ -21,7 +21,18 @@
             });
         });
 
+        function clearText() {
+            var pTag = ["title", "content"];
+            for (var tag in pTag) {
+                var pElement = document.getElementById(tag);
+                if(pElement != null) {
+                    pElement.textContent = "";
+                }
+            }
+        }
+
         function register() {
+            clearText();
             var academy = Number($('#academy').val());
             var title = $('#title').val();
             var content = $('#content').val();
@@ -32,19 +43,36 @@
                     "content":content,
                 };
 
-            $.ajax({
-                url: '/notice/register',
-                type: "POST",
-                contentType: "application/json",
-                headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                data: JSON.stringify(json),
-            }).then((response) => {
-                if (title != null && content != null) {
-                    history.back();
-                } else {
-                    alert('모든 항목을 작성해주세요.');
-                };
-            });
+            if (title && content) {
+                $.ajax({
+                    url: '/notice/register',
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
+                    data: JSON.stringify(json),
+                    success: function() {
+                        history.back();
+                    },
+                    error: function(xhr, response) {
+                        jwtFilter();
+                        try {
+                            var errorMessage = JSON.parse(xhr.responseText);
+                            if (errorMessage.BindingResultError) {
+                                for (var err in errorMessage) {
+                                    if (document.getElementById(err)) {
+                                        var errElement = document.getElementById(err);
+                                        errElement.textContent = errorMessage[err];
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.log(xhr.responseText);
+                        }
+                    },
+                });
+            } else {
+                alert('모든 항목을 작성해주세요.');
+            }
         }
     </script>
 </div>

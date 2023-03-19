@@ -9,7 +9,7 @@
     <form th:object="${review}">
         <input type="hidden" th:value="${academy}" id="academy">
         제목<input type="text" th:field="*{title}">
-        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError"></p><br>
+        <p id="titleError"></p><br>
         평점
         <div th:field="*{grade}">
             <input type="radio" id="5points" name="grade" value="5">
@@ -23,9 +23,9 @@
             <input type="radio" id="1point" name="grade" value="1">
             <label for="1point">1</label>
         </div>
-        <p th:if="${#fields.hasErrors('grade')}" th:errors="*{grade}" class="fieldError"></p><br>
+        <p id="gradeError"></p><br>
         내용<input type="text" style="height: 600px; width: 800px;" th:field="*{content}">
-        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError"></p><br>
+        <p id="contentError"></p><br>
         <button type="button" id="registerBtn">등록</button>
 </form>
 <script th:inline="javascript">
@@ -36,7 +36,18 @@
         });
     });
 
+    function clearText() {
+        var pTag = ["titleError", "gradeError", "contentError"];
+        for (var tag in pTag) {
+            var pElement = document.getElementById(tag);
+            if (pElement != null) {
+                pElement.textContent = "";
+            }
+        }
+    }
+
     function register() {
+        clearText();
         var academy = $('#academy').val();
         var title = $('#title').val();
         var content = $('#content').val();
@@ -55,10 +66,24 @@
                     "grade":grade,
                 }),
                 success: function() {
-                    alert(academy);
                     history.back();
                 },
-
+                error: function(xhr, response) {
+                    jwtFilter();
+                    try {
+                        var errorMessage = JSON.parse(xhr.responseText);
+                        if (errorMessage.BindingResultError) {
+                            for (var err in errorMessage) {
+                                if (document.getElementById(err)) {
+                                    var errElement = document.getElementById(err);
+                                    errElement.textContent = errorMessage[err];
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.log(xhr.responseText);
+                    }
+                },
             });
         } else {
             alert('모든 항목을 입력해주세요.');
