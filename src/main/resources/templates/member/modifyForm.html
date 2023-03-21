@@ -9,7 +9,7 @@
     <form th:object="${member}">
 
         이메일<input type="email" th:field="*{email}" readonly>
-        비밀번호<input type="password" th:field="*{password}">
+        비밀번호<input type="password" id="password">
         <p id="passwordError"></p>
         비밀번호 확인<input type="password" id="password2"><br>
         이름<input type="text" th:field="*{name}">

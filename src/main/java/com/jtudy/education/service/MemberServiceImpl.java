@@ -36,7 +36,7 @@ public class MemberServiceImpl implements MemberService{
     @Transactional(readOnly = true)
     public boolean validateMember(Long memNum, SecurityMember securityMember) {
         Member member = memberRepository.findByMemNum(memNum);
-        return member.getEmail().equals(securityMember.getUsername());
+        return member.getEmail().equals(securityMember.getUsername()) || securityMember.getAuthorities().contains(Roles.ADMIN);
     }
 
     @Override
@@ -120,19 +120,6 @@ public class MemberServiceImpl implements MemberService{
         Page<MemberDTO> page = new PageImpl<>(memberDTOList, pageable, memberList.size());
         return page;
     }
-/*
-    @Override
-    @Transactional(readOnly = true)
-    public MemberDTO getJoinedDate(Long acaNum, Long memNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        Member member = memberRepository.findByMemNum(memNum);
-        Optional<AcademyMember> academyMember = academyMemberRepository.findByAcademyAndMember(academy, member);
-        if (academyMember.isPresent()) {
-            MemberDTO memberDTO = entityToDTO(member, academyMember.get().getCreatedAt());
-            return memberDTO;
-        }
-    }*/
-
 }
 
 

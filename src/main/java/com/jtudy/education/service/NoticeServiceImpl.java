@@ -3,6 +3,7 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.repository.AcademyRepository;
@@ -36,7 +37,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional(readOnly = true)
     public boolean validateMember(Long acaNum, SecurityMember member) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        return academy.getCreatedBy().equals(member.getUsername());
+        return academy.getCreatedBy().equals(member.getUsername()) || member.getAuthorities().contains(Roles.ADMIN);
     }
 
     @Override

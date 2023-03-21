@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
         Auth auth = authRepository.findByAuthId(authId);
         Long authNum = auth.getMember().getMemNum();
         Long memNum = member.getMember().getMemNum();
-        return authNum.equals(memNum);
+        return authNum.equals(memNum) || member.getAuthorities().contains(Roles.ADMIN);
     }
 
     @Override

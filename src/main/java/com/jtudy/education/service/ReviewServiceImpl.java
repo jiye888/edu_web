@@ -2,6 +2,7 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
 import com.jtudy.education.entity.Member;
@@ -41,7 +42,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
         boolean regInfo = academyList.contains(academy);
         boolean modInfo = review.getCreatedBy().equals(member.getUsername());
-        return (regInfo || modInfo);
+        return (regInfo || modInfo || member.getAuthorities().contains(Roles.ADMIN));
     }
 
     @Override

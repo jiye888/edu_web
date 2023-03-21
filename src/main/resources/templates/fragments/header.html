@@ -71,9 +71,8 @@
                             },*/
                         }).always(function() {
                             localStorage.removeItem("jwt");
-                            /*jwtCookie();
                             alert("로그아웃이 완료되었습니다.");
-                            location.href = "/academy/main";*/
+                            location.href = "/academy/main";
                         });
 
                     });
@@ -134,33 +133,6 @@
                         location.href='/academy/search?'+urlString;
                     },
                 });
-            }
-
-            function jwtCookie() {
-                    var cookies = document.cookie.split(".");
-                    var cookieName = "Matched_Token";
-                    var cookieValue = "";
-                    for (var i=0; i<cookies.length; i++) {
-                        var cookie = cookies[i];
-                        while (cookie.charAt(0) == ' '){
-                            cookie = cookie.substring(1);
-                        }
-                        if (cookie.indexOf(cookieName) == 0) {
-                            cookieValue = cookie.substring(cookieName.length+1);
-
-                            if (cookieValue == "not_matched") {
-                                var now = new Date();
-                                now.setMonth(now.getMonth()-1);
-                                var expires = "expires="+now.toUTCString();
-
-                                document.cookie = cookieName + "=; " + expires;
-                                alert('not matched 토큰 처리');
-                            }
-
-                            break;
-
-                        }
-                    }
 
             }
 

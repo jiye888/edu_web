@@ -7,6 +7,7 @@ import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpHeaders;
@@ -42,10 +43,17 @@ public class AuthController {
     }
 
     @GetMapping("/requested")
-    public void requestedAuths(/*@RequestParam(defaultValue = "1") int page*/ Pageable pageable, Model model) {
-        //Pageable pageable = PageRequest.of(page-1, 10);
+    public String requestedAuths(@RequestParam(defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10);
         Slice<AuthDTO> authDTO = authService.requestedAuths(pageable);
         model.addAttribute("auth", authDTO);
+        return "auth/requested";
+    }
+    @GetMapping("/requestedAuth")
+    public ResponseEntity requestedAuthData(@RequestParam(defaultValue = "1") int page, Model model) {
+        Pageable pageable = PageRequest.of(page-1, 10);
+        Slice<AuthDTO> authDTO = authService.requestedAuths(pageable);
+        return ResponseEntity.ok().body(authDTO);
     }
 
     @GetMapping("/get")
