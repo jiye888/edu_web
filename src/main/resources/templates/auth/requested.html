@@ -17,13 +17,11 @@
             </tr>
             </thead>
             <tbody align="center" id="tbody">
-            <tr th:each="auth1:${auth}" id="tbody_tr">
-                <!--<div th:href="@{/auth/get?number={number}(number=${auth1.authId})}">-->
-                <td id="t_name"><a th:text="${auth1.name}"></a></td>
-                <td id="t_email"><a th:text="${auth1.email}"></a></td>
-                <td id="t_roles"><a th:text="${auth1.roles}"></a></td>
-                <td id="t_created"><a th:text="${auth1.createdAt}"></a></td>
-                <!--</div>-->
+            <tr th:each="auth1:${auth}" id="tbody_tr" th:attr="data-id=${auth1.authId}">
+                <td><a th:text="${auth1.name}"></a></td>
+                <td><a th:text="${auth1.email}"></a></td>
+                <td><a th:text="${auth1.roles}"></a></td>
+                <td><a th:text="${auth1.createdAt}"></a></td>
             </tr>
             </tbody>
         </table>
@@ -37,43 +35,14 @@
         $(function() {
             $('#showBtn').on("click",function() {
                 showMore();
+
             });
+        });
+        $(document).on("click", "tr", function() {
+            getAuth($(this));
         });
 
         function showMore() {
-        /*
-            var showButton = document.getElementById("showBtn");
-            var page = showButton.getAttribute("data-page");
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if(xhr.status == 200 && xhr.readyState == 4) {
-                    var response = xhr.responseText;
-                    var tbody = document.querySelector("table tbody");
-                    tbody.innerHTML += response;
-                    var nextPage = Number(page)+1;
-                    showButton.setAttribute("data-page", nextPage);
-                }
-
-            };
-            xhr.open("GET", "/requested?page="+(Number(page) + 1), true);
-            xhr.send();
-            */
-
-            /*
-            var showBtn = document.getElementById("showBtn");
-            var page = parseInt($('#showBtn').attr('data-page'))+1;
-            $.ajax({
-                type: 'GET',
-                url: '/auth/requested?page='+page,
-                success: function(data, xhr) {
-                    console.log(data);
-                    console.log(xhr.responseText);
-                    var tbody = document.querySelector("table tbody");
-                    tbody.append(data);
-                    $('#showMore').attr('data-page', page);
-                },
-            });*/
-
             var showBtn = $('#showBtn');
             var page = showBtn.data("page");
             page = Number(page)+1;
@@ -85,14 +54,27 @@
                 success: function(response) {
                     var requestedList = response.content;
                     var isLast = response.last;
-                    var tbody = $('#tbody');
+                    //var tbody = $('#tbody');
+                    var tbody = document.querySelector("tbody");
                     for (var i=0; i<requestedList.length; i++) {
                         var requested = requestedList[i];
-                        var tname = $("<td>").text(requested.name);
-                        var temail = $('<td>').text(requested.email);
-                        var troles = $('<td>').text(requested.roles);
-                        var tcreated = $('<td>').text(requested.createdAt);
-                        tbody.append("<tr>").append(tname).append("</td>").append(temail).append("</td>").append(troles).append("</td>").append(tcreated).append("</td>").append("</tr>");
+                        var tId = requested.authId;
+                        var trTag = document.createElement("tr");
+                        trTag.setAttribute("data-id", tId);
+
+                        var tName = document.createElement("td");
+                        tName.textContent = requested.name;
+                        var tEmail = document.createElement("td");
+                        tEmail.textContent = requested.email;
+                        var tRoles = document.createElement("td");
+                        tRoles.textContent = requested.roles;
+                        var tCreated = document.createElement("td");
+                        tCreated.textContent = requested.createdAt;
+                        trTag.insertBefore(tName, null);
+                        trTag.insertBefore(tEmail, null);
+                        trTag.insertBefore(tRoles, null);
+                        trTag.insertBefore(tCreated, null);
+                        tbody.appendChild(trTag);
                     }
                     if (isLast) {
                         showBtn.css('display', 'none');
@@ -101,6 +83,18 @@
                 }
             });
 
+        }
+
+        function getAuth(element) {
+            var authId = element.data("id");
+            $.ajax({
+                url: "/auth/get",
+                type: "GET",
+                data: {"number":authId},
+                success: function() {
+                    location.href = "/auth/get?number="+authId;
+                },
+            });
         }
     </script>
 </div>
