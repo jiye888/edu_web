@@ -6,6 +6,9 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">[[${name}]]님께서 가입하신 학원 목록입니다.</h3>
+    <div th:if="${academy.isEmpty()}">
+        현재 가입하신 학원이 없습니다.
+    </div>
 
     <div th:if = "${!academy.isEmpty()}">
         <table class="table table-borderless">

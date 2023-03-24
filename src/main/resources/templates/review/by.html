@@ -7,6 +7,9 @@
 <div layout:fragment="content">
     <h3 align="center">Review</h3>
     <input type="hidden" th:value="${member}" id="member">
+    <div th:if = "${review.isEmpty()}">
+        작성한 수강 후기가 존재하지 않습니다.
+    </div>
     <div th:if = "${!review.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">

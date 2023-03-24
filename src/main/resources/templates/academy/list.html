@@ -6,7 +6,10 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Academy</h3>
-    <button type="button" class="register" id="registerBtn">학원등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
+    <button type="button" class="register" id="registerBtn">학원 등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
+    <div th:if="${academy.isEmpty()}">
+        등록된 학원이 존재하지 않습니다.
+    </div>
 
     <div th:if = "${!academy.isEmpty()}">
         <table class="table table-borderless">

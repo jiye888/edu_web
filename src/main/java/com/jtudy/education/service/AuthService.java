@@ -7,6 +7,7 @@ import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface AuthService {
 
@@ -19,6 +20,9 @@ public interface AuthService {
     void cancelRequest(Long authId);
 
     AuthDTO getOne(Member member);
+
+    @Transactional(readOnly = true)
+    AuthDTO getOneByAuthId(Long authId);
 
     Slice<AuthDTO> requestedAuths(Pageable pageable);
 

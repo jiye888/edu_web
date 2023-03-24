@@ -26,7 +26,7 @@ public class AuthServiceImpl implements AuthService {
         Auth auth = authRepository.findByAuthId(authId);
         Long authNum = auth.getMember().getMemNum();
         Long memNum = member.getMember().getMemNum();
-        return authNum.equals(memNum) || member.getAuthorities().contains(Roles.ADMIN);
+        return authNum.equals(memNum) || member.getMember().getRolesList().contains(Roles.ADMIN);
     }
 
     @Override
@@ -57,6 +57,14 @@ public class AuthServiceImpl implements AuthService {
         if (auth == null) {
             return null;
         }
+        AuthDTO authDTO = entityToDTO(auth);
+        return authDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AuthDTO getOneByAuthId(Long authId) {
+        Auth auth = authRepository.findByAuthId(authId);
         AuthDTO authDTO = entityToDTO(auth);
         return authDTO;
     }

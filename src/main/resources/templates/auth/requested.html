@@ -6,6 +6,9 @@
 <body>
 <div layout:fragment="content">
     <h3>All Requested Auth</h3>
+    <div th:if="${auth.isEmpty()}">
+        요청된 권한이 없습니다.
+    </div>
     <div th:if="${!auth.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">
@@ -86,10 +89,12 @@
         }
 
         function getAuth(element) {
-            var authId = element.data("id");
+            var authId = parseInt(element.data("id"));
+            alert(authId);
             $.ajax({
                 url: "/auth/get",
                 type: "GET",
+                contentType: "application/json",
                 data: {"number":authId},
                 success: function() {
                     location.href = "/auth/get?number="+authId;

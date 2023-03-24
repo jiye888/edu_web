@@ -52,7 +52,15 @@ public class AcademyController {
     }
 
     @GetMapping("/main")
-    public void main() {
+    public void main(@AuthenticationPrincipal SecurityMember member, Model model) {
+        try {
+            if (member != null) {
+                boolean isAdmin = member.getMember().getRolesList().contains(Roles.ADMIN);
+                model.addAttribute("isAdmin", isAdmin);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @GetMapping("/list")
@@ -170,25 +178,6 @@ public class AcademyController {
         Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
         model.addAttribute("academy", academyDTO);
     }
-/*
-    @RequestMapping(value = "/search", method = {RequestMethod.POST})
-    public ResponseEntity search(@RequestBody Map<String, Object> search, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
-        try {
-            Page<AcademyDTO> academy = academyService.search(search, pageable);
-            model.addAttribute("academy", academy);
-            Context context = new Context();
-            context.setVariables(model.asMap());
-            String template = templateEngine.process("academy/search", context);
-            return ResponseEntity.ok().body(template);
-        } catch (Exception e) {
-            model.addAttribute("msg", e.getMessage());
-            Context context = new Context();
-            context.setVariables(model.asMap());
-            String template = templateEngine.process("exception", context);
-            return ResponseEntity.ok().body(template);
-        }
-    }*/
 
     @GetMapping("/search")
     public String search(@RequestParam(value="name", required = false) String name, @RequestParam(value="subject", required = false) String[] subject,

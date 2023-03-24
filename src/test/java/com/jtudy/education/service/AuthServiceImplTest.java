@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AuthDTO;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.AuthRepository;
 import com.jtudy.education.repository.MemberRepository;
@@ -32,6 +33,14 @@ class AuthServiceImplTest {
         Member member = memberRepository.findByEmail(email);
         AuthDTO authDTO = authService.getOne(member);
         System.out.println(authDTO);
+    }
+
+    @Test
+    public void getAuth() {
+        Member member = memberRepository.findByMemNum(Long.parseLong("3"));
+        boolean isAdmin = member.getRolesList().contains(Roles.ADMIN);
+        System.out.println(member.getRolesList().contains(Roles.ADMIN));
+        System.out.println(isAdmin);
     }
 
 

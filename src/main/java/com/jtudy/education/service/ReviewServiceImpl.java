@@ -42,7 +42,7 @@ public class ReviewServiceImpl implements ReviewService {
         List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
         boolean regInfo = academyList.contains(academy);
         boolean modInfo = review.getCreatedBy().equals(member.getUsername());
-        return (regInfo || modInfo || member.getAuthorities().contains(Roles.ADMIN));
+        return (regInfo || modInfo || member.getMember().getRolesList().contains(Roles.ADMIN));
     }
 
     @Override

@@ -6,8 +6,11 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Review</h3>
-    <button type="button" class="register" id="registerBtn">리뷰 작성</button>
+    <button type="button" class="register" id="registerBtn">수강 후기 작성</button>
         <input type="hidden" th:value="${academy}" id="academy">
+        <div th:if="${review.isEmpty()}">
+            현재 작성된 수강 후기가 없습니다.
+        </div>
         <div th:if = "${!review.isEmpty()}">
             <table class="table table-borderless">
                 <thead align="center">

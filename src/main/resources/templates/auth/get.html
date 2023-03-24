@@ -6,6 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3>[[${auth.name}]]님의 권한 요청</h3>
+    <input type="hidden" th:value="${auth.authId}" id="authId">
 
     이름<span th:text="${auth.name}"/>
     이메일<span th:text="${auth.email}"/><br/>
@@ -17,6 +18,10 @@
 
     <button type="button" id="modifyBtn">수정</button>
     <button type="button" id="cancelBtn">삭제</button>
+    <div th:if="${isAdmin}">
+        <button type="button" id="acceptBtn">요청 허가</button>
+        <button type="button" id="rejectBtn">요청 거절</button>
+    </div>
 
     <script th:inline="javascript">
         $(function() {
@@ -25,6 +30,12 @@
             });
             $('#cancelBtn').on("click", function() {
                 cancelRequest();
+            });
+            $('#acceptBtn').on("click", function() {
+                acceptRequest();
+            });
+            $('#rejectBtn').on("click", function() {
+                rejectRequest();
             });
         });
 
@@ -41,14 +52,46 @@
         }
 
         function cancelRequest() {
+            var authId = $('#authId').val();
             if (confirm("권한 요청을 취소하시겠습니까?")) {
                 $.ajax({
                     url: "/auth/cancel",
                     type: "POST",
                     contentType: "application/json",
+                    data: JSON.stringify({"authId":authId}),
                     success: function() {
                         history.back();
                     },
+                });
+            }
+        }
+
+        function acceptRequest() {
+            var authId = $('#authId').val();
+            if (confirm("권한 요청을 허가하시겠습니까?")) {
+                $.ajax({
+                    url: "/auth/accept",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({"authId":authId}),
+                    success: function() {
+                        location.href="/auth/requested";
+                    },
+                });
+            }
+        }
+
+        function rejectRequest() {
+            var authId = $('#authId').val();
+            if (confirm("권한 요청을 거절하시겠습니까?")) {
+                $.ajax({
+                    url: "/auth/reject",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({"authId":authId}),
+                    success: function() {
+                        location.href="/auth/requested";
+                    }
                 });
             }
         }

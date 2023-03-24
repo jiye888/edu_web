@@ -8,6 +8,9 @@
     <h3 align="center">Notice</h3>
     <button type="button" class="register" id="registerBtn">공지사항 등록</button>
     <input type="hidden" th:value="${academy}" id="academy">
+    <div th:if = "${notice.isEmpty()}">
+        현재 공지사항이 없습니다.
+    </div>
     <div th:if = "${!notice.isEmpty()}">
         <table class="table table-borderless">
             <thead align="center">

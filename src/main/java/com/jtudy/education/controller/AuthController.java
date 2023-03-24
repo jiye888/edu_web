@@ -58,18 +58,20 @@ public class AuthController {
 
     @GetMapping("/get")
     public String getRequestedOne(@RequestParam(value="number") Long authId, @AuthenticationPrincipal SecurityMember member, Model model) {
-        if (authService.validateMember(authId, member)) {
-            AuthDTO authDTO = authService.getOne(member.getMember());
-                if (authDTO != null) {
-                    model.addAttribute("auth", authDTO);
-                    return "auth/get";
-                } else {
-                    model.addAttribute("msg", "요청된 권한이 없습니다.");
-                    return "exception";
-                }
-        } else {
-            model.addAttribute("msg", "접근 권한이 없습니다.");
-            return "exception";
+        try {
+            if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+                model.addAttribute("isAdmin", true);
+            }
+            if (authService.validateMember(authId, member)) {
+                AuthDTO authDTO = authService.getOneByAuthId(authId);
+                model.addAttribute("auth", authDTO);
+                return "auth/get";
+            } else {
+                model.addAttribute("msg", "접근 권한이 없습니다.");
+                return "exception";
+            }
+        } catch (Exception e) {
+            return e.getMessage();
         }
     }
 
@@ -134,26 +136,37 @@ public class AuthController {
 
     @PostMapping("/cancel")
     @ResponseBody
-    public void cancelRequest(@RequestParam(value = "number") Long authId, @AuthenticationPrincipal SecurityMember member) {
-        authService.cancelRequest(authId);
+    public void cancelRequest(@RequestBody Map<String,Long> map, @AuthenticationPrincipal SecurityMember member) {
+        Long authId = map.get("authId");
+        if (authService.validateMember(authId, member)) {
+            authService.cancelRequest(authId);
+        }
     }
 
     @PostMapping("/accept")
     @ResponseBody
-    public void acceptAuth(@RequestParam Roles roles, @RequestParam String email) {
-        authService.acceptAuth(email, roles);
+    public void acceptAuth(@RequestBody Map<String,Long> map, @AuthenticationPrincipal SecurityMember member) {
+        Long authId = map.get("authId");
+        System.out.println(authId);
+        AuthDTO authDTO = authService.getOneByAuthId(authId);
+        authService.acceptAuth(authDTO.getEmail(), authDTO.getRoles());
     }
 
     @PostMapping("/reject")
     @ResponseBody
-    public void rejectRequest(@RequestParam Roles roles, @RequestParam String email) {
-        authService.rejectAuth(email, roles);
+    public void rejectRequest(@RequestBody Map<String,Long> map, @AuthenticationPrincipal SecurityMember member) {
+        Long authId = map.get("authId");
+        AuthDTO authDTO = authService.getOneByAuthId(authId);
+        authService.rejectAuth(authDTO.getEmail(), authDTO.getRoles());
     }
 
     @PostMapping("/delete")
     @ResponseBody
-    public void deleteAuth(@RequestParam Roles roles, @RequestParam String email) {
+    public void deleteAuth(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
+        String email = map.get("email").toString();
+        Roles roles = Roles.valueOf(map.get("roles").toString());
         authService.deleteAuth(email, roles);
 
+        // 회원 정보 조회(/member/get에 버튼 추가)
     }
 }

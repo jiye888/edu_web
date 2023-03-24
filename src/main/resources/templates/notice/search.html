@@ -13,6 +13,9 @@
     <label for="content_keyword"><input type="text" id="content_keyword"></label>
 
     <button type="button" class="search" id="searchBtn">공지사항 검색</button>
+    <div th:if="${notice.isEmpty()}">
+        검색 결과가 존재하지 않습니다.
+    </div>
 
     <div th:if = "${!notice.isEmpty()}">
         <table class="table table-borderless">
