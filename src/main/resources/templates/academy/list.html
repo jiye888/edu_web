@@ -12,7 +12,7 @@
     </div>
 
     <div th:if = "${!academy.isEmpty()}">
-        <table class="table table-borderless">
+        <table class="table table-borderless table-hover">
             <thead align="center">
             <tr>
                 <th scope="col" style="width:50%">학원 이름</th>
@@ -32,17 +32,54 @@
             </tbody>
         </table>
 
-        학원명<input type="text" id="name_keyword">
-        학원 위치<input type="text" id="location_keyword">
-
-        <a text="과목">
-            <div th:each="sub, subStat:${subject}" style="display:inline-block">
-                <input type="checkbox" th:value="${sub}" th:name="subject_checkbox" id="subject_keyword">
-                <label th:for="'subject_keyword'+${subStat.index}" th:text="${sub.description}"></label>
+        <div class="input-group justify-content-center">
+            <div class="input-group-prepend">
+                <select name="search_category" class="custom-select">
+                    <option name="search_category" value="name">학원명</option>
+                    <option name="search_category" value="location">학원 위치</option>
+                    <option name="search_category" value="name&location">학원명+위치</option>
+                    <option name="detailed_search" data-toggle="collapse" data-target="#detailed_search">상세 검색 옵션 열기</option>
+                </select>
+                <input class="form-control" type="search" aria-label="Search" id="searchKeyword">
+                <button class="custom-button-yellow" type="button" id="academySearchBtn">Search</button>
             </div>
-        </a>
+            <div class="input-group-append">
+                <button type="button" class="custom-button-yellow" data-toggle="collapse" data-target="#detailed_search">상세 검색</button>
+            </div>
+        </div>
 
-            <button type="button" class="search" id="academySearchBtn">학원 검색</button>
+        <div class="card card-body collapse" id="detailed_search">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group form-inline">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">학원명</span>
+                            <input type="text" class="form-control" id="name_keyword">
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group form-inline">
+                        <span class="input-group-text">학원 위치</span>
+                        <input type="text" class="form-control" id="location_keyword">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group form-inline">
+                        <button type="button" class="btn btn-primary" id="detailedSearchBtn">상세 검색</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-body" style="display:inline-block">
+                <div class="custom-control custom-radio custom-control-inline">
+                    <div th:each="sub, subStat:${subject}" >
+                        <input type="checkbox" th:value="${sub}" th:name="subject_checkbox" id="subject_keyword" class="custom-checkbox">
+                        <label th:for="'subject_keyword'+${subStat.index}" th:text="${sub.description}" class="custom-label"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
             <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
@@ -90,11 +127,15 @@
     <script th:inline="javascript">
         $(document).ready(function() {
 
-            $('#registerBtn').click(function(){
+            $('#registerBtn').click(function() {
                 register();
             });
 
-            $('#academySearchBtn').click(function(){
+            $('#detailedSearchBtn').click(function() {
+                detailedSearch();
+            });
+
+            $('#academySearchBtn').click(function() {
                 academySearch();
             });
 
@@ -123,7 +164,7 @@
             return subject;
         }
 
-        function academySearch() {
+        function detailedSearch() {
             var name = $('#name_keyword').val();
             var location =$('#location_keyword').val();
             var subject = getSubject();
@@ -159,6 +200,51 @@
                     window.location.href="/academy/search?"+urlString;
                 },
             });
+        }
+
+
+        function academySearch() {
+            var category = $("option[name=search_category]:selected").val();
+            var keyword = $('#searchKeyword').val();
+            var searchData = {};
+            var urlString = "";
+
+            if (keyword === "") {
+                alert("검색어를 입력해주세요.");
+            }
+
+            if (category == "name") {
+                searchData.name = keyword;
+            } else if (category == "location") {
+                searchData.location = keyword;
+            } else if (category == "name&location") {
+                searchData.name = keyword;
+                searchData.location = keyword;
+            }
+
+            for (var property in searchData) {
+                if (searchData[property] !== undefined && searchData[property] !== "") {
+                    urlString += property + "=" + searchData[property] + "&";
+                }
+            }
+
+            if (urlString !== "") {
+                urlString = urlString.slice(0,-1);
+            }
+
+            $.ajax({
+                url: '/academy/search',
+                type: 'GET',
+                contentType: "application/json",
+                data: {
+                    "name":searchData.name,
+                    "location":searchData.location,
+                    },
+                success: function() {
+                    location.href='/academy/search?'+urlString;
+                },
+            });
+
         }
 
     </script>

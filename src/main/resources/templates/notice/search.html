@@ -9,8 +9,8 @@
     <h3 align="center">Notice</h3>
     <input type="hidden" th:value="${academy}" id="academy">
 
-    <label for="title_keyword"><input type="text" id="title_keyword"></label>
-    <label for="content_keyword"><input type="text" id="content_keyword"></label>
+    <label for="title_keyword"><input type="text" class="form-control" id="title_keyword"></label>
+    <label for="content_keyword"><input type="text" class="form-control" id="content_keyword"></label>
 
     <button type="button" class="search" id="searchBtn">공지사항 검색</button>
     <div th:if="${notice.isEmpty()}">
@@ -18,7 +18,7 @@
     </div>
 
     <div th:if = "${!notice.isEmpty()}">
-        <table class="table table-borderless">
+        <table class="table table-borderless table-hover">
             <thead align="center">
             <tr>
                 <th scope="col">제목</th>

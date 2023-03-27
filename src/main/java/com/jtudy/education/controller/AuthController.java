@@ -1,6 +1,7 @@
 package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AuthDTO;
+import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Auth;
 import com.jtudy.education.security.SecurityMember;
@@ -22,6 +23,7 @@ import org.thymeleaf.context.Context;
 
 import javax.management.relation.Role;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -160,13 +162,43 @@ public class AuthController {
         authService.rejectAuth(authDTO.getEmail(), authDTO.getRoles());
     }
 
-    @PostMapping("/delete")
-    @ResponseBody
-    public void deleteAuth(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
-        String email = map.get("email").toString();
-        Roles roles = Roles.valueOf(map.get("roles").toString());
-        authService.deleteAuth(email, roles);
+    @GetMapping("/change")
+    public String changeAuth(@RequestParam Long number, Model model, @AuthenticationPrincipal SecurityMember member) {
+        model.addAttribute("number", number);
+        MemberDTO memberDTO = memberService.getOne(number);
+        model.addAttribute("member", memberDTO);
+        List<Roles> rolesList = authService.getRoles(number);
+        model.addAttribute("roles", rolesList);
+        Map<Roles, String> koreanRoles = new HashMap<>();
+        koreanRoles.put(Roles.STUDENT, "학생");
+        koreanRoles.put(Roles.MANAGER, "학원 관리자");
+        koreanRoles.put(Roles.ADMIN, "운영자");
+        model.addAttribute("koreanRoles", koreanRoles);
+        Map<Roles, String> currentRoles = new HashMap<>();
+        for (Roles roles : rolesList) {
+            if (koreanRoles.containsKey(roles)) {
+                currentRoles.put(roles, koreanRoles.get(roles));
+            }
+        }
+        model.addAttribute("currentRoles", currentRoles);
+        return "auth/change";
+    }
 
-        // 회원 정보 조회(/member/get에 버튼 추가)
+    @PostMapping("/remove_role")
+    @ResponseBody
+    public void removeRoles(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
+        System.out.println(map);
+        Long number = Long.parseLong(map.get("number").toString());
+        Roles roles = Roles.valueOf(map.get("roles").toString());
+        authService.removeRoles(number, roles);
+    }
+
+    @PostMapping("/add_role")
+    @ResponseBody
+    public void addRoles(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
+        System.out.println(map);
+        Long number  = Long.parseLong(map.get("number").toString());
+        Roles roles = Roles.valueOf(map.get("roles").toString());
+        authService.addRoles(number, roles);
     }
 }

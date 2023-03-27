@@ -11,7 +11,7 @@
     </div>
 
     <div th:if = "${!academy.isEmpty()}" id="searchResult">
-        <table class="table table-borderless">
+        <table class="table table-borderless table-hover">
             <thead align="center">
             <tr>
                 <th scope="col" style="width:50%">학원 이름</th>
@@ -30,8 +30,8 @@
             </tbody>
         </table>
 
-        학원명<input type="text" id="name_keyword">
-        학원 위치<input type="text" id="location_keyword">
+        학원명<input type="text" class="form-control" id="name_keyword">
+        학원 위치<input type="text" class="form-control" id="location_keyword">
 
         <a text="과목">
             <div th:each="sub, subStat:${subject}">

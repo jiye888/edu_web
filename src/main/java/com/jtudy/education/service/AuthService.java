@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface AuthService {
 
     boolean validateMember(Long authId, SecurityMember member);
@@ -30,7 +32,11 @@ public interface AuthService {
 
     void rejectAuth(String email, Roles roles);
 
-    void deleteAuth(String email, Roles roles);
+    List<Roles> getRoles(Long memNum);
+
+    void removeRoles(Long memNum, Roles roles);
+
+    void addRoles(Long memNum, Roles roles);
 
     default AuthDTO entityToDTO(Auth auth) {
         AuthDTO authDTO = AuthDTO.builder()
@@ -38,7 +44,7 @@ public interface AuthService {
                 .name(auth.getMember().getName())
                 .email(auth.getMember().getEmail())
                 .processed(auth.isProcessed())
-                .roles(auth.getRoles())
+                .roles(auth.getRoles().iterator().next())
                 .createdAt(auth.getCreatedAt())
                 .content(auth.getContent())
                 .build();

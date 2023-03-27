@@ -8,11 +8,11 @@
         <form> <!--role="form" method="post" action="/member/loginCheck">-->
             <div>
                 <label th:for="email">이메일 주소</label>
-                <input type="email" id="email" name="email" class="form-control">
+                <input type="email" class="form-control" id="email" name="email" class="form-control">
             </div>
             <div>
                 <label th:for="password">비밀번호</label>
-                <input type="password" name="password" id="password" class="form-control">
+                <input type="password" class="form-control" name="password" id="password" class="form-control">
             </div>
             <p th:if="${msg}" class="error" th:text="${msg}"></p>
             <button type="button" class="btn btn-primary" id="loginBtn">로그인</button>

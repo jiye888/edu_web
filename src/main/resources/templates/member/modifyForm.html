@@ -8,21 +8,21 @@
     <h3>회원 정보 수정</h3>
     <form th:object="${member}">
 
-        이메일<input type="email" th:field="*{email}" readonly>
-        비밀번호<input type="password" id="password">
+        이메일<input type="email" class="form-control" th:field="*{email}" readonly>
+        비밀번호<input type="password" class="form-control" id="password">
         <p id="passwordError"></p>
-        비밀번호 확인<input type="password" id="password2"><br>
-        이름<input type="text" th:field="*{name}">
+        비밀번호 확인<input type="password" class="form-control" id="password2"><br>
+        이름<input type="text" class="form-control" th:field="*{name}">
         <p id="nameError"></p><br>
         주소
         <div th:field="*{address}">
-            <input type="text" name="address" id="postcode" placeholder="우편번호">
-            <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
-            <input type="text" name="address" id="roadAddress" placeholder="도로명주소">
-            <input type="text" name="address" id="jibunAddress" placeholder="지번주소">
+            <input type="text" class="form-control" name="address" id="postcode" placeholder="우편번호">
+            <input type="button" class="form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
+            <input type="text" class="form-control" name="address" id="roadAddress" placeholder="도로명주소">
+            <input type="text" class="form-control" name="address" id="jibunAddress" placeholder="지번주소">
             <span id="guide" style="color:#999;display:none"></span>
-            <input type="text" name="address" id="detailAddress" placeholder="상세주소">
-            <input type="text" name="address" id="extraAddress" placeholder="참고항목">
+            <input type="text" class="form-control" name="address" id="detailAddress" placeholder="상세주소">
+            <input type="text" class="form-control" name="address" id="extraAddress" placeholder="참고항목">
         </div><br>
         기존 주소
         <input type="text" style="width:500px;" th:value="*{address}" id="ex_address" readonly><br>
@@ -98,6 +98,7 @@
                                     if (document.getElementById(err)) {
                                         var errElement = document.getElementById(err);
                                         errElement.textContent = errorMessage[err];
+                                        errElement.classList.add("alert", "alert-warning");
                                     }
                                 }
                             }

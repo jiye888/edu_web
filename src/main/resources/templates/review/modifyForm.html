@@ -9,7 +9,7 @@
     <form th:object="${review}">
         <input type="hidden" th:value="${academy}" id="academy">
         <input type="hidden" th:value="*{revNum}" id="number">
-        제목<input type="text" th:field="*{title}">
+        제목<input type="text" class="form-control" th:field="*{title}">
         <p id="titleError"></p><br>
         평점
         <div th:field="*{grade}">
@@ -25,7 +25,7 @@
             <label for="1point">1</label>
         </div>
         <p id="gradeError"></p><br>
-        내용<input type="text" style="height: 600px; width: 800px;" th:field="*{content}"><br>
+        내용<input type="text" class="form-control" style="height: 600px; width: 800px;" th:field="*{content}"><br>
         <p id="contentError"></p><br>
         <button type="button" id="modifyBtn">수정</button>
     </form>
@@ -79,6 +79,7 @@
                                     if (document.getElementById(err)) {
                                         var errElement = document.getElementById(err);
                                         errElement.textContent = errorMessage[err];
+                                        errElement.classList.add("alert", "alert-warning");
                                     }
                                 }
                             }

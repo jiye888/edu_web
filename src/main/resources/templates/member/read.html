@@ -19,6 +19,10 @@
     <button type="button" id="authBtn">회원 권한 요청</button>
     <button type="button" id="deleteBtn">회원 탈퇴</button>
 
+    <div th:if="${isAdmin}">
+        <button type="button" id="changeBtn">권한 수정</button>
+    </div>
+
     <script th:inline="javascript">
 
         $(function() {
@@ -41,6 +45,10 @@
 
             $('#authBtn').on("click", function() {
                 requestAuth();
+            });
+
+            $('#changeBtn').on("click", function() {
+                changeRoles();
             });
 
         });
@@ -122,6 +130,20 @@
                         console.log("other");
                         window.location.href = "/auth/request";
                     }
+                },
+            });
+        }
+
+        function changeRoles() {
+            var number = $('#number').val();
+
+            $.ajax({
+                url: '/auth/change',
+                type: 'GET',
+                contentType: "application/json",
+                data: {"number":number},
+                success: function() {
+                    window.location.href="/auth/change?number="+number;
                 },
             });
         }

@@ -13,6 +13,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     public Long requestAuth(Member member, Roles roles, String content) {
         Auth auth = new Auth(member, roles, content);
         auth = authRepository.save(auth);
+        System.out.println("Roles!!!!!!1"+auth);
         return auth.getAuthId();
     }
 
@@ -97,9 +100,22 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void deleteAuth(String email, Roles roles) {
-        Member member = memberRepository.findByEmail(email);
+    public List<Roles> getRoles(Long memNum) {
+        Member member = memberRepository.findByMemNum(memNum);
+        List<Roles> roles = member.getRolesList();
+        return roles;
+    }
+
+    @Override
+    public void removeRoles(Long memNum, Roles roles) {
+        Member member = memberRepository.findByMemNum(memNum);
         member.removeRoles(roles);
+    }
+
+    @Override
+    public void addRoles(Long memNum, Roles roles) {
+        Member member = memberRepository.findByMemNum(memNum);
+        member.addRoles(roles);
     }
 
 }

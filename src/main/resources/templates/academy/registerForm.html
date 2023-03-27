@@ -7,17 +7,17 @@
     <div layout:fragment="content">
         <h3>등록 화면</h3>
         <form th:object="${academy}">
-            학원 이름<input type="text" th:field="*{acaName}">
+            학원 이름<input type="text" class="form-control" th:field="*{acaName}">
             <p id="acaNameError"></p><br>
             학원 위치
             <div th:field="*{location}">
-                <input type="text" name="location" id="postcode" placeholder="우편번호">
-                <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
-                <input type="text" name="location" id="roadAddress" placeholder="도로명주소">
-                <input type="text" name="location" id="jibunAddress" placeholder="지번주소">
+                <input type="text" class="form-control" name="location" id="postcode" placeholder="우편번호">
+                <input type="button" class="form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
+                <input type="text" class="form-control" name="location" id="roadAddress" placeholder="도로명주소">
+                <input type="text" class="form-control" name="location" id="jibunAddress" placeholder="지번주소">
                 <span id="guide" style="color:#999;display:none"></span>
-                <input type="text" name="location" id="detailAddress" placeholder="상세주소">
-                <input type="text" name="location" id="extraAddress" placeholder="참고항목">
+                <input type="text" class="form-control" name="location" id="detailAddress" placeholder="상세주소">
+                <input type="text" class="form-control" name="location" id="extraAddress" placeholder="참고항목">
             </div>
             <p id="locationError"></p><br>
 
@@ -94,6 +94,7 @@
                                     if (document.getElementById(err)) {
                                         var errElement = document.getElementById(err);
                                         errElement.textContent = errorMessage[err];
+                                        errElement.classList.add("alert", "alert-warning");
                                     }
                                 }
                             }

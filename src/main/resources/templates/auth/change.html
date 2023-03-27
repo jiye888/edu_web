@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    <h3>[[${member.name}]]님의 권한 수정</h3>
+    <input type="hidden" th:value="${number}" id="number">
+    <div>
+        현재 권한
+        <div th:if="${currentRoles.size() == 0}">
+            아직 권한이 없습니다.
+        </div>
+        <div th:if="${currentRoles.size() > 0}">
+            <div th:each="role : ${currentRoles}">
+                <span th:text="${role.value}"></span>
+            </div>
+        </div>
+        <br>
+        권한
+        <div th:each="koreanRole : ${koreanRoles}">
+            <input type="radio" name="role" th:value="${koreanRole.key}" id="${koreanRole.key}">
+            <label th:for="${koreanRole}" th:text="${koreanRole.value}"></label>
+        </div>
+        <input type="radio" name="changeType" id="addRoles">
+        <label th:for="addRoles">권한 추가</label>
+        <input type="radio" name="changeType" id="removeRoles">
+        <label th:for="removeRoles">권한 제거</label>
+        <button type="button" id="changeBtn">권한 수정</button>
+    </div>
+
+    <script th:inline="javascript">
+
+        $(function() {
+            $('#changeBtn').on("click", function() {
+                changeRoles();
+            });
+        });
+
+        function changeRoles() {
+            var number = $('#number').val();
+            var roles = $('input[name="role"]:checked').val();
+            var changeType = $('input[name="changeType"]:checked').attr('id');
+            console.log(number);
+            console.log(roles);
+
+            if (roles && changeType) {
+
+                if (changeType === 'addRoles') {
+                    $.ajax({
+                        url: '/auth/add_role',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            "number":number,
+                            "roles":roles
+                        }),
+                        success: function() {
+                            location.href = location.href;
+                        },
+                    });
+                } else if (changeType === 'removeRoles') {
+                    $.ajax({
+                        url: '/auth/remove_role',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            "number":number,
+                            "roles":roles
+                        }),
+                        success: function() {
+                            location.href = location.href;
+                        },
+                    });
+                }
+            } else {
+                alert("모든 항목을 선택해주세요.");
+            }
+
+        }
+
+    </script>
+</div>
+</body>
+</html>

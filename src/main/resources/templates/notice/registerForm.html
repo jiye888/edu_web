@@ -8,9 +8,9 @@
     <h3>등록 화면</h3>
     <form th:object="${notice}">
         <input type="hidden" th:value="${academy}" id="academy">
-        제목<input type="text" th:field="*{title}">
+        제목<input type="text" class="form-control" th:field="*{title}">
         <p id="titleError"></p><br>
-        내용<input type="text" th:field="*{content}">
+        내용<input type="text" class="form-control" th:field="*{content}">
         <p id="contentError"></p><br>
         <button type="button" id="registerBtn">등록</button>
     </form>
@@ -62,6 +62,7 @@
                                     if (document.getElementById(err)) {
                                         var errElement = document.getElementById(err);
                                         errElement.textContent = errorMessage[err];
+                                        errElement.classList.add("alert", "alert-warning");
                                     }
                                 }
                             }
