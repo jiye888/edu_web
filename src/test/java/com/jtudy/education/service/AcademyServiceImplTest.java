@@ -127,4 +127,12 @@ class AcademyServiceImplTest {
 
     }
 
+    @Test
+    public void shortLocation() {
+        Academy academy = academyRepository.findByAcaNum(Long.parseLong("3"));
+        String[] locationSplit = academy.getLocation().split("\\s");
+        System.out.println(locationSplit[0]);
+        System.out.println(locationSplit[1]+" "+locationSplit[2]);
+    }
+
 }

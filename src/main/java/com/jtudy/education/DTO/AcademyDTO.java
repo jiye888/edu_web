@@ -24,6 +24,8 @@ public class AcademyDTO {
 
     private String location;
 
+    private String shortLocation;
+
     private Long managerMemNum;
 
     private String managerEmail;
@@ -39,9 +41,12 @@ public class AcademyDTO {
         this.acaName = academy.getAcaName();
         this.subject = academy.getSubject();
         this.location = academy.getLocation();
+        String[] locationSplit = this.location.split("\\s");
+        if(locationSplit.length > 2) {
+            this.shortLocation = locationSplit[1]+" "+locationSplit[2];
+        }
         this.grade = grade;
         this.reviewCount = count;
     }
-
 
 }

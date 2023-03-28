@@ -4,13 +4,13 @@
       layout:decorate="~{layout/main}">
 <meta charset="UTF-8">
 <div layout:fragment="content">
-    <div class="card" style="height:600px;">
+    <div class="card" style="height:600px;border:none;">
         <div class="custom-card-background" style="border:0;">
-            <div class="card-body" style="opacity:1;">
+            <div class="card-body">
                 <h3 align="center" class="card-title font-bold" style="color:white;">WELCOME!</h3>
                 <p class="card-text" align="center" style="color:white;">Education에 오신 것을 환영합니다.</p>
             </div>
-            <div class="justify-content-center" style="display:flex;opacity:1;">
+            <div class="justify-content-center" style="display:flex;">
                 <button type="button" class="custom-button-yellow" th:onclick="'location.href=\''+@{/academy/list}+'\';'">학원 보러가기</button>
                 <button type="button" class="custom-button-yellow" th:onclick="'location.href=\''+@{/member/join}+'\';'">회원 가입</button>
                 <button type="button" class="custom-button-yellow" id="authBtn" th:if="${isAdmin} == true">요청된 권한 목록</button>
