@@ -12,17 +12,17 @@
         제목<input type="text" class="form-control" th:field="*{title}">
         <p id="titleError"></p><br>
         평점
-        <div th:field="*{grade}">
-            <input type="radio" id="5points" name="grade" value="5">
-            <label for="5points">5</label>
-            <input type="radio" id="4points" name="grade" value="4">
-            <label for="4points">4</label>
-            <input type="radio" id="3points" name="grade" value="3">
-            <label for="3points">3</label>
-            <input type="radio" id="2points" name="grade" value="2">
-            <label for="2points">2</label>
-            <input type="radio" id="1point" name="grade" value="1">
-            <label for="1point">1</label>
+        <div th:field="*{grade}" class="reversed-stars">
+            <input type="radio" id="5points" name="grade" value="5" class="stars-input" th:checked="${review.grade == 5}">
+            <label for="5points" class="stars">★</label>
+            <input type="radio" id="4points" name="grade" value="4" class="stars-input" th:checked="${review.grade == 4}">
+            <label for="4points" class="stars">★</label>
+            <input type="radio" id="3points" name="grade" value="3" class="stars-input" th:checked="${review.grade == 3}">
+            <label for="3points" class="stars">★</label>
+            <input type="radio" id="2points" name="grade" value="2" class="stars-input" th:checked="${review.grade == 2}">
+            <label for="2points" class="stars">★</label>
+            <input type="radio" id="1point" name="grade" value="1" class="stars-input" th:checked="${review.grade == 1}">
+            <label for="1point" class="stars">★</label>
         </div>
         <p id="gradeError"></p><br>
         내용<input type="text" class="form-control" style="height: 600px; width: 800px;" th:field="*{content}"><br>

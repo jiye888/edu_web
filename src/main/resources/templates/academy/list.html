@@ -24,7 +24,12 @@
             <tbody align="center">
             <tr th:each="aca : ${academy}">
                 <td><a th:text="${aca.acaName}" th:href="@{/academy/read?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
-                <td><span th:text="${aca.grade}" class="grade-text">평점</span></td>
+                <td>
+                    <div>
+                        <span th:if="${aca.grade == null}"></span>
+                        <span th:if="${aca.grade != null}" th:text="${#numbers.formatDecimal(aca.grade, 1, 1)}" class="grade-text">평점</span>
+                    </div>
+                </td>
                 <td><span th:text="${aca.shortLocation}" style="font-size:85%"></span></td>
                 <td><li th:each="sub : ${aca.subject}" th:value="${sub}" th:text="${sub.description}"></li></td>
             </tr>

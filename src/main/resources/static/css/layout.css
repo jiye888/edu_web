@@ -24,13 +24,25 @@ a:hover {
     color: #f58b0a;
     text-align: center;
 }
-
+/*
 .custom-button-yellow {
     border-radius: 12px;
     border: 1px double;
     border-color: #FDCE5E;
     color: #FAC431;
     background: white;
+}*/
+
+.custom-button-yellow {
+    background-image: linear-gradient(309deg, #ffa725, #ffc543);
+    border-radius: 12px;
+    border: none;
+    color: white;
+    line-height: 36px;
+}
+.custom-button-yellow:hover {
+    background-image: linear-gradient(309deg, #ffc543, #ffa725);
+    color: yellow;
 }
 
 .custom-button-mint {
@@ -88,8 +100,6 @@ a:hover {
     top: 50%;
     left: 50%;
     position: absolute;
-    .input {
-    }
 }
 
 .read-box1 {
@@ -120,27 +130,30 @@ a:hover {
     border-bottom: solid;
     border-color: #fbf8e0e3;
 }
-/*
- .star {
-    position: relative;
+
+.stars {
     font-size: 2rem;
-    color: #ddd;
-  }
+    text-shadow: 0 0 0 #f7eada;
+    color: transparent;
+}
+.stars:hover {
+    text-shadow: 0 0 0 #f9ea35;
+}
+.stars:hover ~ label{
+    text-shadow: 0 0 0 #f9ea35;
+}
 
-  .star input {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
+.stars-input {
+    display: none;
+}
 
-  .star span {
-    width: 0;
-    position: absolute;
-    left: 0;
-    color: red;
-    overflow: hidden;
-    pointer-events: none;
-  } */
+.stars-input:checked ~ label {
+    text-shadow: 0 0 0 #f9ea35;
+}
+
+.reversed-stars {
+    display: inline-block;
+    direction: rtl;
+    border: 0;
+    text-align: left;
+}
