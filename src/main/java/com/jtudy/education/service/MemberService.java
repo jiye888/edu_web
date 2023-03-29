@@ -39,6 +39,7 @@ public interface MemberService {
                 .email(member.getEmail())
                 .name(member.getName())
                 .address(member.getAddress())
+                .rolesList(member.getRolesList())
                 .createdAt(member.getCreatedAt())
                 .build();
 

@@ -110,9 +110,37 @@ a:hover {
 .grade-text {
     color: #14ced7;
     font-weight: 900;
+    border-radius: 30px;
+    border: 7px solid gray;
+    border-color: #fffdb1;
+    background: #fffdb1;
 }
 
 .table-bottom {
     border-bottom: solid;
     border-color: #fbf8e0e3;
 }
+/*
+ .star {
+    position: relative;
+    font-size: 2rem;
+    color: #ddd;
+  }
+
+  .star input {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .star span {
+    width: 0;
+    position: absolute;
+    left: 0;
+    color: red;
+    overflow: hidden;
+    pointer-events: none;
+  } */

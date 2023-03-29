@@ -15,7 +15,7 @@
         <table class="table table-borderless table-hover">
             <thead align="center">
             <tr class="custom-text font-bold">
-                <th scope="col" style="width:50%">학원 이름</th>
+                <th scope="col">학원 이름</th>
                 <th scope="col">평점</th>
                 <th scope="col">학원 위치</th>
                 <th scope="col">수강 과목</th>
@@ -25,10 +25,8 @@
             <tr th:each="aca : ${academy}">
                 <td><a th:text="${aca.acaName}" th:href="@{/academy/read?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
                 <td><span th:text="${aca.grade}" class="grade-text">평점</span></td>
-                <!--<td><span th:text="${#strings.substring(aca.location, 6, #strings.length(aca.location))}">학원 위치</span></td>-->
                 <td><span th:text="${aca.shortLocation}" style="font-size:85%"></span></td>
                 <td><li th:each="sub : ${aca.subject}" th:value="${sub}" th:text="${sub.description}"></li></td>
-
             </tr>
             </tbody>
         </table>

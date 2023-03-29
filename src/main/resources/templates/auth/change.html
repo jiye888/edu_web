@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3>[[${member.name}]]님의 권한 수정</h3>
-    <input type="hidden" th:value="${number}" id="number">
+    <input type="hidden" th:value="${member.memNum}" id="number">
     <div>
         현재 권한
         <div th:if="${currentRoles.size() == 0}">
