@@ -9,18 +9,14 @@ import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import com.jtudy.education.repository.AcademyMemberRepository;
 import com.jtudy.education.repository.AcademyRepository;
-import com.jtudy.education.repository.MemberRepository;
 import com.jtudy.education.repository.ReviewRepository;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +54,15 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional(readOnly = true)
     public ReviewDTO getOne(Long revNum) {
         Review review = reviewRepository.findByRevNum(revNum);
+        ReviewDTO reviewDTO = entityToDTO(review);
+        return reviewDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReviewDTO getByAcademy(Long acaNum, String email) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        Review review = reviewRepository.findByAcademyAndCreatedBy(academy, email);
         ReviewDTO reviewDTO = entityToDTO(review);
         return reviewDTO;
     }

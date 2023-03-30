@@ -19,6 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -33,6 +35,7 @@ import java.util.Map;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final TemplateEngine templateEngine;
 
     @GetMapping("/list")
     public void list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
@@ -43,10 +46,25 @@ public class ReviewController {
     }
 
     @GetMapping("/register")
-    public String register(@RequestParam("academy") Long acaNum, Model model) {
-        model.addAttribute("academy", acaNum);
-        model.addAttribute("review", new ReviewFormDTO());
-        return "/review/registerForm";
+    public ResponseEntity register(@RequestParam("academy") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+        try {
+            if (reviewService.getByAcademy(acaNum, member.getUsername()) == null) {
+                model.addAttribute("academy", acaNum);
+                model.addAttribute("review", new ReviewFormDTO());
+                Context context = new Context();
+                context.setVariables(model.asMap());
+                String template = templateEngine.process("review/registerForm", context);
+                return ResponseEntity.ok().body(template);
+            } else {
+                ReviewDTO reviewDTO = reviewService.getByAcademy(acaNum, member.getUsername());
+                Long revNum = reviewDTO.getRevNum();
+                Map<String, Long> map = new HashMap<>();
+                map.put("number", revNum);
+                return ResponseEntity.ok().body(map);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/register")

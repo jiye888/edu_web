@@ -8,6 +8,7 @@ import com.jtudy.education.entity.Review;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ReviewService {
 
@@ -16,6 +17,9 @@ public interface ReviewService {
     Page<ReviewDTO> getAll(Long acaNum, Pageable pageable);
 
     ReviewDTO getOne(Long revNum);
+
+    @Transactional(readOnly = true)
+    ReviewDTO getByAcademy(Long acaNum, String email);
 
     Long register(ReviewFormDTO reviewFormDTO);
 

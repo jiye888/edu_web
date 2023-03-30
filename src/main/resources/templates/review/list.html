@@ -86,9 +86,16 @@
                 type: 'GET',
                 contentType: "application/json",
                 data: {"academy":academy},
-                success: function() {
-                    location.href="/review/register?academy="+academy;
-                }
+                success: function(response) {
+                    var number = Number(response.number);
+                    if(number != undefined && !isNaN(number)) {
+                        if (confirm("이미 작성된 후기가 존재합니다. 수정하시겠습니까?")) {
+                            window.location.href="/review/modify?number="+number;
+                        }
+                    } else {
+                        window.location.href="/review/register";
+                    }
+                },
             });
         }
     </script>

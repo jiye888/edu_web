@@ -16,5 +16,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByAcademy(Academy academy, Pageable pageable);
     Review findByRevNum(Long revNum);
     Page<Review> findByCreatedBy(String email, Pageable pageable);
+    Review findByAcademyAndCreatedBy(Academy academy, String email);
 
 }

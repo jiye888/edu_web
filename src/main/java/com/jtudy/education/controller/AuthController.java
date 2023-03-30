@@ -112,8 +112,8 @@ public class AuthController {
                 return ResponseEntity.ok().body(template);
             } else {
                 Long authId = authService.getOne(member.getMember()).getAuthId();
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("number", authId.toString());
+                //HttpHeaders headers = new HttpHeaders();
+                //headers.add("number", authId.toString());
                 Map<String, String> map = new HashMap<>();
                 map.put("number", authId.toString());
                 return ResponseEntity.ok().body(map);
@@ -123,7 +123,7 @@ public class AuthController {
             Context context = new Context();
             context.setVariables(model.asMap());
             String template = templateEngine.process("exception", context);
-            return ResponseEntity.ok().body(template);
+            return ResponseEntity.badRequest().body(template);
         }
     }
 
