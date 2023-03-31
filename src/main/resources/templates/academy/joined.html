@@ -5,16 +5,16 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 align="center">[[${name}]]님께서 가입하신 학원 목록입니다.</h3>
-    <div th:if="${academy.isEmpty()}">
+    <h3 class="custom-text font-bold" align="center">[[${name}]]님께서 가입하신 학원 목록입니다.</h3>
+    <div class="custom-text" th:if="${academy.isEmpty()}">
         현재 가입하신 학원이 없습니다.
     </div>
 
     <div th:if = "${!academy.isEmpty()}">
         <table class="table table-borderless table-hover">
             <thead align="center">
-            <tr>
-                <th scope="col" style="width:50%">학원 이름</th>
+            <tr class="custom-text font-bold">
+                <th scope="col">학원 이름</th>
                 <th scope="col">평점</th>
                 <th scope="col">학원 위치</th>
                 <th scope="col">수강 과목</th>
@@ -23,8 +23,13 @@
             <tbody align="center">
             <tr th:each="aca : ${academy}">
                 <td><a th:text="${aca.acaName}" th:href="@{/academy/read?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
-                <td><span th:text="${aca.grade}">평점</span></td>
-                <td><span th:text="${aca.location}" style="font-size:50%">학원 위치</span></td>
+                <td>
+                    <div>
+                        <span th:if="${aca.grade == null}"></span>
+                        <span th:if="${aca.grade != null}" th:text="${#numbers.formatDecimal(aca.grade, 1, 1)}" class="grade-text">평점</span>
+                    </div>
+                </td>
+                <td><span th:text="${aca.location}" style="font-size:85%">학원 위치</span></td>
                 <td><a th:each="sub : ${aca.subject}" th:value="${sub}" th:text="'＊'+${sub.description}"></a></td>
 
             </tr>

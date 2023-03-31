@@ -84,8 +84,6 @@
             </div>
         </div>
 
-
-
             <nav th:with = "pageNumber=${academy.pageable.pageNumber}, pageSize=${academy.pageable.pageSize},
                             totalPages=${academy.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
                             tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"

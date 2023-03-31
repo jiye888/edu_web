@@ -7,34 +7,40 @@
     <div layout:fragment="content">
         <h3>등록 화면</h3>
         <form th:object="${academy}">
-            학원 이름<input type="text" class="form-control" th:field="*{acaName}">
+            학원 이름<input type="text" class="custom-form-control" th:field="*{acaName}">
             <p id="acaNameError"></p><br>
             학원 위치
             <div th:field="*{location}">
-                <input type="text" class="form-control" name="location" id="postcode" placeholder="우편번호">
-                <input type="button" class="form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
-                <input type="text" class="form-control" name="location" id="roadAddress" placeholder="도로명주소">
-                <input type="text" class="form-control" name="location" id="jibunAddress" placeholder="지번주소">
+                <input type="text" class="custom-form-control" name="location" id="postcode" placeholder="우편번호">
+                <input type="button" class="custom-form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
+                <input type="text" class="custom-form-control" name="location" id="roadAddress" placeholder="도로명주소">
+                <input type="text" class="custom-form-control" name="location" id="jibunAddress" placeholder="지번주소">
                 <span id="guide" style="color:#999;display:none"></span>
-                <input type="text" class="form-control" name="location" id="detailAddress" placeholder="상세주소">
-                <input type="text" class="form-control" name="location" id="extraAddress" placeholder="참고항목">
+                <input type="text" class="custom-form-control" name="location" id="detailAddress" placeholder="상세주소">
+                <input type="text" class="custom-form-control" name="location" id="extraAddress" placeholder="참고항목">
             </div>
             <p id="locationError"></p><br>
 
             수강 과목<br>
-            <div th:each="sub : ${subject}" class="form-check form-check line">
-                <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="form-check-input">
-                <label th:for="${#ids.prev('subject')}" th:text="${sub.description}" class="form-check-label"></label>
+            <div class="custom-checkbox-group">
+                <div th:each="sub : ${subject}" class="custom-checkbox">
+                    <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="custom-check-input">
+                    <label th:for="${#ids.prev('subject')}" th:text="${sub.description}"></label>
+                </div>
             </div>
             <p id="subjectError"></p><br>
 
-            <button type="button" id="registerBtn">등록</button>
+            <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
+            <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
         </form>
         <script th:inline="javascript">
 
         $(function() {
             $('#registerBtn').on("click", function() {
                 register();
+            });
+            $('#cancelBtn').on("click", function() {
+                history.back();
             });
         });
 

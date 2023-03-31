@@ -14,12 +14,13 @@
             <span th:text="${memberDTO.address}">주소</span><br>
 
             <input type="hidden" th:value="${memberDTO.memNum}" id="number">
-            <button type="button" class="custom-button-yellow" id="academyBtn">학원 리스트</button><br>
-            <button type="button" class="custom-button-yellow" id="reviewBtn">작성한 학원 리뷰</button>
 
             <button type="button" class="custom-button-yellow" id="modifyBtn">회원 정보 수정</button>
             <button type="button" class="custom-button-yellow" id="authBtn">회원 권한 요청</button>
-            <button type="button" class="custom-button-yellow" id="deleteBtn">회원 탈퇴</button>
+            <button type="button" class="custom-button-yellow" id="deleteBtn">회원 탈퇴</button><br>
+
+            <button type="button" class="custom-button-yellow" id="academyBtn">학원 리스트</button>
+            <button type="button" class="custom-button-yellow" id="reviewBtn">작성한 학원 리뷰</button>
 
             <div th:if="${isAdmin}">
                 <button type="button" class="custom-button-yellow" id="changeBtn">권한 수정</button>
