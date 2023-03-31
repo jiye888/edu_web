@@ -18,7 +18,6 @@ public interface ReviewService {
 
     ReviewDTO getOne(Long revNum);
 
-    @Transactional(readOnly = true)
     ReviewDTO getByAcademy(Long acaNum, String email);
 
     Long register(ReviewFormDTO reviewFormDTO);

@@ -63,6 +63,9 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDTO getByAcademy(Long acaNum, String email) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Review review = reviewRepository.findByAcademyAndCreatedBy(academy, email);
+        if (review == null) {
+            return null;
+        }
         ReviewDTO reviewDTO = entityToDTO(review);
         return reviewDTO;
     }

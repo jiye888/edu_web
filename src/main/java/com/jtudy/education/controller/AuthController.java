@@ -112,8 +112,6 @@ public class AuthController {
                 return ResponseEntity.ok().body(template);
             } else {
                 Long authId = authService.getOne(member.getMember()).getAuthId();
-                //HttpHeaders headers = new HttpHeaders();
-                //headers.add("number", authId.toString());
                 Map<String, String> map = new HashMap<>();
                 map.put("number", authId.toString());
                 return ResponseEntity.ok().body(map);

@@ -55,6 +55,8 @@ public class ReviewController {
                 context.setVariables(model.asMap());
                 String template = templateEngine.process("review/registerForm", context);
                 return ResponseEntity.ok().body(template);
+            } else if (reviewService.getByAcademy(acaNum, member.getUsername()).getRevNum() == null) {
+                return ResponseEntity.ok().body("null");
             } else {
                 ReviewDTO reviewDTO = reviewService.getByAcademy(acaNum, member.getUsername());
                 Long revNum = reviewDTO.getRevNum();
