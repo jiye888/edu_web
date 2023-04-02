@@ -28,6 +28,24 @@ a:hover {
     align-content: center;
     flex-wrap: wrap;
 }
+.page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #f3a73d;
+    border-color: #e7a642;
+}
+.page-link {
+    color: #f3a73d;
+}
+
+.page-item.disabled .page-link {
+    color: #f3a73d;
+}
+
+.pagination {
+    justify-content: center;
+    margin-top: 10px;
+}
 
 .custom-text {
     color: #f58b0a;
@@ -69,8 +87,8 @@ a:hover {
     border: none;
     color: white;
     line-height: 36px;
-    padding-right: 13px;
-    padding-left: 13px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 .custom-button-yellow:hover {
     background-image: linear-gradient(309deg, #ffc543, #ffa725);

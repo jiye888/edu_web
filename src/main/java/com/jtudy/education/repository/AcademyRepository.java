@@ -30,16 +30,9 @@ public interface AcademyRepository extends JpaRepository<Academy, Long>, JpaSpec
     Page<Academy> findByAcaNameContaining(String keyword, Pageable pageable);
 
     Page<Academy> findBySubjectContaining(String keyword, Pageable pageable);
-    //@Query("select a from Academy a where a.subject in :subjects")
-    //Page<Academy> findBySubjectContaining(Set<Subject> subjects, Pageable pageable);
-    //@Query("SELECT a FROM Academy a WHERE :subject = TREAT(a.subject AS Subject)")
-    //List<Academy> findBySubjectContaining(EnumSet<Subject> subjects);
+
     @Query(value = "SELECT * FROM academy WHERE FIND_IN_SET(:subject, subject)", nativeQuery = true)
     List<Academy> findBySubjectContaining(@Param("subject") String subject);
-    /*@Query("SELECT a FROM Academy a WHERE " +
-            "(:subject is null OR :subject = '' OR " +
-            "CONCAT(',', a.subject, ',') LIKE CONCAT('%,', :subject, ',%'))")
-    List<Academy> findBySubjectContaining(@Param("subjects") List<String> subject);*/
 
 
 

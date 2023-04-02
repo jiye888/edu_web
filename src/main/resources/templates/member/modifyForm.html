@@ -28,7 +28,8 @@
         <input type="text" style="width:500px;" th:value="*{address}" id="ex_address" readonly><br>
         <p id="addressError"><br>
 
-        <input type="button" id="modifyBtn" value="수정">
+        <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
+        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
     </form>
 
     <script th:inline="javascript">
@@ -37,6 +38,9 @@
 
         $('#modifyBtn').on("click", function() {
             modify();
+        });
+        $('#cancelBtn').on("click", function() {
+            history.back();
         });
 
     });

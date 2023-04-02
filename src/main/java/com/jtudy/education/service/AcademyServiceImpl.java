@@ -119,7 +119,8 @@ public class AcademyServiceImpl implements AcademyService{
             }
         }
         Page<Academy> academy = academyRepository.findAll(spec, pageable);
-        Page<AcademyDTO> academyDTO = academy.map(e -> entityToDTO(e));
+        //Page<AcademyDTO> academyDTO = academy.map(e -> new AcademyDTO(e, ))
+        Page<AcademyDTO> academyDTO = academy.map(e -> academyRepository.getOneAcademyWithReviewInfo(e.getAcaNum()));
         return academyDTO;
     }
 

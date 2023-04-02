@@ -12,12 +12,16 @@
         <p id="titleError"></p><br>
         내용<input type="text" class="form-control" th:field="*{content}">
         <p id="contentError"></p><br>
-        <button type="button" id="registerBtn">등록</button>
+        <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
+        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
     </form>
     <script th:inline="javascript">
         $(function() {
             $('#registerBtn').click(function() {
                 register();
+            });
+            $('#cancelBtn').on("click", function() {
+                history.back();
             });
         });
 

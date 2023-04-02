@@ -15,13 +15,17 @@
         </div>
 
         내용<input type="text" class="form-control" th:field="*{content}" id="content">
-        <button type="button" id="modifyBtn">수정</button>
+        <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
+        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
     </form>
 
     <script th:inline="javascript">
         $(function() {
             $('#modifyBtn').on("click", function() {
                 modify();
+            });
+            $('#cancelBtn').on("click", function() {
+                history.back();
             });
         });
 

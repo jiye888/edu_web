@@ -27,13 +27,17 @@
         </div><br>
         <p id="addressError"><br>
 
-        <button type="button" id="registerBtn">등록</button>
+        <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
+        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
     </form>
     <script th:inline="javascript">
     $(function() {
 
         $('#registerBtn').on("click", function() {
             register();
+        });
+        $('#cancelBtn').on("click", function() {
+            history.back();
         });
 
     });

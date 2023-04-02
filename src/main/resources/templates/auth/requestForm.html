@@ -14,7 +14,8 @@
             <label th:for="${role}" th:text="${role.value}"></label>
         </div>
         내용<input type="text" class="form-control" id="content">
-        <button type="button" id="requestBtn">등록</button>
+        <button type="button" id="requestBtn" class="custom-button-yellow">등록</button>
+        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
     </form>
 
     <script th:inline="javascript">
@@ -22,6 +23,9 @@
         $(function() {
             $('#requestBtn').on("click", function() {
                 requestAuth();
+            });
+            $('#cancelBtn').on("click", function() {
+                history.back();
             });
         });
 
