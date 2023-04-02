@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 align="center">[[${name}]] 학원의 수강생 목록입니다.</h3>
+    <h3 class="custom-text">[[${name}]] 학원의 수강생 목록입니다.</h3>
     <input type="hidden" th:value="${number}" id="number">
     <div th:if ="${member.isEmpty()}">
         현재 [[${name}]] 학원의 수강생이 없습니다.

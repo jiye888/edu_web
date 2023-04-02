@@ -55,7 +55,7 @@ public class AcademyServiceImpl implements AcademyService{
         Member member = memberRepository.findByMemNum(memNum);
         List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member);
         List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
-        List<AcademyDTO> academyDTOList = academyList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+        List<AcademyDTO> academyDTOList = academyList.stream().map(e -> academyRepository.getOneAcademyWithReviewInfo(e.getAcaNum())).collect(Collectors.toList());
         Page<AcademyDTO> page = new PageImpl<>(academyDTOList, pageable, academyList.size());
         return page;
     }

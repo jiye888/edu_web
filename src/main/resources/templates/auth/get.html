@@ -5,22 +5,34 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>[[${auth.name}]]님의 권한 요청</h3>
-    <input type="hidden" th:value="${auth.authId}" id="authId">
+    <div class="read-box1">
+        <div class="read-box2">
+            <h3 class="custom-text">[[${auth.name}]]님의 권한 요청</h3>
+            <input type="hidden" th:value="${auth.authId}" id="authId">
 
-    이름<span th:text="${auth.name}"/>
-    이메일<span th:text="${auth.email}"/><br/>
-    요청 권한<span th:text="${auth.roles}" id="roles"/><br/>
-    요청 내용<span th:text="${auth.content}" id="content"/><br/>
-    요청일<span th:text="${auth.createdAt}"/><br/>
+            <span class="custom-span">이름</span>
+            <span th:text="${auth.name}"/>
+            <span class="custom-span">이메일</span>
+            <span th:text="${auth.email}"/><br><br>
+            <span class="custom-span">요청 권한</span>
+            <span th:text="${auth.roles}" id="roles"/><br><br>
+            <span class="custom-span">요청 내용</span>
+            <span th:text="${auth.content}" id="content"/><br><br>
+            <span class="custom-span">요청일</span>
+            <span th:text="${auth.createdAt}"/><br><br>
 
-    처리 여부<span th:text="${auth.processed}"/>
+            <span class="custom-span">처리 여부</span>
+            <span th:text="${auth.processed}"/><br>
 
-    <button type="button" id="modifyBtn">수정</button>
-    <button type="button" id="cancelBtn">삭제</button>
-    <div th:if="${isAdmin}">
-        <button type="button" id="acceptBtn">요청 허가</button>
-        <button type="button" id="rejectBtn">요청 거절</button>
+            <div class="margin-top20">
+                <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
+                <button type="button" id="cancelBtn" class="custom-button-yellow">삭제</button>
+            </div>
+            <div th:if="${isAdmin}" class="margin-top20">
+                <button type="button" id="acceptBtn" class="custom-button-mint">요청 허가</button>
+                <button type="button" id="rejectBtn" class="custom-button-mint">요청 거절</button>
+            </div>
+        </div>
     </div>
 
     <script th:inline="javascript">

@@ -29,8 +29,8 @@
                         <span th:if="${aca.grade != null}" th:text="${#numbers.formatDecimal(aca.grade, 1, 1)}" class="grade-text">평점</span>
                     </div>
                 </td>
-                <td><span th:text="${aca.location}" style="font-size:85%">학원 위치</span></td>
-                <td><a th:each="sub : ${aca.subject}" th:value="${sub}" th:text="'＊'+${sub.description}"></a></td>
+                <td><span th:text="${aca.shortLocation}" style="font-size:85%">학원 위치</span></td>
+                <td><li th:each="sub : ${aca.subject}" th:value="${sub}" th:text="${sub.description}"></li></td>
 
             </tr>
             </tbody>

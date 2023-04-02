@@ -8,7 +8,7 @@
     <h3>등록 화면</h3>
     <form>
         <input type="hidden" th:value="${academy}" id="academy">
-        제목<input type="text" class="form-control">
+        제목<input type="text" class="form-control" id="title">
         <p id="titleError"></p><br>
         평점
         <div class="reversed-stars">
@@ -24,7 +24,7 @@
             <label for="1point" class="stars">★</label>
         </div>
         <p id="gradeError"></p><br>
-        내용<input type="text" class="form-control" style="height: 600px; width: 800px;">
+        내용<input type="text" class="form-control" style="height: 600px; width: 800px;" id="content">
         <p id="contentError"></p><br>
         <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
         <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>

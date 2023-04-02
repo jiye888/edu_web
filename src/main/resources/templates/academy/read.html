@@ -5,27 +5,40 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    학원명:
-    <span th:text="${academy.acaName}" id="academy_name">학원 이름</span><br>
-    수강 과목:
-    <div th:each="subject : ${academy.subject}">
-        <span th:each="sub : ${subject}" th:if="${subject == subject}">
-                <span th:text="${sub.description}" class="form-check-label"></span>
-        </span>
+    <div class="read-box1">
+        <div class="read-box2">
+            <div class="flex">
+                <span class="custom-span">학원명</span>
+                <span type="text" th:text="${academy.acaName}" id="academy_name">학원 이름</span>
+            </div>
+            <div class="flex">
+                <span class="custom-span" style="margin-right:7px;">수강 과목</span>
+                <div th:each="subject : ${academy.subject}">
+                <span th:each="sub : ${subject}" th:if="${subject == subject}">
+                        <li th:text="${sub.description}" class="form-check-label custom-li"></li>
+                </span>
+                </div>
+            </div>
+            <div class="flex">
+                <span class="custom-span">학원 위치</span>
+                <span th:text="${academy.location}">학원 위치</span><br>
+            </div>
+            <input type="hidden" th:field="${academy.acaNum}" id="number">
+            <div class="flex">
+                <button type="button" id="noticeBtn" class="custom-button-mint">공지사항</button>
+                <button type="button" id="reviewBtn" class="custom-button-mint">수강 후기</button>
+                <button type="button" id="membersBtn" class="custom-button-mint">수강생 목록</button>
+            </div>
+            <div class="flex">
+                <button type="button" id="joinBtn" class="custom-button-yellow">수강 신청</button>
+                <button type="button" id="withdrawBtn" class="custom-button-yellow">수강 취소</button><br>
+
+                <button type="button" id="modifyBtn" class="custom-button-yellow">수정하기</button>
+                <button type="button" id="deleteBtn" class="custom-button-yellow">삭제하기</button>
+            </div>
+
+        </div>
     </div>
-    학원 위치:
-    <span th:text="${academy.location}">학원 위치</span><br>
-    <input type="hidden" th:field="${academy.acaNum}" id="number">
-    <button type="button" id="noticeBtn">공지사항</button>
-    <button type="button" id="reviewBtn">수강 후기</button><br>
-    <button type="button" id="membersBtn">수강생 목록</button>
-
-    <button type="button" id="modifyBtn">수정하기</button>
-    <button type="button" id="deleteBtn">삭제하기</button>
-    <button type="button" id="joinBtn">수강 신청</button>
-    <button type="button" id="withdrawBtn">수강 취소</button>
-    <!--<button type="button" class="withdraw" th:onclick="'location.href=\''+@{/academy/withdraw?number={number}(number=${academy.acaNum})}+'\';">수강 취소</button>-->
-
     <script th:inline="javascript">
 
         $(function() {

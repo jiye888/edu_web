@@ -49,35 +49,6 @@ public class MemberController {
         model.addAttribute("member", new MemberFormDTO());
         return "member/registerForm";
     }
-/*
-    @PostMapping("/join")
-    public ResponseEntity join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        //model.addAttribute("member", new MemberFormDTO());
-        if (bindingResult.hasErrors()) {
-            StringBuilder message = new StringBuilder();
-            Map<String, String> map = new HashMap();
-            map.put("BindingResultError", "true");
-            //model.addAttribute("org.springframework.validation.BindingResult.registerForm", bindingResult);
-            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-            for (FieldError fieldError : fieldErrors) {
-                message.append(fieldError.getDefaultMessage());
-                map.put(fieldError.getField(), fieldError.getDefaultMessage());
-                System.out.println(fieldError.getField()+"Error");
-                System.out.println(fieldError);
-            }
-            Context context = new Context();
-            context.setVariables(model.asMap());
-            String template = templateEngine.process("member/registerForm", context);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
-        }
-        try {
-            memberService.createMember(memberFormDTO);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        return ResponseEntity.ok().build();
-    }*/
-
 
     @PostMapping("/join")
     public ResponseEntity join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
@@ -102,7 +73,6 @@ public class MemberController {
         }
         return ResponseEntity.ok().build();
     }
-
 
     @GetMapping("/request")
     public ResponseEntity requestInfo(@AuthenticationPrincipal SecurityMember member, Model model) {
