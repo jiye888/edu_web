@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3 align="center">Review</h3>
-    <input type="hidden" th:value="${member}" id="member">
+    <!--<input type="hidden" th:value="${member}" id="member">-->
     <div th:if = "${review.isEmpty()}">
         작성한 수강 후기가 존재하지 않습니다.
     </div>
@@ -14,7 +14,7 @@
         <table class="table table-borderless table-hover">
             <thead align="center">
             <tr>
-                <th scope="col" style="width:50%">제목</th>
+                <th scope="col">제목</th>
                 <th scope="col">작성자</th>
                 <th scope="col">평점</th>
                 <th scope="col">작성일자</th>
@@ -22,10 +22,10 @@
             </thead>
             <tbody align="center">
             <tr th:each="rev : ${review}">
-                <td style="width:50%" align="center"><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
-                <td><span th:text="${rev.writerName}">작성자</span></td>
+                <td align="center"><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
+                <td><span th:text="${rev.writerEmail}">작성자</span></td>
                 <td><span th:text="${rev.grade}">평점</span></td>
-                <td><span th:text="${rev.createdAt}">작성 일자</span></td>
+                <td><span th:text="${#temporals.format(rev.createdAt, 'yyyy-MM-dd HH:mm')}">작성 일자</span></td>
             </tr>
             </tbody>
         </table>
@@ -43,7 +43,7 @@
                 </li>
 
                 <li th:classappend="${review.first}?'disabled'" class="page-item">
-                    <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/by?(page=1)}:@{/review/by?(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})}"
+                    <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/by?(page=1)}:@{/review/by?(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})})"
                        aria-label="Previous">
                         <span aria-hidden="true">&lt;</span>
                         <span class="sr-only">이전 페이지</span>

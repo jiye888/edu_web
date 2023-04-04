@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.context.WebContext;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
 import java.util.HashMap;
@@ -130,25 +132,22 @@ public class ReviewController {
     }
 
     @GetMapping("/by")
-    public ResponseEntity reviews(@RequestParam("member") Long memNum, @RequestParam(value = "page", defaultValue = "1") int page,
-                                  @AuthenticationPrincipal SecurityMember securityMember, Model model) {
+    public ResponseEntity reviews(@RequestParam(value = "page", defaultValue = "1") int page,
+                                  @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request, HttpServletResponse response) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "revNum");
         try {
-            if (memNum.equals(securityMember.getMember().getMemNum())) {
-                Page<ReviewDTO> review = reviewService.getReviews(securityMember.getMember(), pageable);
-                model.addAttribute("review", review);
-            } else {
-                String message = "본인이 아닙니다. 권한이 없습니다.";
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-            }
-        } catch (NullPointerException e) {
-            String message = "작성된 리뷰가 없습니다.";
-            return ResponseEntity.status(HttpStatus.SEE_OTHER).header(HttpHeaders.LOCATION, "member/read").body(message);
+            Page<ReviewDTO> review = reviewService.getReviews(member.getMember(), pageable);
+            model.addAttribute("review", review);
+
+            //model.addAttribute("number", member.getMember().getMemNum());
+            WebContext context = new WebContext(request, response, request.getServletContext());
+            context.setVariables(model.asMap());
+            String template = templateEngine.process("review/by", context);
+            return ResponseEntity.status(HttpStatus.OK).body(template);
         } catch (Exception e) {
             String message = e.getMessage();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

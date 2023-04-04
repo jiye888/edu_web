@@ -31,7 +31,7 @@
                     </div>
                 </td>
                 <td><span th:text="${aca.shortLocation}" style="font-size:85%"></span></td>
-                <td><li th:each="sub : ${aca.subject}" th:value="${sub}" th:text="${sub.description}"></li></td>
+                <td><ul class="ul-none"><li class="ul-none-li" th:each="sub : ${aca.subject}" th:value="${sub}" th:text="${sub.description}"></li></ul></td>
             </tr>
             </tbody>
         </table>

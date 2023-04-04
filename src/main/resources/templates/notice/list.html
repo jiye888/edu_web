@@ -5,35 +5,33 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 align="center">Notice</h3>
-    <button type="button" class="register" id="registerBtn">공지사항 등록</button>
-    <input type="hidden" th:value="${academy}" id="academy">
-    <div th:if = "${notice.isEmpty()}">
+    <h3 class="custom-text font-bold">Notice</h3>
+    <div class="margin-left20">
+        <button type="button" id="registerBtn" class="custom-button-yellow">공지사항 등록</button>
+
+    </div>
+    <div th:if = "${notice.isEmpty()}" class="margin-left20">
         현재 공지사항이 없습니다.
     </div>
-    <div th:if = "${!notice.isEmpty()}">
+    <div th:if = "${!notice.isEmpty()}" class="margin-left20">
         <table class="table table-borderless table-hover">
             <thead align="center">
             <tr>
-                <th scope="col" style="width:50%">제목</th>
+                <th scope="col">제목</th>
                 <th scope="col">작성일</th>
             </tr>
             </thead>
             <tbody align="center">
             <div th:if = "${notice != null}">
                 <tr th:each="notice1 : ${notice}">
-                    <td align="center"><a th:text="${notice1.title}" th:href="@{/notice/read?number={number}(number=${notice1.notNum})}">학원 이름</a></td>
-                    <td><span th:text="${notice1.createdAt}">작성일</span></td>
+                    <td><a th:text="${notice1.title}" th:href="@{/notice/read?number={number}(number=${notice1.notNum})}">학원 이름</a></td>
+                    <td><span th:text="${#temporals.format(notice1.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span></td>
                 </tr>
             </div>
             </tbody>
         </table>
 
-        <form class="d-flex" role="search" id="searchForm">
-            <label for="title_keyword"><input type="text" class="form-control" id="title_keyword" class="form-control me-2"></label>
-            <label for="content_keyword"><input type="text" class="form-control" id="content_keyword" class="form-control me-2"></label>
-            <button class="btn btn-outline-success" type="button" id="noticeSearchBtn">Search</button>
-        </form>
+        <div th:insert="fragments/searchBtn::noticeSearchBtn"></div>
 
         <nav th:with = "pageNumber=${notice.pageable.pageNumber}, pageSize=${notice.pageable.pageSize},
                             totalPages=${notice.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
@@ -83,13 +81,10 @@
                 register();
             });
 
-            $('#noticeSearchBtn').click(function() {
-                noticeSearch();
-            });
         });
 
         function register() {
-            var academy = [[${academy}]];
+            var academy = "[[${academy}]]";
 
             $.ajax({
                 url: '/notice/register',
@@ -102,25 +97,6 @@
             });
         }
 
-        function noticeSearch() {
-            var title = $('#title_keyword').val();
-            var content = $('#content_keyword').val();
-            var academy = $('#academy').val();
-
-            $.ajax({
-                url: '/notice/search',
-                type: 'GET',
-                contentType:"application/json",
-                data: {
-                    "title":title,
-                    "content":content,
-                    "academy":academy,
-                },
-                success: function() {
-                    location.href="/notice/search?academy="+academy+"&title="+title+"&content="+content;
-                }
-            });
-        }
 
     </script>
 </div>

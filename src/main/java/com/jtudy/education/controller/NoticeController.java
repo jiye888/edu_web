@@ -129,7 +129,7 @@ public class NoticeController {
     }
 
     @RequestMapping(value = "/search", method = {RequestMethod.GET/*, RequestMethod.POST*/})
-    public String search(@RequestParam(value="academy") Long acaNum, @RequestParam String title, @RequestParam String content, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    public String search(@RequestParam(value="academy") Long acaNum, @RequestParam(required = false) String title, @RequestParam(required = false) String content, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
         try {
             Map<String, String> map = new HashMap<>();
@@ -137,6 +137,7 @@ public class NoticeController {
             map.put("content", content);
             Page<NoticeDTO> notice = noticeService.search(acaNum, map, pageable);
             model.addAttribute("notice", notice);
+            model.addAttribute("academy", acaNum);
             return "notice/search";
         } catch (Exception e) {
             String msg = e.getMessage();

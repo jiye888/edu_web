@@ -95,14 +95,22 @@ public class NoticeServiceImpl implements NoticeService {
         }
 
         Specification<Notice> spec = NoticeSpecification.findByAcademy(acaNum);
-        for (String category : categories) {
-            if (category.contains("title")) {
+        if (categories.size() == 1) {
+            if (categories.contains("title")) {
                 spec = spec.and(NoticeSpecification.titleContaining(map.get("title")));
-            }
-            if (category.equals("content")) {
+            } else if (categories.contains("content")) {
                 spec = spec.and(NoticeSpecification.contentContaining(map.get("content")));
             }
+        } else if (categories.size() == 2) {
+            for (String category : categories) {
+                if (category.contains("title")) {
+                    spec = spec.or(NoticeSpecification.titleContaining(map.get("title")));
+                } else if (category.equals("content")) {
+                    spec = spec.or(NoticeSpecification.contentContaining(map.get("content")));
+                }
+            }
         }
+
         Page<Notice> notice = noticeRepository.findAll(spec, pageable);
         Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
         return noticeDTO;

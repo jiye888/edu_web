@@ -160,4 +160,73 @@
 
 </script>
 </div>
+
+<div th:fragment="noticeSearchBtn">
+    <input type="hidden" th:value="${academy}" id="academy">
+    <div class="input-group justify-content-center">
+        <div class="input-group-prepend">
+            <select name="notice_category" class="custom-select">
+                <option name="notice_category" value="title">제목</option>
+                <option name="notice_category" value="content">내용</option>
+                <option name="notice_category" value="title&content">제목+내용</option>
+            </select>
+            <input type="search" class="custom-form-control" id="notice_keyword">
+            <button class="custom-button-yellow" type="button" id="noticeSearchBtn">Search</button>
+        </div>
+    </div>
+    <script th:inline="javascript">
+
+        $(function() {
+            $('#noticeSearchBtn').click(function() {
+                noticeSearch();
+            });
+        });
+
+        function noticeSearch() {
+            var category = $("option[name=notice_category]:selected").val();
+            var academy = $('#academy').val();
+            console.log(academy);
+            var keyword = $('#notice_keyword').val();
+            var searchData = {};
+            var urlString = "";
+
+            if (keyword === "") {
+                alert("검색어를 입력해주세요.");
+            }
+
+            if (category == "title") {
+                searchData.title = keyword;
+            } else if (category == "content") {
+                searchData.content = keyword;
+            } else if (category == "title&content") {
+                searchData.title = keyword;
+                searchData.content = keyword;
+            }
+
+            for (var property in searchData) {
+                if (searchData[property] !== undefined && searchData[property] !== "") {
+                    urlString += property + "=" + searchData[property] + "&";
+                }
+            }
+
+            if (urlString !== "") {
+                urlString = urlString.slice(0,-1);
+            }
+
+            $.ajax({
+                url: '/notice/search',
+                type: 'GET',
+                contentType:"application/json",
+                data: {
+                    "title":searchData.title,
+                    "content":searchData.content,
+                    "academy":academy,
+                },
+                success: function() {
+                    window.location.href="/notice/search?academy="+academy+"&"+urlString;
+                },
+            });
+        }
+    </script>
+</div>
 </html>

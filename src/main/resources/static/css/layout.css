@@ -244,3 +244,23 @@ a:hover {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.input-group-append {
+    align-items: center;
+}
+
+.ul-none {
+    list-style-type: none;
+    margin-left: -40px;
+}
+.ul-none-li {
+    display: inline-block;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-style: solid;
+    margin-left: 1px;
+    margin-right: 1px;
+    border-color: #ffd55870;
+    border-radius: 15px;
+    border-width: 2px;
+}

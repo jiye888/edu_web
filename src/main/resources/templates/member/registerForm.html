@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3>회원 가입</h3>
-    <form th:object="${member}">
+    <form th:object="${member}" class="margin-left20">
 
         이메일<input type="email" class="form-control" th:field="*{email}" th:id="email">
         <p id="emailError"></p><br>

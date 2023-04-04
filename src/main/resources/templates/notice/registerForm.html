@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3>등록 화면</h3>
-    <form th:object="${notice}">
+    <form th:object="${notice}" class="margin-left20">
         <input type="hidden" th:value="${academy}" id="academy">
         제목<input type="text" class="form-control" th:field="*{title}">
         <p id="titleError"></p><br>

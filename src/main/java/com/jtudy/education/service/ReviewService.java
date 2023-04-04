@@ -62,7 +62,6 @@ public interface ReviewService {
                 .createdAt(review.getCreatedAt())
                 .modifiedAt(review.getModifiedAt())
                 .build();
-
         return reviewDTO;
     }
 }

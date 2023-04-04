@@ -13,11 +13,13 @@
             </div>
             <div class="flex">
                 <span class="custom-span" style="margin-right:7px;">수강 과목</span>
-                <div th:each="subject : ${academy.subject}">
-                <span th:each="sub : ${subject}" th:if="${subject == subject}">
-                        <li th:text="${sub.description}" class="form-check-label custom-li"></li>
-                </span>
-                </div>
+                <ul>
+                    <div th:each="subject : ${academy.subject}">
+                        <span th:each="sub : ${subject}" th:if="${subject == subject}">
+                            <li th:text="${sub.description}" class="form-check-label custom-li"></li>
+                        </span>
+                    </div>
+                </ul>
             </div>
             <div class="flex">
                 <span class="custom-span">학원 위치</span>

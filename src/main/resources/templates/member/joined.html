@@ -13,7 +13,7 @@
     <div th:if = "${!member.isEmpty()}">
         <table class="table table-borderless table-hover">
             <thead align="center">
-            <tr>
+            <tr class="custom-text font-bold">
                 <th scope="col">이름</th>
                 <th scope="col">이메일</th>
                 <th scope="col">주소</th>
@@ -24,8 +24,8 @@
             <tr th:each="mem : ${member}">
                 <td><a th:text="${mem.name}">이름</a></td>
                 <td><span th:text="${mem.email}">이메일</span></td>
-                <td><span th:text="${mem.address}" style="font-size:50%">주소</span></td>
-                <td><a th:text="${mem.joinedDate}">등록일</a></td>
+                <td><span th:text="${mem.address}" style="font-size:80%">주소</span></td>
+                <td><a th:text="${#temporals.format(mem.joinedDate, 'yyyy년 MM월 dd일')}">등록일</a></td>
 
             </tr>
             </tbody>

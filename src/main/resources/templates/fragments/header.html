@@ -35,7 +35,7 @@
                                 <option name="category" value="location">학원 위치</option>
                                 <option name="category" value="name&location">학원명+위치</option>
                             </select>
-                            <input class="form-control" type="search" placeholder="Search" aria-label="Search" id="keyword">
+                            <input class="custom-form-control" type="search" placeholder="Search" aria-label="Search" id="keyword">
                             <button class="custom-button-mint" type="button" id="searchBtn" style="width:50%;">Search</button>
                         </div>
                     </div>
@@ -117,6 +117,7 @@
                     if (searchData[property] !== undefined && searchData[property] !== "") {
                         urlString += property + "=" + searchData[property] + "&";
                     }
+
                 }
 
                 if (urlString !== "") {

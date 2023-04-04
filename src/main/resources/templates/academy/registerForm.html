@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
 <body>
     <div layout:fragment="content">
-        <h3>등록 화면</h3>
-        <form th:object="${academy}">
+        <h3 class="custom-text font-bold">등록 화면</h3>
+        <form th:object="${academy}" class="margin-left20">
             학원 이름<input type="text" class="custom-form-control" th:field="*{acaName}">
             <p id="acaNameError"></p><br>
             학원 위치
