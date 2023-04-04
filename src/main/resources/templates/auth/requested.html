@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>All Requested Auth</h3>
+    <h3 class="custom-text font-bold">All Requested Auth</h3><br>
     <div th:if="${auth.isEmpty()}">
         요청된 권한이 없습니다.
     </div>
@@ -24,7 +24,7 @@
                 <td><a th:text="${auth1.name}"></a></td>
                 <td><a th:text="${auth1.email}"></a></td>
                 <td><a th:text="${auth1.roles}"></a></td>
-                <td><a th:text="${auth1.createdAt}"></a></td>
+                <td><a th:text="${#temporals.format(auth1.createdAt, 'yyyy-MM-dd HH:mm')}"></a></td>
             </tr>
             </tbody>
         </table>

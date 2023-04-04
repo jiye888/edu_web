@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>[[${member.name}]]님의 권한 수정</h3>
+    <h3 class="custom-text font-bold">[[${member.name}]]님의 권한 수정</h3><br>
     <input type="hidden" th:value="${member.memNum}" id="number">
-    <div>
-        현재 권한
+    <div class="custom-form">
+        <span class="custom-span span-center">현재 권한</span>
         <div th:if="${currentRoles.size() == 0}">
             아직 권한이 없습니다.
         </div>
@@ -18,16 +18,21 @@
             </div>
         </div>
         <br>
-        권한
+        <span class="custom-span span-center">수정할 권한</span>
         <div th:each="koreanRole : ${koreanRoles}">
             <input type="radio" name="role" th:value="${koreanRole.key}" id="${koreanRole.key}">
             <label th:for="${koreanRole}" th:text="${koreanRole.value}"></label>
         </div>
-        <input type="radio" name="changeType" id="addRoles">
-        <label th:for="addRoles">권한 추가</label>
-        <input type="radio" name="changeType" id="removeRoles">
-        <label th:for="removeRoles">권한 제거</label>
-        <button type="button" id="changeBtn">권한 수정</button>
+        <div style="margin-top:30px;">
+            <input type="radio" name="changeType" id="addRoles">
+            <label th:for="addRoles">권한 추가</label>
+            <input type="radio" name="changeType" id="removeRoles">
+            <label th:for="removeRoles">권한 제거</label>
+        </div>
+        <div class="button-distance">
+            <button type="button" id="changeBtn" class="custom-button-mint">권한 수정</button>
+            <button type="button" id="cancelBtn" class="custom-button-mint">수정 취소</button>
+        </div>
     </div>
 
     <script th:inline="javascript">
@@ -36,12 +41,15 @@
             $('#changeBtn').on("click", function() {
                 changeRoles();
             });
+            $('#cancelBtn').on("click", function() {
+                history.back();
+            });
         });
 
         function changeRoles() {
             var number = $('#number').val();
-            var roles = $('input[name="role"]:checked').val();
-            var changeType = $('input[name="changeType"]:checked').attr('id');
+            var roles = $('input[name=role]:checked').val();
+            var changeType = $('input[name=changeType]:checked').attr('id');
             console.log(number);
             console.log(roles);
 

@@ -5,18 +5,20 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 class="custom-text">[[${auth.name}]]님의 권한 요청</h3>
+    <h3 class="custom-text font-bold">[[${auth.name}]]님의 권한 요청</h3><br>
     <input type="hidden" th:value="${auth.authId}" id="number">
-    <form th:object="${auth}" class="margin-left20">
-        <span class="custom-span">권한</span>
+    <form th:object="${auth}" class="custom-form">
+        <span class="custom-span span-center">권한</span>
         <div th:each="role : ${roles}">
             <input type="radio" class="custom-form-control" name="role" th:value="${role.key}" id="${role.key}" th:checked="${role.key} == ${auth.roles}">
             <label th:for="${role}" th:text="${role.value}"></label>
         </div><br>
-        <span class="custom-span">내용</span><br>
+        <span class="custom-span span-center">내용</span><br>
         <input type="text" class="custom-form-control input-content" th:field="*{content}" id="content"><br>
-        <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
-        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        <div class="button-distance">
+            <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
+            <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        </div>
     </form>
 
     <script th:inline="javascript">
@@ -30,7 +32,7 @@
         });
 
         function modify() {
-            var roles = $('input[name="role"]:checked').val();
+            var roles = $('input[name=role]:checked').val();
             var content = $('#content').val();
             var number = $('#number').val();
 

@@ -5,19 +5,36 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>공지사항</h3>
+    <h3 class="custom-text font-bold">[[${notice.acaName}]] 공지사항</h3><br>
+    <div class="read-box1">
+        <div class="read-box2">
+            <div>
+                <tbody>
+                <tr>
+                    <td>
+                        <span class="custom-span">제목</span>
+                        <span th:text="${notice.title}" id="title">제목</span><br>
+                    </td>
+                    <td>
+                        <span class="custom-span">작성일자</span>
+                        <span th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd HH:mm')}" id="createdAt"></span><br>
+                    </td>
+                </tr>
+                </tbody>
 
-            <span th:text="${notice.acaName}"></span><br>
-
-            <span th:text="${notice.title}" id="title">제목</span><br>
-            <span th:text="${notice.createdAt}" id="createdAt"></span><br>
+            </div>
+            <span>내용</span>
             <span th:text="${notice.content}" id="content"></span><br>
 
-    <input type="hidden" th:value="${notice.notNum}" id="number">
-    <input type="hidden" th:value="${academy}" id="academy">
+            <input type="hidden" th:value="${notice.notNum}" id="number">
+            <input type="hidden" th:value="${academy}" id="academy">
 
-    <button type="button" id="modifyBtn">수정하기</button>
-    <button type="button" id="deleteBtn">삭제하기</button>
+            <div >
+                <button type="button" id="modifyBtn" class="custom-button-yellow">수정하기</button>
+                <button type="button" id="deleteBtn" class="custom-button-yellow">삭제하기</button>
+            </div>
+        </div>
+    </div>
 
     <script th:inline="javascript">
 

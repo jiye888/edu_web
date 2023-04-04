@@ -5,16 +5,20 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>수정 화면</h3>
-    <form th:object="${notice}" class="margin-left20">
+    <h3 class="custom-text font-bold">수정 화면</h3><br>
+    <form th:object="${notice}" class="custom-form">
         <input type="hidden" th:field="*{acaNum}" id="academy">
         <input type="hidden" th:field="*{notNum}" id="number">
-        제목<input type="text" class="form-control" th:field="*{title}">
+        <span class="custom-span span-center margin-top10">제목</span>
+        <input type="text" class="custom-form-control" th:field="*{title}">
         <p id="titleError"></p><br>
-        내용<input type="text" class="form-control" th:field="*{content}">
+        <span class="custom-span span-center">내용</span>
+        <input type="text" class="custom-form-control input-content" th:field="*{content}">
         <p id="contentError"></p><br>
-        <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
-        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        <div class="button-distance">
+            <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
+            <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        </div>
     </form>
 
     <script th:inline="javascript">

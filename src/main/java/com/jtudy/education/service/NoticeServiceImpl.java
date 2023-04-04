@@ -95,6 +95,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
 
         Specification<Notice> spec = NoticeSpecification.findByAcademy(acaNum);
+
         if (categories.size() == 1) {
             if (categories.contains("title")) {
                 spec = spec.and(NoticeSpecification.titleContaining(map.get("title")));

@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
 <body>
     <div layout:fragment="content">
-        <h3 class="custom-text font-bold">등록 화면</h3>
-        <form th:object="${academy}" class="margin-left20">
-            학원 이름<input type="text" class="custom-form-control" th:field="*{acaName}">
+        <h3 class="custom-text font-bold">등록 화면</h3><br>
+        <form th:object="${academy}" class="custom-form">
+            <span class="custom-span">학원 이름</span>
+            <input type="text" class="custom-form-control" th:field="*{acaName}">
             <p id="acaNameError"></p><br>
-            학원 위치
+            <span class="custom-span">학원 위치</span>
             <div th:field="*{location}">
                 <input type="text" class="custom-form-control" name="location" id="postcode" placeholder="우편번호">
                 <input type="button" class="custom-form-control" onclick="execDaumPostcode()" value="우편번호 찾기"><br>
@@ -21,7 +22,7 @@
             </div>
             <p id="locationError"></p><br>
 
-            수강 과목<br>
+            <span class="custom-span">수강 과목</span><br>
             <div class="custom-checkbox-group">
                 <div th:each="sub : ${subject}" class="custom-checkbox">
                     <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="custom-check-input">
@@ -29,9 +30,10 @@
                 </div>
             </div>
             <p id="subjectError"></p><br>
-
-            <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
-            <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
+            <div class="button-distance">
+                <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
+                <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
+            </div>
         </form>
         <script th:inline="javascript">
 

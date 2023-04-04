@@ -5,13 +5,14 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3>등록 화면</h3>
-    <form class="margin-left20">
+    <h3 class="custom-text font-bold">등록 화면</h3><br>
+    <form class="custom-form">
         <input type="hidden" th:value="${academy}" id="academy">
-        제목<input type="text" class="form-control" id="title">
+        <span class="custom-span span-center">제목</span>
+        <input type="text" class="custom-form-control margin-top10" id="title">
         <p id="titleError"></p><br>
-        평점
-        <div class="reversed-stars">
+        <span class="custom-span span-center">평점</span>
+        <div class="reversed-stars span-center">
             <input type="radio" id="5points" name="grade" value="5" class="stars-input">
             <label for="5points" class="stars">★</label>
             <input type="radio" id="4points" name="grade" value="4" class="stars-input">
@@ -24,10 +25,13 @@
             <label for="1point" class="stars">★</label>
         </div>
         <p id="gradeError"></p><br>
-        내용<input type="text" class="form-control" style="height: 600px; width: 800px;" id="content">
+        <span class="custom-span span-center">내용</span>
+        <input type="text" class="custom-form-control" style="height: 600px; width: 800px;" id="content">
         <p id="contentError"></p><br>
-        <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
-        <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        <div class="button-distance">
+            <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
+            <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        </div>
 </form>
 <script th:inline="javascript">
 
