@@ -4,7 +4,37 @@
       layout:decorate="~{layout/main}">
 <meta charset="UTF-8">
 <div layout:fragment="content">
-    <div class="card" style="height:600px;border:none;">
+
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="margin-top:-20px;height:300px;">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img class="d-block w-100" src="/img/blue.jpg" alt="First slide">
+                <span>blue</span>
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="/img/boat.jpg" alt="Second slide">
+                <span>boat</span>
+            </div>
+            <div class="carousel-item">
+                <img class="d-block w-100" src="/img/giftbox.jpg" alt="Third slide">
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+    <div class="card" style="height:700px;border:none;">
         <div class="custom-card-background" style="border:0;">
             <div class="card-body">
                 <h3 align="center" class="card-title font-bold" style="color:white;">WELCOME!</h3>

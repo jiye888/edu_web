@@ -178,7 +178,7 @@ a:hover {
 
 .read-box1 {
     background-color: #fffcf5c7;
-    color: #f58b0a;
+    /*color: #f58b0a;*/
     margin: 10%;
     padding: 5px 20px 5px 20px;
     border-radius: 20px;
@@ -362,9 +362,22 @@ a:hover {
     display: inline-block;
     padding: 0px 10px 0px 10px;
     color: #495057;
-    border: 1px solid #060606;
+    border: 1px solid #bfddd8;
     border-radius: 0.25rem;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+}
+
+.review-count {
+    font-weight: 600;
+    color: #adb5bd;
+    margin-left: -5px;
+}
+
+.read-a {
+    color: #9fa3a7;
+    text-decoration: none;
+    padding: 5px 10px 5px 0px;
+    font-size: medium;
 }

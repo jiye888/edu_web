@@ -28,6 +28,7 @@
                     <div>
                         <span th:if="${aca.grade == null}"></span>
                         <span th:if="${aca.grade != null}" th:text="${#numbers.formatDecimal(aca.grade, 1, 1)}" class="grade-text">평점</span>
+                        <span th:if="${aca.reviewCount != 0}" th:text="'('+${aca.reviewCount}+')'" class="review-count"></span>
                     </div>
                 </td>
                 <td><span th:text="${aca.shortLocation}" style="font-size:85%"></span></td>

@@ -7,9 +7,16 @@
 <div layout:fragment="content">
     <div class="read-box1">
         <div class="read-box2">
-            <div class="flex">
+            <div style="display:flex;justify-content:space-between;">
+                <div>
                 <span class="custom-span">학원명</span>
                 <span type="text" th:text="${academy.acaName}" id="academy_name">학원 이름</span>
+                </div><div>
+                <span class="custom-span">평점</span>
+                <span th:if="${academy.grade == null}"></span>
+                <span th:if="${academy.grade != null}" th:text="${#numbers.formatDecimal(academy.grade, 1, 1)}">평점</span>
+                <span th:if="${academy.reviewCount != 0}" th:text="'('+${academy.reviewCount}+')'" class="review-count"></span>
+                </div>
             </div>
             <div class="flex">
                 <span class="custom-span" style="margin-right:7px;">수강 과목</span>
@@ -34,9 +41,10 @@
             <div class="flex">
                 <button type="button" id="joinBtn" class="custom-button-yellow">수강 신청</button>
                 <button type="button" id="withdrawBtn" class="custom-button-yellow">수강 취소</button><br>
-
-                <button type="button" id="modifyBtn" class="custom-button-yellow">수정하기</button>
-                <button type="button" id="deleteBtn" class="custom-button-yellow">삭제하기</button>
+            </div>
+            <div style="display: flex; float: right;">
+                <a id="modifyA" class="read-a">수정하기</a>
+                <a id="deleteA" class="read-a">삭제하기</a>
             </div>
 
         </div>
@@ -49,11 +57,11 @@
                 memberList();
             });
 
-            $('#modifyBtn').on("click", function() {
+            $('#modifyA').on("click", function() {
                 modify();
             });
 
-            $('#deleteBtn').on("click", function() {
+            $('#deleteA').on("click", function() {
                 delete_academy();
             });
 
