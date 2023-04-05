@@ -9,7 +9,7 @@
     <form th:object="${notice}" class="custom-form">
         <input type="hidden" th:value="${academy}" id="academy">
         <span class="custom-span span-center">제목</span>
-        <input type="text" class="custom-form-control margin-top10" th:field="*{title}">
+        <input type="text" class="custom-form-control margin-top10 w-auto" th:field="*{title}">
         <p id="titleError"></p><br>
         <span class="custom-span span-center">내용</span>
         <input type="text" class="custom-form-control input-content" th:field="*{content}">

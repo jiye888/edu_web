@@ -6,8 +6,8 @@
 <body>
 <div layout:fragment="content">
     <h3 class="custom-text font-bold">Academy</h3>
-    <button type="button" class="custom-button-yellow" id="registerBtn">학원 등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
-    <div th:if="${academy.isEmpty()}">
+    <button type="button" class="custom-button-yellow" id="registerBtn" style="float:right;">학원 등록</button> <!--th:onclick="'location.href=\''+@{/academy/register}+'\';'">학원 등록</button>-->
+    <div th:if="${academy.isEmpty()}" class="flex-center">
         <h3>등록된 학원이 존재하지 않습니다.</h3>
     </div>
 

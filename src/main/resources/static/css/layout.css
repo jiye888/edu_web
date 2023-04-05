@@ -71,7 +71,6 @@ a:hover {
     border: 1px solid #bfddd8;
     border-radius: 0.25rem;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    width: fit-content;
 }
 
 .custom-form {
@@ -161,11 +160,10 @@ a:hover {
     align-items: stretch;
     text-align: center;
     border-radius: 10px;
-    overflow: hidden;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    position: absolute;
+    margin-top: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 80px;
 }
 
 .login-box2 {
@@ -179,13 +177,11 @@ a:hover {
 }
 
 .read-box1 {
-    background-color: #fffcf5ed;
-    width: 1000px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
+    background-color: #fffcf5c7;
     color: #f58b0a;
+    margin: 10%;
+    padding: 5px 20px 5px 20px;
+    border-radius: 20px;
     font-size: large;
 }
 
@@ -246,6 +242,11 @@ a:hover {
     text-align: left;
 }
 
+.title-stars {
+    margin-left: 20px;
+    color: #ffda52;
+}
+
 .flex {
     display: flex;
     align-items: baseline;
@@ -291,4 +292,79 @@ a:hover {
 .span-center {
     align-self: center;
     width: fit-content;
+}
+
+.border-tb{
+    padding: 10px 20px 10px 20px;
+    border-top: 2px solid #4bd9c761;
+    border-bottom: 2px solid #1f7c707a;
+    margin-bottom: 30px;
+}
+
+.title-tr {
+    display: flex;
+}
+
+.title-td {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.title-date {
+    margin-top: -10px;
+    display: flex;
+    font-size: smaller;
+    flex-direction: row-reverse;
+    margin-bottom: -20px;
+}
+
+.content-box {
+    margin: 10px 20px 30px 20px;
+    background-color: white;
+    padding: 30px 30px 50px 30px;
+    color: black;
+}
+
+.footer {
+    width: 100%;
+    height: 99999px;
+    position: absolute;
+    bottom: 0px;
+}
+
+.read-box-white-title {
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    margin-bottom: -30px;
+}
+
+.read-box-white {
+     margin: 5% 10% 5% 10%;
+     padding: 5px 20px 5px 20px;
+     font-size: large;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.w-auto {
+    width: auto;
+}
+
+.w-fit{
+    width: fit-content;
+}
+
+.select-prepend {
+    display: inline-block;
+    padding: 0px 10px 0px 10px;
+    color: #495057;
+    border: 1px solid #060606;
+    border-radius: 0.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
