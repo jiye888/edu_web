@@ -36,8 +36,15 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional(readOnly = true)
     public boolean validateMember(Long acaNum, SecurityMember member) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        return academy.getCreatedBy().equals(member.getUsername()) || member.getMember().getRolesList().contains(Roles.ADMIN);
+        try {
+            Academy academy = academyRepository.findByAcaNum(acaNum);
+            return academy.getCreatedBy().equals(member.getUsername()) || member.getMember().getRolesList().contains(Roles.ADMIN);
+        } catch (NullPointerException e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

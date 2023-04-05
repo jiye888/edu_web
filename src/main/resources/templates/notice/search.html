@@ -7,6 +7,10 @@
 <div layout:fragment="content">
 
     <h3 class="custom-text font-bold">Notice</h3>
+    <div class="margin-left20">
+        <button type="button" id="registerBtn" class="custom-button-yellow">공지사항 등록</button>
+        <button type="button" id="academyBtn" class="custom-button-yellow">학원으로 돌아가기</button>
+    </div>
     <input type="hidden" th:value="${academy}" id="academy">
 
     <div th:if="${notice.isEmpty()}">
@@ -74,6 +78,48 @@
             </ul>
         </nav>
     </div>
+    <script th:inline="javascript">
+        $(function() {
+
+            $('#registerBtn').click(function(){
+                register();
+            });
+            $('#academyBtn').click(function(){
+                readAcademy();
+            });
+
+        });
+
+        function register() {
+            var academy = "[[${academy}]]";
+
+            $.ajax({
+                url: '/notice/register',
+                type: 'GET',
+                contentType: "application/json",
+                data: {"academy":academy},
+                success: function() {
+                    location.href="/notice/register?academy="+academy;
+                },
+            });
+        }
+
+        function readAcademy() {
+            var academy = "[[${academy}]]";
+
+            $.ajax({
+                url: '/academy/read?number='+academy,
+                type: 'GET',
+                contentType: 'application/json',
+                data: {"academy":academy},
+                success: function() {
+                    location.href="/academy/read?number="+academy;
+                },
+            });
+        }
+
+
+    </script>
 </div>
 </body>
 </html>

@@ -25,10 +25,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean validateMember(Long authId, SecurityMember member) {
-        Auth auth = authRepository.findByAuthId(authId);
-        Long authNum = auth.getMember().getMemNum();
-        Long memNum = member.getMember().getMemNum();
-        return authNum.equals(memNum) || member.getMember().getRolesList().contains(Roles.ADMIN);
+        try {
+            Auth auth = authRepository.findByAuthId(authId);
+            Long authNum = auth.getMember().getMemNum();
+            Long memNum = member.getMember().getMemNum();
+            return authNum.equals(memNum) || member.getMember().getRolesList().contains(Roles.ADMIN);
+        } catch (NullPointerException e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

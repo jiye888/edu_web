@@ -32,13 +32,20 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional(readOnly = true)
     public boolean validateMember(Long revNum, SecurityMember member) {
-        Review review = reviewRepository.findByRevNum(revNum);
-        Academy academy = review.getAcademy();
-        List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member.getMember());
-        List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
-        boolean regInfo = academyList.contains(academy);
-        boolean modInfo = review.getCreatedBy().equals(member.getUsername());
-        return (regInfo || modInfo || member.getMember().getRolesList().contains(Roles.ADMIN));
+        try {
+            Review review = reviewRepository.findByRevNum(revNum);
+            Academy academy = review.getAcademy();
+            List<AcademyMember> academyMemberList = academyMemberRepository.findByMember(member.getMember());
+            List<Academy> academyList = academyMemberList.stream().map(e -> e.getAcademy()).collect(Collectors.toList());
+            boolean regInfo = academyList.contains(academy);
+            boolean modInfo = review.getCreatedBy().equals(member.getUsername());
+            return (regInfo || modInfo || member.getMember().getRolesList().contains(Roles.ADMIN));
+        } catch (NullPointerException e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

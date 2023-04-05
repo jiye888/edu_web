@@ -35,8 +35,15 @@ public class MemberServiceImpl implements MemberService{
     @Override
     @Transactional(readOnly = true)
     public boolean validateMember(Long memNum, SecurityMember securityMember) {
-        Member member = memberRepository.findByMemNum(memNum);
-        return member.getEmail().equals(securityMember.getUsername()) || securityMember.getMember().getRolesList().contains(Roles.ADMIN);
+        try {
+            Member member = memberRepository.findByMemNum(memNum);
+            return member.getEmail().equals(securityMember.getUsername()) || securityMember.getMember().getRolesList().contains(Roles.ADMIN);
+        } catch (NullPointerException e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

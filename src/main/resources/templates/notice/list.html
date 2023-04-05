@@ -8,7 +8,7 @@
     <h3 class="custom-text font-bold">Notice</h3>
     <div class="margin-left20">
         <button type="button" id="registerBtn" class="custom-button-yellow">공지사항 등록</button>
-
+        <button type="button" id="academyBtn" class="custom-button-yellow">학원으로 돌아가기</button>
     </div>
     <div th:if = "${notice.isEmpty()}" class="margin-left20">
         현재 공지사항이 없습니다.
@@ -80,6 +80,9 @@
             $('#registerBtn').click(function(){
                 register();
             });
+            $('#academyBtn').click(function(){
+                readAcademy();
+            });
 
         });
 
@@ -93,6 +96,20 @@
                 data: {"academy":academy},
                 success: function() {
                     location.href="/notice/register?academy="+academy;
+                },
+            });
+        }
+
+        function readAcademy() {
+            var academy = "[[${academy}]]";
+
+            $.ajax({
+                url: '/academy/read?number='+academy,
+                type: 'GET',
+                contentType: 'application/json',
+                data: {"academy":academy},
+                success: function() {
+                    location.href="/academy/read?number="+academy;
                 },
             });
         }
