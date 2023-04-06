@@ -12,7 +12,7 @@
                 <span class="custom-span">학원명</span>
                 <span type="text" th:text="${academy.acaName}" id="academy_name">학원 이름</span>
                 </div><div>
-                <span class="custom-span">평점</span>
+                <span th:if="${academy.grade != null}" class="custom-span">평점</span>
                 <span th:if="${academy.grade == null}"></span>
                 <span th:if="${academy.grade != null}" th:text="${#numbers.formatDecimal(academy.grade, 1, 1)}">평점</span>
                 <span th:if="${academy.reviewCount != 0}" th:text="'('+${academy.reviewCount}+')'" class="review-count"></span>

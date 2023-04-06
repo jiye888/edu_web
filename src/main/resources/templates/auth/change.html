@@ -5,32 +5,27 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 class="custom-text font-bold">[[${member.name}]]님의 권한 수정</h3><br>
+    <h3 class="custom-text font-bold">[[${member.name}]]님의 권한 수정</h3><br><br>
     <input type="hidden" th:value="${member.memNum}" id="number">
     <div class="custom-form">
-        <span class="custom-span span-center">현재 권한</span>
+        <span class="custom-span span-center">현재 권한</span><br>
         <div th:if="${currentRoles.size() == 0}">
             아직 권한이 없습니다.
         </div>
         <div th:if="${currentRoles.size() > 0}">
             <div th:each="role : ${currentRoles}">
-                <span th:text="${role.value}"></span>
+                <li th:text="${role.value}"></li>
             </div>
         </div>
-        <br>
-        <span class="custom-span span-center">수정할 권한</span>
+        <br><br>
+        <span class="custom-span span-center">수정할 권한</span><br>
         <div th:each="koreanRole : ${koreanRoles}">
             <input type="radio" name="role" th:value="${koreanRole.key}" id="${koreanRole.key}">
             <label th:for="${koreanRole}" th:text="${koreanRole.value}"></label>
-        </div>
-        <div style="margin-top:30px;">
-            <input type="radio" name="changeType" id="addRoles">
-            <label th:for="addRoles">권한 추가</label>
-            <input type="radio" name="changeType" id="removeRoles">
-            <label th:for="removeRoles">권한 제거</label>
-        </div>
-        <div class="button-distance">
-            <button type="button" id="changeBtn" class="custom-button-mint">권한 수정</button>
+        </div><br>
+        <div class="button-distance" style="margin: 10px 0px 30px 0px;">
+            <button type="button" id="addBtn" class="custom-button-mint">권한 추가</button>
+            <button type="button" id="removeBtn" class="custom-button-mint">권한 제거</button>
             <button type="button" id="cancelBtn" class="custom-button-mint">수정 취소</button>
         </div>
     </div>
@@ -38,54 +33,60 @@
     <script th:inline="javascript">
 
         $(function() {
-            $('#changeBtn').on("click", function() {
-                changeRoles();
+            $('#addBtn').on("click", function() {
+                addRoles();
+            });
+            $('#removeBtn').on("click", function() {
+                removeRoles();
             });
             $('#cancelBtn').on("click", function() {
                 history.back();
             });
         });
 
-        function changeRoles() {
+        function addRoles() {
             var number = $('#number').val();
             var roles = $('input[name=role]:checked').val();
-            var changeType = $('input[name=changeType]:checked').attr('id');
-            console.log(number);
-            console.log(roles);
 
-            if (roles && changeType) {
-
-                if (changeType === 'addRoles') {
-                    $.ajax({
-                        url: '/auth/add_role',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            "number":number,
-                            "roles":roles
-                        }),
-                        success: function() {
-                            location.href = location.href;
-                        },
-                    });
-                } else if (changeType === 'removeRoles') {
-                    $.ajax({
-                        url: '/auth/remove_role',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            "number":number,
-                            "roles":roles
-                        }),
-                        success: function() {
-                            location.href = location.href;
-                        },
-                    });
-                }
+            if (roles) {
+                $.ajax({
+                    url: '/auth/add_role',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "number":number,
+                        "roles":roles
+                    }),
+                    success: function() {
+                        history.back();
+                    },
+                });
             } else {
-                alert("모든 항목을 선택해주세요.");
+                alert("수정할 권한을 선택해주세요.");
             }
 
+        }
+
+        function removeRoles() {
+            var number = $('#number').val();
+            var roles = $('input[name=role]:checked').val();
+
+            if (roles) {
+                $.ajax({
+                    url: '/auth/remove_role',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        "number":number,
+                        "roles":roles
+                    }),
+                    success: function() {
+                        history.back();
+                    },
+                });
+            } else {
+                alert("수정할 권한을 선택해주세요.");
+            }
         }
 
     </script>

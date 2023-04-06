@@ -140,6 +140,17 @@ a:hover {
     background-position: top;
     height: 600px;
 }
+
+.custom-carousel-background1 {
+    background-image: url("/img/blue.jpg");
+}
+.custom-carousel-background2 {
+    background-image: url("/img/boat.jpg");
+}
+.custom-carousel-background3 {
+    background-image: url("/img/giftbox.jpg");
+}
+
 .custom-background {
     background-color: white;
     border: double;
