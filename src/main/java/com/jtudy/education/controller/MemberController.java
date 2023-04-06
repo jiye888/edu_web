@@ -15,19 +15,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +77,21 @@ public class MemberController {
         } catch (Exception e) {
             String error = e.getMessage();
             return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @GetMapping("/find")
+    public ResponseEntity findMember(@RequestParam("email") String email, Model model) {
+        try {
+            MemberDTO member = memberService.findByEmail(email);
+            model.addAttribute("member", member);
+            return ResponseEntity.ok(member.getMemNum());
+        } catch (NullPointerException e) {
+            String msg = "해당 이메일을 사용중인 회원이 없습니다.";
+            model.addAttribute("msg", msg);
+            return ResponseEntity.badRequest().body(msg);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

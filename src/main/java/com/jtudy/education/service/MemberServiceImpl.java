@@ -56,9 +56,10 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     @Transactional(readOnly = true)
-    public Member findByEmail(String email) {
+    public MemberDTO findByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
-        return member;
+        MemberDTO memberDTO = entityToDTO(member);
+        return memberDTO;
     }
 
     @Override

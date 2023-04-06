@@ -17,7 +17,7 @@ public interface MemberService {
 
     MemberDTO getOne(Long memNum);
 
-    Member findByEmail(String email);
+    MemberDTO findByEmail(String email);
 
     Long createMember(MemberFormDTO memberFormDTO);
 

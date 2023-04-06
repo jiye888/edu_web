@@ -6,6 +6,16 @@
 <body>
 <div layout:fragment="content">
     <h3 class="custom-text font-bold">All Requested Auth</h3><br>
+    <button type="button" class="custom-button-yellow" data-toggle="collapse" data-target="#find_member">개별 회원 권한 수정</button>
+
+    <div class="card search-card-body collapse" id="find_member">
+        <div>
+            <input type="text" id="email" class="custom-form-control">
+            <button type="button" class="custom-button-yellow" id="findBtn">확인</button>
+        </div>
+    </div>
+
+
     <div th:if="${auth.isEmpty()}">
         요청된 권한이 없습니다.
     </div>
@@ -38,9 +48,13 @@
         $(function() {
             $('#showBtn').on("click",function() {
                 showMore();
-
+            });
+            $('#findBtn').on("click", function() {
+                findMember();
             });
         });
+
+
         $(document).on("click", "tr", function() {
             getAuth($(this));
         });
@@ -97,6 +111,20 @@
                 data: {"number":authId},
                 success: function() {
                     location.href = "/auth/get?number="+authId;
+                },
+            });
+        }
+
+        function findMember() {
+            var email = $('#email').val();
+
+            $.ajax({
+                url: "/member/find",
+                type: "GET",
+                contentType: "application/json",
+                data: {"email":email},
+                success: function(response) {
+                    location.href = "/member/read?number="+response;
                 },
             });
         }
