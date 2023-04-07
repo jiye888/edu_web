@@ -8,13 +8,13 @@
 
     <h3 class="custom-text font-bold">Notice</h3>
     <div class="margin-left20">
-        <button type="button" id="registerBtn" class="custom-button-yellow">공지사항 등록</button>
-        <button type="button" id="academyBtn" class="custom-button-yellow">학원으로 돌아가기</button>
+        <button type="button" id="registerBtn" class="custom-button-yellow float-r">공지사항 등록</button>
+        <button type="button" id="academyBtn" class="custom-button-yellow float-r">학원으로 돌아가기</button>
     </div>
     <input type="hidden" th:value="${academy}" id="academy">
 
     <div th:if="${notice.isEmpty()}">
-        검색 결과가 존재하지 않습니다.
+        <h3 class="flex-center null-content">검색 결과가 존재하지 않습니다.</h3>
         <div th:insert="fragments/searchBtn::noticeSearchBtn"></div>
     </div>
 

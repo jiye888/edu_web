@@ -30,6 +30,9 @@ public class Academy extends BaseEntity {
     @Convert(converter = SubjectConverter.class)
     private EnumSet<Subject> subject;
 
+    @ManyToOne
+    private Member manager;
+
     @Column
     private String location;
 

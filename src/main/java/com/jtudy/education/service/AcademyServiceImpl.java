@@ -68,8 +68,8 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
-    public Long register(AcademyFormDTO academyFormDTO) {
-        Academy academy = formToEntity(academyFormDTO);
+    public Long register(AcademyFormDTO academyFormDTO, Member member) {
+        Academy academy = formToEntity(academyFormDTO, member);
         academy = academyRepository.save(academy);
         return academy.getAcaNum();
     }

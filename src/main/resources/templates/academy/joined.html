@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <h3 class="custom-text font-bold" align="center">[[${name}]]님께서 가입하신 학원 목록입니다.</h3>
     <div class="custom-text" th:if="${academy.isEmpty()}">
-        현재 가입하신 학원이 없습니다.
+        <h3 class="flex-center null-content">현재 가입하신 학원이 없습니다.</h3>
     </div>
 
     <div th:if = "${!academy.isEmpty()}">

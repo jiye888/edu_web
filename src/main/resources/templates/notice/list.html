@@ -7,11 +7,11 @@
 <div layout:fragment="content">
     <h3 class="custom-text font-bold">Notice</h3>
     <div class="margin-left20">
-        <button type="button" id="registerBtn" class="custom-button-yellow">공지사항 등록</button>
-        <button type="button" id="academyBtn" class="custom-button-yellow">학원으로 돌아가기</button>
+        <button type="button" id="registerBtn" class="custom-button-yellow float-r">공지사항 등록</button>
+        <button type="button" id="academyBtn" class="custom-button-yellow float-r">학원으로 돌아가기</button>
     </div>
     <div th:if = "${notice.isEmpty()}" class="margin-left20">
-        현재 공지사항이 없습니다.
+        <h3 class="flex-center null-content">현재 공지사항이 없습니다.</h3>
     </div>
     <div th:if = "${!notice.isEmpty()}" class="margin-left20">
         <table class="table table-borderless table-hover">

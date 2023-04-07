@@ -20,7 +20,7 @@ public interface ReviewService {
 
     ReviewDTO getByAcademy(Long acaNum, String email);
 
-    Long register(ReviewFormDTO reviewFormDTO);
+    Long register(ReviewFormDTO reviewFormDTO, Member member);
 
     Long update(ReviewFormDTO reviewFormDTO);
 
@@ -28,23 +28,13 @@ public interface ReviewService {
 
     Page<ReviewDTO> getReviews(Member member, Pageable pageable);
 
-    default Review dtoToEntity(ReviewDTO reviewDTO) {
-        Review review = Review.builder()
-                .revNum(reviewDTO.getRevNum())
-                .title(reviewDTO.getTitle())
-                .content(reviewDTO.getContent())
-                .grade(reviewDTO.getGrade())
-                .build();
-
-        return review;
-    }
-
-    default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy) {
+    default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy, Member member) {
         Review review = Review.builder()
                 .title(reviewFormDTO.getTitle())
                 .content(reviewFormDTO.getContent())
                 .grade(reviewFormDTO.getGrade())
                 .academy(academy)
+                .writer(member)
                 .build();
 
         return review;
@@ -57,6 +47,7 @@ public interface ReviewService {
                 .content(review.getContent())
                 .acaNum(review.getAcademy().getAcaNum())
                 .acaName(review.getAcademy().getAcaName())
+                .writerName(review.getWriter().getName())
                 .writerEmail(review.getCreatedBy())
                 .grade(review.getGrade())
                 .createdAt(review.getCreatedAt())

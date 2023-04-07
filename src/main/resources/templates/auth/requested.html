@@ -6,7 +6,7 @@
 <body>
 <div layout:fragment="content">
     <h3 class="custom-text font-bold">All Requested Auth</h3><br>
-    <button type="button" class="custom-button-yellow" data-toggle="collapse" data-target="#find_member">개별 회원 권한 수정</button>
+    <button type="button" class="custom-button-yellow float-r" data-toggle="collapse" data-target="#find_member">개별 회원 권한 수정</button>
 
     <div class="card search-card-body collapse" id="find_member">
         <div>
@@ -17,7 +17,7 @@
 
 
     <div th:if="${auth.isEmpty()}">
-        요청된 권한이 없습니다.
+        <h3 class="flex-center null-content">요청된 권한이 없습니다.</h3>
     </div>
     <div th:if="${!auth.isEmpty()}">
         <table class="table table-borderless table-hover">
@@ -33,7 +33,7 @@
             <tr th:each="auth1:${auth}" id="tbody_tr" th:attr="data-id=${auth1.authId}">
                 <td><a th:text="${auth1.name}"></a></td>
                 <td><a th:text="${auth1.email}"></a></td>
-                <td><a th:text="${auth1.roles}"></a></td>
+                <td><a th:text="${auth1.rolesString}"></a></td>
                 <td><a th:text="${#temporals.format(auth1.createdAt, 'yyyy-MM-dd HH:mm')}"></a></td>
             </tr>
             </tbody>

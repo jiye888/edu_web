@@ -26,6 +26,8 @@ public class ReviewDTO {
 
     private String acaName;
 
+    private String writerName;
+
     private String writerEmail;
 
     private Integer grade;

@@ -20,7 +20,7 @@ public interface AcademyService {
 
     AcademyDTO getOne(Long acaNum);
 
-    Long register(AcademyFormDTO academyFormDTO);
+    Long register(AcademyFormDTO academyFormDTO, Member member);
 
     Long update(AcademyFormDTO academyFormDTO);
 
@@ -30,10 +30,11 @@ public interface AcademyService {
 
     Page<AcademyDTO> search(Map<String, Object> search, Pageable pageable);
 
-    default Academy formToEntity(AcademyFormDTO academyFormDTO) {
+    default Academy formToEntity(AcademyFormDTO academyFormDTO, Member member) {
         Academy academy = Academy.builder()
                 .acaNum(academyFormDTO.getAcaNum())
                 .acaName(academyFormDTO.getAcaName())
+                .manager(member)
                 .subject(academyFormDTO.getSubject())
                 .location(academyFormDTO.getLocation())
                 .build();
@@ -45,6 +46,8 @@ public interface AcademyService {
         AcademyDTO academyDTO = AcademyDTO.builder()
                 .acaNum(academy.getAcaNum())
                 .acaName(academy.getAcaName())
+                .managerName(academy.getManager().getName())
+                .managerEmail(academy.getManager().getEmail())
                 .subject(academy.getSubject())
                 .location(academy.getLocation())
                 .managerEmail(academy.getCreatedBy())

@@ -82,7 +82,7 @@ public class AcademyController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult,
-                                   RedirectAttributes redirectAttributes, @AuthenticationPrincipal Member member, Model model, HttpServletRequest request) {
+                                   RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -95,7 +95,7 @@ public class AcademyController {
                 return ResponseEntity.badRequest().body(map);
             }
             model.addAttribute("academy", new AcademyFormDTO());
-            Long number = academyService.register(academyFormDTO);
+            Long number = academyService.register(academyFormDTO, member.getMember());
             model.addAttribute("number", number);
             return ResponseEntity.status(HttpStatus.OK).body(number);
         } catch (Exception e) {

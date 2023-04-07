@@ -60,7 +60,7 @@ a:hover {
     background: white;
 }*/
 .custom-form-control {
-    height: 2.2rem;
+    height: 38px;
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
     font-weight: 400;
@@ -190,7 +190,7 @@ a:hover {
 .read-box1 {
     background-color: #fffcf5c7;
     /*color: #f58b0a;*/
-    margin: 10%;
+    margin: 150px 0px 100px 0px
     padding: 5px 20px 5px 20px;
     border-radius: 20px;
     font-size: large;
@@ -391,4 +391,14 @@ a:hover {
     text-decoration: none;
     padding: 5px 10px 5px 0px;
     font-size: medium;
+}
+
+.null-content {
+    margin: 150px 0px 150px 0px;
+    font-size: large;
+}
+
+.float-r {
+    float: right;
+    margin-left: 20px;
 }

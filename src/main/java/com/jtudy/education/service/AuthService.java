@@ -9,7 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface AuthService {
 
@@ -38,6 +40,24 @@ public interface AuthService {
 
     void addRoles(Long memNum, Roles roles);
 
+    default Map<Roles, String> rolesMap(List<Roles> rolesList) {
+        Map<Roles, String> rolesMap = new HashMap<>();
+        rolesMap.put(Roles.STUDENT, "학생");
+        rolesMap.put(Roles.MANAGER, "학원 관리자");
+        rolesMap.put(Roles.ADMIN, "운영자");
+        Map<Roles, String> map = new HashMap<>();
+        for (Roles roles : rolesList) {
+            if (rolesMap.get(roles) != null) {
+                map.put(roles, rolesMap.get(roles));
+            }
+        }
+        if (map.isEmpty()) {
+            return null;
+        } else {
+            return map;
+        }
+    }
+
     default AuthDTO entityToDTO(Auth auth) {
         AuthDTO authDTO = AuthDTO.builder()
                 .authId(auth.getAuthId())
@@ -47,6 +67,7 @@ public interface AuthService {
                 .roles(auth.getRoles().iterator().next())
                 .createdAt(auth.getCreatedAt())
                 .content(auth.getContent())
+                .rolesString(rolesMap(auth.getRoles()).get(auth.getRoles().get(0)))
                 .build();
         return authDTO;
     }

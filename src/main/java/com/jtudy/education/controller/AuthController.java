@@ -164,17 +164,11 @@ public class AuthController {
     public String changeAuth(@RequestParam Long number, Model model, @AuthenticationPrincipal SecurityMember member) {
         MemberDTO memberDTO = memberService.getOne(number);
         model.addAttribute("member", memberDTO);
-
         Map<Roles, String> koreanRoles = roles();
         koreanRoles.put(Roles.ADMIN, "운영자");
         model.addAttribute("koreanRoles", koreanRoles);
 
-        Map<Roles, String> currentRoles = new HashMap<>();
-        for (Roles roles : memberDTO.getRolesList()) {
-            if (koreanRoles.containsKey(roles)) {
-                currentRoles.put(roles, koreanRoles.get(roles));
-            }
-        }
+        Map<Roles, String> currentRoles = authService.rolesMap(memberDTO.getRolesList());
         model.addAttribute("currentRoles", currentRoles);
         return "auth/change";
     }

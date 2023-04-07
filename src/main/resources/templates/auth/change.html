@@ -10,7 +10,7 @@
     <div class="custom-form">
         <span class="custom-span span-center">현재 권한</span><br>
         <div th:if="${currentRoles.size() == 0}">
-            아직 권한이 없습니다.
+            <h3 class="flex-center null-content">아직 권한이 없습니다.</h3>
         </div>
         <div th:if="${currentRoles.size() > 0}">
             <div th:each="role : ${currentRoles}">

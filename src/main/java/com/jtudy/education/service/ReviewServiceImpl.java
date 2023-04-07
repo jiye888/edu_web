@@ -78,9 +78,9 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewFormDTO reviewFormDTO) {
+    public Long register(ReviewFormDTO reviewFormDTO, Member member) {
         Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcademy());
-        Review review = formToEntity(reviewFormDTO, academy);
+        Review review = formToEntity(reviewFormDTO, academy, member);
         reviewRepository.save(review);
         return review.getRevNum();
     }

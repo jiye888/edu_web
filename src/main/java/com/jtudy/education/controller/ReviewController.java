@@ -83,7 +83,7 @@ public class ReviewController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
-            Long revNum = reviewService.register(reviewFormDTO);
+            Long revNum = reviewService.register(reviewFormDTO, member.getMember());
             return ResponseEntity.ok().body(revNum);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

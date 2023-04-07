@@ -26,8 +26,6 @@ public class AcademyDTO {
 
     private String shortLocation;
 
-    private Long managerMemNum;
-
     private String managerEmail;
 
     private String managerName;
@@ -45,6 +43,8 @@ public class AcademyDTO {
         if(locationSplit.length > 2) {
             this.shortLocation = locationSplit[1]+" "+locationSplit[2];
         }
+        this.managerEmail = academy.getManager().getEmail();
+        this.managerName = academy.getManager().getName();
         this.grade = grade;
         this.reviewCount = count;
     }
