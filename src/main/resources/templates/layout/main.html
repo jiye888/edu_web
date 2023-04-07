@@ -25,7 +25,7 @@
 
 </div>
 
-<div style="margin: 0px 150px 0px 150px;">
+<div style="margin: 0px 200px 0px 200px;">
     <div layout:fragment="content" class="content">
     </div>
 </div>
@@ -34,14 +34,12 @@
 <div th:insert="fragments/footer :: footer"></div>
 <script th:inline="javascript">
     window.jwtFilter = jwtFilter;
+    window.setJwt = setJwt;
     $(function() {
 
         $.ajaxSetup({
             beforeSend: function(xhr) {
-                var token = localStorage.getItem("jwt");
-                if(token) {
-                    xhr.setRequestHeader("X-AUTH-TOKEN", token);
-                }
+                setJwt(xhr);
             },
             error: function(xhr) {
                 jwtFilter();
@@ -49,6 +47,13 @@
             }
         });
     });
+
+    function setJwt(xhr) {
+        var token = localStorage.getItem("jwt");
+        if(token) {
+            xhr.setRequestHeader("X-AUTH-TOKEN", token);
+        }
+    }
 
             function jwtFilter() {
                 var token = localStorage.getItem("jwt");

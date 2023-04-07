@@ -63,6 +63,12 @@ public class AcademyController {
         }
     }
 
+    @GetMapping("/exception")
+    public String exceptionalPage(Model model) {
+        model.addAttribute("msg", "");
+        return "academy/exception";
+    }
+
     @GetMapping("/list")
     public void list(Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
@@ -117,7 +123,7 @@ public class AcademyController {
             return "academy/modifyForm";
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
-            return "exception";
+            return "academy/exception";
         }
     }
 
@@ -150,7 +156,7 @@ public class AcademyController {
             academyService.delete(acaNum);
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
-            return "exception";
+            return "academy/exception";
         }
         return "redirect:/academy/list";
     }

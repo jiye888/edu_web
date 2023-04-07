@@ -154,7 +154,7 @@
 
             if (result) {
                 $.ajax({
-                    url: '/academy/withdraw',
+                    url: '/academy/withdraw?number='+number,
                     type: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify({"number":number}),

@@ -3,6 +3,7 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.security.SecurityMember;
+import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ import java.util.Map;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final AcademyMemberService academyMemberService;
     private final TemplateEngine templateEngine;
 
     @GetMapping("/list")
@@ -50,6 +52,11 @@ public class ReviewController {
     @GetMapping("/register")
     public ResponseEntity register(@RequestParam("academy") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         try {
+            if (!academyMemberService.isPresent(member.getMember().getMemNum(), acaNum)) {
+                Map<String, String> map = new HashMap<>();
+                map.put("not_member", "not_member");
+                return ResponseEntity.ok().body(map);
+            }
             if (reviewService.getByAcademy(acaNum, member.getUsername()) == null) {
                 model.addAttribute("academy", acaNum);
                 model.addAttribute("review", new ReviewFormDTO());

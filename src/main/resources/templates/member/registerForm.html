@@ -34,7 +34,6 @@
             <input type="text" class="custom-form-control f1" name="address" id="detailAddress" placeholder="상세주소">
             <input type="text" class="custom-form-control f1" name="address" id="extraAddress" placeholder="참고항목">
             </div>
-
         </div><br>
         <p id="addressError"><br>
 
@@ -75,10 +74,10 @@
 
         var address = '';
         $('input[name=address]:lt(3)').map(function(){
-        if ('input[name=address]') {
-        address += $(this).val();
-        address += ' ';
-        }
+            if ('input[name=address]') {
+                address += $(this).val();
+                address += ' ';
+            }
         });
         address = $.trim(address);
 

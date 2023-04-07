@@ -48,6 +48,7 @@ public class AcademyMemberServiceImpl implements AcademyMemberService {
         Member member = memberRepository.findByMemNum(memNum);
         if (isPresent(memNum, acaNum)) {
             Long am = getOne(memNum, acaNum);
+            System.out.println("!!!!!!!!!!"+am);
             academyMemberRepository.deleteById(am);
             if (academyMemberRepository.findByMember(member) == null) {
                 member.removeRoles(Roles.STUDENT);

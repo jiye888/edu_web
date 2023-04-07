@@ -70,7 +70,7 @@ public class AuthController {
                 return "auth/get";
             } else {
                 model.addAttribute("msg", "접근 권한이 없습니다.");
-                return "exception";
+                return "academy/exception";
             }
         } catch (Exception e) {
             return e.getMessage();
@@ -86,7 +86,7 @@ public class AuthController {
             }
         } catch (Exception e) {
             model.addAttribute("msg", e.getMessage());
-            return "exception";
+            return "academy/exception";
         }
         return "auth/modifyForm";
     }
@@ -120,7 +120,7 @@ public class AuthController {
             model.addAttribute("msg", e.getMessage());
             Context context = new Context();
             context.setVariables(model.asMap());
-            String template = templateEngine.process("exception", context);
+            String template = templateEngine.process("academy/exception", context);
             return ResponseEntity.badRequest().body(template);
         }
     }

@@ -78,6 +78,7 @@ a:hover {
     flex-direction: column;
     align-content: center;
     flex-wrap: wrap;
+    margin: 10px 200px 10px 200px;
 }
 
 .custom-checkbox-group {
@@ -193,7 +194,7 @@ a:hover {
 .read-box1 {
     background-color: #fffcf5c7;
     /*color: #f58b0a;*/
-    margin: 150px 0px 100px 0px
+    margin: 150px 0px 100px 0px;
     padding: 5px 20px 5px 20px;
     border-radius: 20px;
     font-size: large;
@@ -407,6 +408,7 @@ a:hover {
 .null-content {
     margin: 150px 0px 150px 0px;
     font-size: large;
+    color: black;
 }
 
 .float-r {
