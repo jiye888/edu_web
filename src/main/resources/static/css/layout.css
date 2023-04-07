@@ -133,7 +133,7 @@ a:hover {
 
 .custom-card-background {
     background-image: url("/img/catalog.jpg");
-    /*background-image: url("/img/yellow.jpg");*/
+    /*backgroundrmage: url("/img/yellow.jpg");*/
     /*background-image: url("/img/desk.jpg");*/
     /*background-image: url("/img/floor.jpg");*/
     background-size: cover;
@@ -143,12 +143,15 @@ a:hover {
 
 .custom-carousel-background1 {
     background-image: url("/img/blue.jpg");
+    height: 300px;
 }
 .custom-carousel-background2 {
     background-image: url("/img/boat.jpg");
+    height: 300px;
 }
 .custom-carousel-background3 {
     background-image: url("/img/giftbox.jpg");
+    height: 300px;
 }
 
 .custom-background {
@@ -321,6 +324,14 @@ a:hover {
     flex-direction: row;
     align-items: center;
 }
+
+.title-writer {
+    display: flex;
+    flex-direction: row-reverse;
+    margin: -10px 0px 10px 0px;
+    font-size: medium;
+}
+
 .title-date {
     margin-top: -10px;
     display: flex;
@@ -401,4 +412,20 @@ a:hover {
 .float-r {
     float: right;
     margin-left: 20px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: flex-end;
+}
+
+.w70 {
+    width: 70%;
+}
+
+.f1 {
+    flex: 1;
+}
+.f0 {
+    flex: 0;
 }

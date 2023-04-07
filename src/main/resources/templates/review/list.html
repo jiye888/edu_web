@@ -24,7 +24,7 @@
                 <tbody align="center">
                 <tr th:each="rev : ${review}">
                     <td><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
-                    <td><span th:text="${rev.writerEmail}">작성자</span></td>
+                    <td><span th:text="${rev.writerName}">작성자</span></td>
                     <td><span th:text="${rev.grade}">평점</span></td>
                     <td><span th:text="${#temporals.format(rev.createdAt, 'yyyy-MM-dd HH:mm')}">작성 일자</span></td>
                 </tr>

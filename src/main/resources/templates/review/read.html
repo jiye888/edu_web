@@ -13,6 +13,7 @@
                 <span th:text="${review.title}" class="font-bold">제목</span>
                 <p th:text="${#strings.repeat('★', review.grade)}" class="title-stars"></p>
                 </div>
+                <span th:text="${review.writerName}" class="title-writer"></span>
                 <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}" class="title-date">작성일자</span><br>
 
             </div>

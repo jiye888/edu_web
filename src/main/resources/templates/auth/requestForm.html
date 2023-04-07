@@ -9,9 +9,9 @@
     <input type="hidden" th:value="${member.email}" id="email">
     <form th:object="${auth}" class="custom-form">
         <span class="custom-span span-center">권한</span>
-        <div th:each="role : ${roles}">
+        <div th:each="role : ${roles}" class="radio-label">
             <input type="radio" class="custom-form-control" name="role" th:value="${role.key}" id="${role.key}">
-            <label th:for="${role}" th:text="${role.value}"></label>
+            <label th:for="${role}" th:text="${role.value}" style="padding-left:7px;"></label>
         </div><br>
         <span class="custom-span span-center">내용</span><br>
         <input type="text" class="custom-form-control input-content" id="content"><br>

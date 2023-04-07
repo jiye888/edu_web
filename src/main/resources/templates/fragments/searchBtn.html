@@ -5,7 +5,7 @@
 <div th:fragment="searchBtn">
     <div class="input-group justify-content-center" style="margin-top:20px;">
         <div class="input-group-prepend">
-            <select name="search_category" class="custom-select">
+            <select name="search_category" class="custom-select select-prepend">
                 <option name="search_category" value="name">학원명</option>
                 <option name="search_category" value="location">학원 위치</option>
                 <option name="search_category" value="name&location">학원명+위치</option>
@@ -165,7 +165,7 @@
     <input type="hidden" th:value="${academy}" id="academy">
     <div class="input-group justify-content-center">
         <div class="input-group-prepend">
-            <select name="notice_category" class="custom-select">
+            <select name="notice_category" class="custom-select select-prepend">
                 <option name="notice_category" value="title">제목</option>
                 <option name="notice_category" value="content">내용</option>
                 <option name="notice_category" value="title&content">제목+내용</option>
