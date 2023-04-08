@@ -9,10 +9,10 @@
     <form th:object="${member}" class="custom-form">
 
         <span class="custom-span">이메일</span>
-        <input type="email" class="custom-form-control w70" th:field="*{email}" readonly>
+        <input type="email" class="custom-form-control w70" th:field="*{email}" readonly><br>
         <div style="display:flex;">
             <span class="custom-span" style="margin-right: 3px; height: fit-content;">비밀번호</span>
-            <input type="password" class="custom-form-control f1" th:field="*{password}">
+            <input type="password" class="custom-form-control f1" id="password">
             <span class="custom-span" style="margin: 0px 3px 0px 10px; height: fit-content;">비밀번호 확인</span>
             <input type="password" class="custom-form-control f1" id="password2">
             <p id="passwordError"></p>
@@ -34,9 +34,9 @@
                 <input type="text" class="custom-form-control f1" name="address" id="extraAddress" placeholder="참고항목">
             </div>
         </div><br>
+        <p id="addressError"><br>
         <span class="custom-span">기존 주소</span>
         <input type="text" class="custom-form-control w70" th:value="*{address}" id="ex_address" readonly><br>
-        <p id="addressError"><br>
 
         <div class="button-distance">
             <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>

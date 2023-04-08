@@ -87,20 +87,26 @@
                 contentType: "application/json",
                 data: {academy:academy},
                 success: function(response) {
-                    console.log(response);
+
+                    } else {
+                        location.href = "/review/register?academy="+academy;
+                    }
+                },
+                error: function(xhr, response) {
+                    jwtFilter();
                     var number = Number(response.number);
                     if(number != undefined && !isNaN(number)) {
                         if (confirm("이미 작성된 후기가 존재합니다. 수정하시겠습니까?")) {
                             location.href="/review/modify?number="+number;
                         }
-                    } else if (response.not_member) {
+                    } else if (xhr.responseText == "not_member") {
                         if (confirm("학원에 가입되어 있지 않습니다. 학원에 가입하시겠습니까?")) {
                             join();
                         }
                     } else {
-                        location.href = "/review/register?academy="+academy;
+                        console.log(xhr.responseText);
                     }
-                },
+                }
             });
         }
 
@@ -112,7 +118,7 @@
                 type: "POST",
                 contentType: 'application/json',
                 success: function() {
-                    alert("가입이 완료되었습니다.");
+                    alert("가입이 완료되었습니다. 수강 후기를 작성하실 수 있습니다.");
                 },
             });
         }

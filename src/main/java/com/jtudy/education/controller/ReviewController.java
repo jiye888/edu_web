@@ -53,9 +53,8 @@ public class ReviewController {
     public ResponseEntity register(@RequestParam("academy") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (!academyMemberService.isPresent(member.getMember().getMemNum(), acaNum)) {
-                Map<String, String> map = new HashMap<>();
-                map.put("not_member", "not_member");
-                return ResponseEntity.ok().body(map);
+                String msg = "not_member";
+                return ResponseEntity.badRequest().body(msg);
             }
             if (reviewService.getByAcademy(acaNum, member.getUsername()) == null) {
                 model.addAttribute("academy", acaNum);
@@ -65,7 +64,7 @@ public class ReviewController {
                 String template = templateEngine.process("review/registerForm", context);
                 return ResponseEntity.ok().body(template);
             } else if (reviewService.getByAcademy(acaNum, member.getUsername()).getRevNum() == null) {
-                return ResponseEntity.ok().body("null");
+                return ResponseEntity.badRequest().body("null");
             } else {
                 ReviewDTO reviewDTO = reviewService.getByAcademy(acaNum, member.getUsername());
                 Long revNum = reviewDTO.getRevNum();
