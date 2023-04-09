@@ -30,10 +30,13 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     @Transactional(readOnly = true)
-    public boolean validateMember(Long acaNum, SecurityMember member) {
+    public boolean isManager(Long acaNum, SecurityMember securityMember) {
         try {
+            Member member = securityMember.getMember();
             Academy academy = academyRepository.findByAcaNum(acaNum);
-            return academy.getCreatedBy().equals(member.getUsername()) || member.getMember().getRolesList().contains(Roles.ADMIN);
+            boolean isManager = academy.getManager().getMemNum().equals(member.getMemNum());
+            boolean isAdmin = member.getRolesList().contains(Roles.ADMIN);
+            return (isManager || isAdmin);
         } catch (NullPointerException e) {
             return false;
         } catch (Exception e) {

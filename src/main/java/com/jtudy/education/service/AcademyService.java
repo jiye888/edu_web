@@ -9,12 +9,13 @@ import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
 public interface AcademyService {
 
-    boolean validateMember(Long acaNum, SecurityMember member);
+    boolean isManager(Long acaNum, SecurityMember member);
 
     Page<AcademyDTO> getAll(Pageable pageable);
 

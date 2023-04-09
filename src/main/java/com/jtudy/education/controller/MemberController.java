@@ -175,12 +175,22 @@ public class MemberController {
     }
 
     @GetMapping("/joined")
-    public void getMembers(@RequestParam("number") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model){
-        Pageable pageable = PageRequest.of(page-1, 10);
-        AcademyDTO academyDTO = academyService.getOne(acaNum);
-        model.addAttribute("name", academyDTO.getAcaName());
-        Page<MemberDTO> member = memberService.getMembers(acaNum, pageable);
-        model.addAttribute("member", member);
+    public String getMembers(@RequestParam("number") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model, @AuthenticationPrincipal SecurityMember member){
+        try {
+            if (academyService.isManager(acaNum, member)) {
+                Pageable pageable = PageRequest.of(page - 1, 10);
+                AcademyDTO academyDTO = academyService.getOne(acaNum);
+                model.addAttribute("name", academyDTO.getAcaName());
+                Page<MemberDTO> memberDTO = memberService.getMembers(acaNum, pageable);
+                model.addAttribute("member", memberDTO);
+                return "/member/joined";
+            } else {
+                model.addAttribute("msg", "관리자 권한이 없습니다.");
+                return "/academy/exception";
+            }
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
 }

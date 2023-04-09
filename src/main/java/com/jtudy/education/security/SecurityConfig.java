@@ -40,21 +40,17 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-    // spring security의 인증 처리
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtTokenProvider jwtTokenProvider) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
                 //.antMatchers("/academy/register").hasRole("USER")
-                //.antMatchers("/review/**").hasRole("USER")
                 //.antMatchers("/member/update").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/member/login") // 사용자 정의 로그인 페이지
-                //.loginProcessingUrl("/member/login")
                 .defaultSuccessUrl("/main") // 로그인 성공 후 이동 페이지
                 .permitAll()
                 .failureUrl("/member/login") // 로그인 실패 후 이동 페이지

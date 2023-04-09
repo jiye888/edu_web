@@ -1,6 +1,7 @@
 .custom-control.custom-radio.custom-control-inline {
 padding-right: 10px;
 padding-left: 10px;
+flex-wrap: wrap;
 }
 
 .custom-checkbox {

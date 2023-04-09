@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 class="custom-text">[[${name}]] 학원의 수강생 목록입니다.</h3>
+    <h3 class="custom-text font-bold">[[${name}]] 학원의 수강생 목록입니다.</h3><br>
     <input type="hidden" th:value="${number}" id="number">
     <div th:if ="${member.isEmpty()}">
         <h3 class="flex-center null-content">현재 [[${name}]] 학원의 수강생이 없습니다.</h3>
@@ -17,7 +17,7 @@
                 <th scope="col">이름</th>
                 <th scope="col">이메일</th>
                 <th scope="col">주소</th>
-                <th scope="col">등록일</th>
+                <th scope="col">가입일</th>
             </tr>
             </thead>
             <tbody align="center">

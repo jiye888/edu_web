@@ -118,7 +118,7 @@ public class AcademyController {
     @GetMapping("/modify")
     public String modify(@RequestParam(value = "number") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
-        if (academyService.validateMember(acaNum, member)) {
+        if (academyService.isManager(acaNum, member)) {
             model.addAttribute("academy", academyDTO);
             return "academy/modifyForm";
         } else {
@@ -152,7 +152,7 @@ public class AcademyController {
     @ResponseBody
     public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         //AcademyDTO academyDTO = academyService.getOne(acaNum);
-        if (academyService.validateMember(acaNum, member)) {
+        if (academyService.isManager(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
