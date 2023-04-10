@@ -22,7 +22,7 @@ public interface AcademyService {
     AcademyDTO getOne(Long acaNum);
 
     @Transactional(readOnly = true)
-    Page<AcademyDTO> manageAcademies(Long memNum, Pageable pageable);
+    Page<AcademyDTO> manageAcademies(Member member, Pageable pageable);
 
     Long register(AcademyFormDTO academyFormDTO, Member member);
 

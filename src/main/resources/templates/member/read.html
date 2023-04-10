@@ -168,7 +168,14 @@
         }
 
         function manage() {
-
+            $.ajax({
+                url: '/academy/manage',
+                type: 'GET',
+                contentType: 'application/json',
+                success: function() {
+                    window.location.href="/academy/manage";
+                },
+            });
         }
 
     </script>

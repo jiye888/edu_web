@@ -77,8 +77,11 @@ public class AcademyController {
     }
 
     @GetMapping("/manage")
-    public void manage(Model model, @AuthenticationPrincipal SecurityMember member) {
-
+    public void manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        Page<AcademyDTO> academyDTO = academyService.manageAcademies(member.getMember(), pageable);
+        model.addAttribute("academy", academyDTO);
+        model.addAttribute("name", member.getMember().getName());
     }
 
     @GetMapping("/register")
