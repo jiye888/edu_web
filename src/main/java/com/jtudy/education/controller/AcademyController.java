@@ -76,6 +76,11 @@ public class AcademyController {
         model.addAttribute("academy", academyDTO);
     }
 
+    @GetMapping("/manage")
+    public void manage(Model model, @AuthenticationPrincipal SecurityMember member) {
+
+    }
+
     @GetMapping("/register")
     public String register(@AuthenticationPrincipal SecurityMember member, Model model) {
         if (member != null) {

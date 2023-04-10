@@ -6,21 +6,32 @@
 <div layout:fragment="content">
     <div class="read-box1">
         <div class="read-box2">
-            이름:
+            <span class="custom-span">이름</span>
             <span th:text="${memberDTO.name}" id="name">이름</span><br>
-            이메일:
+            <span class="custom-span">이메일</span>
             <span th:text="${memberDTO.email}" id="email">이메일</span><br>
-            주소:
+            <span class="custom-span">주소</span>
             <span th:text="${memberDTO.address}">주소</span><br>
 
             <input type="hidden" th:value="${memberDTO.memNum}" id="number">
 
-            <button type="button" class="custom-button-yellow" id="modifyBtn">회원 정보 수정</button>
-            <button type="button" class="custom-button-yellow" id="authBtn">회원 권한 요청</button>
-            <button type="button" class="custom-button-yellow" id="deleteBtn">회원 탈퇴</button><br>
+            <div class="flex-start" style="margin-top:-20px;">
+                <button type="button" class="custom-button-mint button-collapse-margin">내 정보</button>
+                <div class="collapse-box">
+                    <button type="button" class="button-my" id="modifyBtn">회원 정보 수정</button>
+                    <button type="button" class="button-my" id="authBtn">회원 권한 요청</button>
+                    <button type="button" class="button-my" id="deleteBtn">회원 탈퇴</button><br>
+                </div>
+            </div>
 
-            <button type="button" class="custom-button-yellow" id="academyBtn">학원 리스트</button>
-            <button type="button" class="custom-button-yellow" id="reviewBtn">작성한 학원 리뷰</button>
+            <div class="flex-start">
+                <button type="button" class="custom-button-mint button-collapse-margin">나의 학원</button>
+                <div class="collapse-box">
+                    <button type="button" class="button-my" id="academyBtn">가입한 학원</button>
+                    <button type="button" class="button-my" id="manageBtn">관리중인 학원</button>
+                    <button type="button" class="button-my" id="reviewBtn">나의 수강 후기</button>
+                </div>
+            </div>
 
             <div th:if="${isAdmin}">
                 <button type="button" class="custom-button-yellow" id="changeBtn">권한 수정</button>
@@ -54,6 +65,10 @@
 
             $('#changeBtn').on("click", function() {
                 changeRoles();
+            });
+
+            $('#manageBtn').on("click", function() {
+                manage();
             });
 
         });
@@ -150,6 +165,10 @@
                     window.location.href="/auth/change?number="+number;
                 },
             });
+        }
+
+        function manage() {
+
         }
 
     </script>

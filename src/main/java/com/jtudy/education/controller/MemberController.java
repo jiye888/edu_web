@@ -107,7 +107,11 @@ public class MemberController {
                 return ResponseEntity.ok().body(template);
             } else {
                 String message = "권한이 없습니다.";
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+                model.addAttribute("msg", message);
+                Context context = new Context();
+                context.setVariables(model.asMap());
+                String template = templateEngine.process("/academy/exception", context);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(template);
             }
         } catch (Exception e) {
             String error = e.getMessage();

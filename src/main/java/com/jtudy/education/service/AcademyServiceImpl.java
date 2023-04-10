@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManagerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,6 +69,14 @@ public class AcademyServiceImpl implements AcademyService{
         List<AcademyDTO> academyDTOList = academyList.stream().map(e -> academyRepository.getOneAcademyWithReviewInfo(e.getAcaNum())).collect(Collectors.toList());
         Page<AcademyDTO> page = new PageImpl<>(academyDTOList, pageable, academyList.size());
         return page;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AcademyDTO> manageAcademies(Long memNum, Pageable pageable) {
+        Page<Academy> academy = academyRepository.findByMemNum(memNum, pageable);
+        Page<AcademyDTO> academyDTO = academy.map(e -> entityToDTO(e));
+        return academyDTO;
     }
 
     @Override
@@ -129,7 +138,6 @@ public class AcademyServiceImpl implements AcademyService{
             }
         }
         Page<Academy> academy = academyRepository.findAll(spec, pageable);
-        //Page<AcademyDTO> academyDTO = academy.map(e -> new AcademyDTO(e, ))
         Page<AcademyDTO> academyDTO = academy.map(e -> academyRepository.getOneAcademyWithReviewInfo(e.getAcaNum()));
         return academyDTO;
     }
