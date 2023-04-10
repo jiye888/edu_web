@@ -7,46 +7,33 @@
 <div layout:fragment="content">
     <div class="read-box1">
         <div class="read-box2">
-            <table>
-                <tr style="display:flex;">
-                    <th>
-                        <img th:if="${imageSrc}" id="imgByte" th:src="${imageSrc}" class="academy-img">
-                    </th>
-                    <th style="font-weight:400;">
-                        <div style="display:flex;justify-content:space-between;">
-                            <div>
-                                <span class="custom-span">학원명</span>
-                                <span type="text" th:text="${academy.acaName}" id="academy_name">학원 이름</span>
-                            </div>
-                            <div>
-                                <span th:if="${academy.grade != null}" class="custom-span">평점</span>
-                                <span th:if="${academy.grade == null}"></span>
-                                <span th:if="${academy.grade != null}" th:text="${#numbers.formatDecimal(academy.grade, 1, 1)}">평점</span>
-                                <span th:if="${academy.reviewCount != 0}" th:text="'('+${academy.reviewCount}+')'" class="review-count"></span>
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <span class="custom-span" style="margin-right:7px;">수강 과목</span>
-                            <ul>
-                                <div th:each="subject : ${academy.subject}">
-                                    <span th:each="sub : ${subject}" th:if="${subject == subject}">
-                                        <li th:text="${sub.description}" class="form-check-label custom-li"></li>
-                                    </span>
-                                </div>
-                            </ul>
-                        </div>
-                        <div class="flex">
-                            <span class="custom-span">학원 위치</span>
-                            <span th:text="${academy.location}">학원 위치</span><br>
-                        </div>
-                        <div class="flex">
-                            <span class="custom-span">학원 소개</span>
-                            <span th:text="${academy.intro}">학원 소개</span>
-                        </div>
-                        <input type="hidden" th:field="${academy.acaNum}" id="number">
-                    </th>
-                </tr>
-            </table>
+            <div style="display:flex;justify-content:space-between;">
+                <div>
+                    <span class="custom-span">학원명</span>
+                    <span type="text" th:text="${academy.acaName}" id="academy_name">학원 이름</span>
+                </div>
+                <div>
+                    <span th:if="${academy.grade != null}" class="custom-span">평점</span>
+                    <span th:if="${academy.grade == null}"></span>
+                    <span th:if="${academy.grade != null}" th:text="${#numbers.formatDecimal(academy.grade, 1, 1)}">평점</span>
+                    <span th:if="${academy.reviewCount != 0}" th:text="'('+${academy.reviewCount}+')'" class="review-count"></span>
+                </div>
+            </div>
+            <div class="flex">
+                <span class="custom-span" style="margin-right:7px;">수강 과목</span>
+                <ul>
+                    <div th:each="subject : ${academy.subject}">
+                        <span th:each="sub : ${subject}" th:if="${subject == subject}">
+                            <li th:text="${sub.description}" class="form-check-label custom-li"></li>
+                        </span>
+                    </div>
+                </ul>
+            </div>
+            <div class="flex">
+                <span class="custom-span">학원 위치</span>
+                <span th:text="${academy.location}">학원 위치</span><br>
+            </div>
+            <input type="hidden" th:field="${academy.acaNum}" id="number">
             <div class="flex">
                 <button type="button" id="noticeBtn" class="custom-button-mint">공지사항</button>
                 <button type="button" id="reviewBtn" class="custom-button-mint">수강 후기</button>
@@ -64,8 +51,6 @@
         </div>
     </div>
     <script th:inline="javascript">
-
-
 
         $(function() {
 
@@ -130,24 +115,21 @@
 
         function delete_academy() {
             var number = $('#number').val();
-            var name = document.getElementById("academy_name").innerText;
 
-            if (confirm(name + '학원을 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: '/academy/delete',
-                    type: 'GET',
-                    contentType: "application/json",
-                    data: {"number":number},
-                    success: function() {
-                        location.href='/academy/main';
-                    },
-                });
-            }
+            $.ajax({
+                url: '/academy/delete',
+                type: 'GET',
+                contentType: "application/json",
+                data: {"number":number},
+                success: function() {
+                    location.href='/academy/main';
+                },
+            });
         }
 
         function join() {
             var number = $('#number').val();
-            var name = document.getElementById("academy_name").innerText;
+            var name = document.getElementById("academy_name").innerHTML;
 
             var result = confirm(name + ' 학원에 가입하시겠습니까?');
 

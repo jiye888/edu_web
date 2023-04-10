@@ -14,7 +14,9 @@
             <span th:text="${memberDTO.address}">주소</span><br>
 
             <input type="hidden" th:value="${memberDTO.memNum}" id="number">
-            <div class="flex-start" style="justify-content:center; padding-top: 10px;">
+
+            <div class="flex-start" style="margin-top:-20px;">
+                <button type="button" class="custom-button-mint button-collapse-margin">내 정보</button>
                 <div class="collapse-box">
                     <button type="button" class="button-my" id="modifyBtn">회원 정보 수정</button>
                     <button type="button" class="button-my" id="authBtn">회원 권한 요청</button>
@@ -22,9 +24,17 @@
                 </div>
             </div>
 
-            <div th:if="${isAdmin}" class="flex-start" style="flex-direction: row-reverse; margin-top: 10px; margin-bottom: -10px;">
-                <button type="button" class="custom-button-yellow" id="requestedAuthBtn">권한 요청 목록</button>
-                <button type="button" class="custom-button-yellow" id="changeBtn">회원 권한 수정</button>
+            <div class="flex-start">
+                <button type="button" class="custom-button-mint button-collapse-margin">나의 학원</button>
+                <div class="collapse-box">
+                    <button type="button" class="button-my" id="academyBtn">가입한 학원</button>
+                    <button type="button" class="button-my" id="manageBtn">관리중인 학원</button>
+                    <button type="button" class="button-my" id="reviewBtn">나의 수강 후기</button>
+                </div>
+            </div>
+
+            <div th:if="${isAdmin}">
+                <button type="button" class="custom-button-yellow" id="changeBtn">권한 수정</button>
             </div>
         </div>
     </div>
@@ -41,6 +51,10 @@
                 delete_member();
             });
 
+            $('#academyBtn').on("click", function() {
+                academyList();
+            });
+
             $('#reviewBtn').on("click", function() {
                 reviews();
             });
@@ -53,8 +67,8 @@
                 changeRoles();
             });
 
-            $('#requestedAuthBtn').on("click", function() {
-                requestedAuth();
+            $('#manageBtn').on("click", function() {
+                manage();
             });
 
         });
@@ -85,7 +99,6 @@
                     contentType: "application/json",
                     data: {"number":number},
                     success: function() {
-                        localStorage.removeItem("jwt");
                         location.href='/academy/main';
                     },
                 });
@@ -93,12 +106,15 @@
         }
 
         function academyList() {
+            var number = $('#number').val();
+
             $.ajax({
-                url: '/academy/joined',
+                url: '/academy/joined?number='+number,
                 type: 'GET',
                 contentType: "application/json",
+                data: {"number":number},
                 success: function() {
-                    location.href="/academy/joined";
+                    location.href="/academy/joined?number="+number;
                 },
             });
         }
@@ -112,6 +128,7 @@
                 contentType: "application/json",
                 data: {"member":member},
                 success: function() {
+                    //location.href='/review/by?member='+member;
                     location.href='/review/by';
                 },
 
@@ -151,24 +168,7 @@
         }
 
         function manage() {
-            $.ajax({
-                url: '/academy/manage',
-                type: 'GET',
-                contentType: 'application/json',
-                success: function() {
-                    window.location.href="/academy/manage";
-                },
-            });
-        }
 
-        function requestedAuth() {
-            $.ajax({
-                url: "/auth/requested",
-                type: "GET",
-                success: function() {
-                    location.href = "/auth/requested";
-                },
-            });
         }
 
     </script>

@@ -68,8 +68,8 @@ class AcademyRepositoryTest {
         academyMemberRepository.save(academyMember);
         Academy result = academyRepository.findByAcaNum(Long.parseLong("1"));
         assertEquals(result.getAcaNum(), Long.parseLong("1"));
-        Page<Academy> location = academyRepository.findByLocationContaining("Seoul", Pageable.unpaged());
-        logger.info(location);
+        //Page<Academy> location = academyRepository.findByLocationContaining("Seoul", Pageable.unpaged());
+        //logger.info(location);
 
 
     }

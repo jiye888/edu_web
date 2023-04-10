@@ -41,6 +41,11 @@ public class AcademyController {
         //model.addAttribute("list", academyService.getList(AcademyDTO, pageable));
     }
 
+    @GetMapping("/manage")
+    public void manage(Model model, @AuthenticationPrincipal SecurityMember member) {
+
+    }
+
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("academy", new AcademyFormDTO());
