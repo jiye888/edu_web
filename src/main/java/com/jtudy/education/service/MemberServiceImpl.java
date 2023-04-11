@@ -2,6 +2,8 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
+import com.jtudy.education.config.exception.CustomException;
+import com.jtudy.education.config.exception.ExceptionCode;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.*;
@@ -9,6 +11,7 @@ import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
 import javassist.bytecode.DuplicateMemberException;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -78,7 +81,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void validateEmail(String email) throws DuplicateMemberException {
         if(memberRepository.existsByEmail(email)) {
-            throw new DuplicateMemberException("사용중인 이메일입니다.");
+            throw new CustomException(ExceptionCode.DUPLICATE_USERNAME);
         }
     }
 
@@ -100,7 +103,7 @@ public class MemberServiceImpl implements MemberService{
         UserDetails user = userDetailsService.loadUserByUsername(email);
         Member member = memberRepository.findByEmail(user.getUsername());
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("잘못된 아이디, 또는 비밀번호입니다.");
+            throw new CustomException(ExceptionCode.NOT_MATCHED_LOGIN_INFO);
         }
         String accessToken = jwtTokenProvider.createAccessToken(email, member.getRolesList());
         String refreshToken = jwtTokenProvider.createRefreshToken(email, member.getRolesList());
@@ -111,7 +114,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void logout(String email) {
-        Member member = memberRepository.findByEmail(email);
         Optional<RefreshToken> token = refreshTokenRepository.findById(email);
         if (token.isPresent()) {
             refreshTokenRepository.delete(token.get());

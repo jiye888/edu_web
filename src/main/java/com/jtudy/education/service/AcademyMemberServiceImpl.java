@@ -21,7 +21,6 @@ public class AcademyMemberServiceImpl implements AcademyMemberService {
     private final AcademyRepository academyRepository;
     private final MemberRepository memberRepository;
     private final AcademyMemberRepository academyMemberRepository;
-    private final MemberService memberService;
 
     @Override
     public Long join(Long memNum, Long acaNum) {
@@ -48,7 +47,6 @@ public class AcademyMemberServiceImpl implements AcademyMemberService {
         Member member = memberRepository.findByMemNum(memNum);
         if (isPresent(memNum, acaNum)) {
             Long am = getOne(memNum, acaNum);
-            System.out.println("!!!!!!!!!!"+am);
             academyMemberRepository.deleteById(am);
             if (academyMemberRepository.findByMember(member) == null) {
                 member.removeRoles(Roles.STUDENT);

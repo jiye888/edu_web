@@ -1,6 +1,8 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AuthDTO;
+import com.jtudy.education.config.exception.CustomException;
+import com.jtudy.education.config.exception.ExceptionCode;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Auth;
 import com.jtudy.education.entity.Member;
@@ -31,9 +33,13 @@ public class AuthServiceImpl implements AuthService {
             Auth auth = authRepository.findByAuthId(authId);
             Long authNum = auth.getMember().getMemNum();
             Long memNum = member.getMember().getMemNum();
-            return authNum.equals(memNum) || member.getMember().getRolesList().contains(Roles.ADMIN);
+            if (authNum.equals(memNum) || member.getMember().getRolesList().contains(Roles.ADMIN)) {
+                return true;
+            } else {
+                throw new CustomException(ExceptionCode.UNAUTHORIZED_USER);
+            }
         } catch (NullPointerException e) {
-            return false;
+            throw new NullPointerException("유효하지 않은 요청입니다.");
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -44,7 +50,6 @@ public class AuthServiceImpl implements AuthService {
     public Long requestAuth(Member member, Roles roles, String content) {
         Auth auth = new Auth(member, roles, content);
         auth = authRepository.save(auth);
-        System.out.println("Roles!!!!!!1"+auth);
         return auth.getAuthId();
     }
 

@@ -3,6 +3,9 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
+import com.jtudy.education.config.exception.CustomException;
+import com.jtudy.education.config.exception.CustomExceptionHandler;
+import com.jtudy.education.config.exception.ExceptionResponseEntity;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.AuthService;
@@ -56,17 +59,16 @@ public class MemberController {
                 for (FieldError fieldError : fieldErrors) {
                     map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
                 }
+                System.out.println(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map));
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
             memberService.createMember(memberFormDTO);
-        } catch (DuplicateMemberException e) {
-            Map<String, String> map = new HashMap<>();
-            map.put("EmailValidationError", e.getMessage());
-            return ResponseEntity.badRequest().body(map);
+            return ResponseEntity.ok().build();
+        } catch (CustomException e) {
+            return ExceptionResponseEntity.toResponseEntity(e.getExceptionCode());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/request")
@@ -87,7 +89,7 @@ public class MemberController {
             model.addAttribute("member", member);
             return ResponseEntity.ok(member.getMemNum());
         } catch (NullPointerException e) {
-            String msg = "해당 이메일을 사용중인 회원이 없습니다.";
+            String msg = "해당 이메일을 사용중인 회원이 없습니다."; //*exception
             model.addAttribute("msg", msg);
             return ResponseEntity.badRequest().body(msg);
         } catch (Exception e) {
@@ -111,7 +113,7 @@ public class MemberController {
                 Context context = new Context();
                 context.setVariables(model.asMap());
                 String template = templateEngine.process("/academy/exception", context);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(template);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(template); //*exception
             }
         } catch (Exception e) {
             String error = e.getMessage();
@@ -189,7 +191,7 @@ public class MemberController {
                 model.addAttribute("member", memberDTO);
                 return "/member/joined";
             } else {
-                model.addAttribute("msg", "관리자 권한이 없습니다.");
+                model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
                 return "/academy/exception";
             }
         } catch (Exception e) {

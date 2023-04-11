@@ -88,11 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Long update(ReviewFormDTO reviewFormDTO) {
         Review review = reviewRepository.findByRevNum(reviewFormDTO.getNumber());
-        System.out.println("!!!"+review.getAcademy());
-        System.out.println(review.getTitle());
         review.changeReview(reviewFormDTO.getTitle(), reviewFormDTO.getContent(), reviewFormDTO.getGrade());
-        System.out.println("!!!!!"+review.getAcademy());
-        System.out.println(review.getTitle());
         reviewRepository.save(review);
         return review.getRevNum();
     }

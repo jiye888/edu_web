@@ -130,7 +130,7 @@ public class AcademyController {
             model.addAttribute("academy", academyDTO);
             return "academy/modifyForm";
         } else {
-            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
             return "academy/exception";
         }
     }
@@ -163,7 +163,7 @@ public class AcademyController {
         if (academyService.isManager(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
-            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
             return "academy/exception";
         }
         return "redirect:/academy/list";

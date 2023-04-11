@@ -69,7 +69,7 @@ public class AuthController {
                 model.addAttribute("auth", authDTO);
                 return "auth/get";
             } else {
-                model.addAttribute("msg", "접근 권한이 없습니다.");
+                model.addAttribute("msg", "접근 권한이 없습니다."); //*exception
                 return "academy/exception";
             }
         } catch (Exception e) {
