@@ -442,6 +442,11 @@ a:hover {
     align-items: flex-start;
 }
 
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .button-collapse-margin {
     margin: 30px 30px 30px 0px;
 }

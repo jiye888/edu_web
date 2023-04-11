@@ -11,10 +11,10 @@
         <span class="custom-span">이메일</span>
         <input type="email" class="custom-form-control w70" th:field="*{email}" th:id="email">
         <p id="emailError"></p><br>
-        <div style="display:flex;">
+        <div class="flex-column">
             <span class="custom-span" style="margin-right: 3px; height: fit-content;">비밀번호</span>
-            <input type="password" class="custom-form-control f1" th:field="*{password}">
-            <span class="custom-span" style="margin: 0px 3px 0px 10px; height: fit-content;">비밀번호 확인</span>
+            <input type="password" class="custom-form-control f1" style="margin-bottom:30px;" th:field="*{password}">
+            <span class="custom-span">비밀번호 확인</span>
             <input type="password" class="custom-form-control f1" id="password2">
             <p id="passwordError"></p>
         </div><br>
@@ -113,9 +113,8 @@
                                         errElement.classList.add("alert", "alert-warning");
                                     }
                                 }
-                            }
-                            if (errorMessage.EmailValidationError) {
-                                alert(errorMessage.EmailValidationError);
+                            } else if (errorMessage.exceptionCode == "DUPLICATE_USERNAME") {
+                                alert(errorMessage.message);
                             }
                         } catch (e) {
                             console.log(xhr.responseText);
