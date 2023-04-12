@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -33,6 +35,10 @@ public class Review extends BaseEntity {
     private Member writer;
 
     private Integer grade;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private List<FileUpload> files = new ArrayList<>();
 
     public void changeReview(String title, String content, Integer grade) {
         this.title = title;

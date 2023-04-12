@@ -73,7 +73,7 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AcademyDTO> manageAcademies(/*Long memNum*/Member member, Pageable pageable) {
+    public Page<AcademyDTO> manageAcademies(Member member, Pageable pageable) {
         Page<AcademyDTO> academy = academyRepository.findByMember(member, pageable);
         return academy;
     }
