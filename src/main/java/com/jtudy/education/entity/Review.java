@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -26,18 +28,22 @@ public class Review extends BaseEntity {
     @Column
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "academy_member")
-    private SubjectClass academyMember;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Academy academy;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member writer;
 
     private Integer grade;
 
-    public void changeReview(String title, String content) {
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private List<FileUpload> files = new ArrayList<>();
+
+    public void changeReview(String title, String content, Integer grade) {
         this.title = title;
         this.content = content;
+        this.grade = grade;
     }
 
 }

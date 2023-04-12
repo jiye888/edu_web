@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -28,6 +30,10 @@ public class Notice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Academy academy;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @Builder.Default
+    private List<FileUpload> files = new ArrayList<>();
 
     public void changeNotice(String title, String content) {
         this.title = title;

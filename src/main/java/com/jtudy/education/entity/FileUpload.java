@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -19,9 +20,6 @@ public class FileUpload extends BaseEntity{
     @Column(name = "file_id")
     private Long fileId;
 
-    @Column(name = "original_name", nullable = false)
-    private String originalName;
-
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
@@ -34,15 +32,25 @@ public class FileUpload extends BaseEntity{
     @ManyToOne
     private Member uploader;
 
+    @OneToOne
+    private Academy academy;
+
     @ManyToOne
     private Notice notice;
+
+    @ManyToOne
+    private Review review;
+
+    public void setAcademy(Academy academy) {
+        this.academy = academy;
+    }
 
     public void setNotice(Notice notice) {
         this.notice = notice;
     }
 
-    public void changeOriginalName(String name) {
-        this.originalName = name;
+    public void setReview(Review review) {
+        this.review = review;
     }
 
 }

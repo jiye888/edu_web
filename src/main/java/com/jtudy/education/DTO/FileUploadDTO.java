@@ -1,11 +1,11 @@
 package com.jtudy.education.DTO;
 
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.Notice;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.nio.file.Path;
 
 @Data
 @Builder
@@ -21,12 +21,10 @@ public class FileUploadDTO {
 
     private String fileType;
 
-    private String filePath;
+    private Path uploadPath;
 
-    private String fileSize;
+    private Path filePath;
 
-    private String uploaderName;
-
-    private String uploaderEmail;
+    private byte[] fileData;
 
 }
