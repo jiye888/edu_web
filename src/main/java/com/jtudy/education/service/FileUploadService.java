@@ -2,6 +2,7 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.entity.FileUpload;
+import com.jtudy.education.entity.Member;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,19 +15,21 @@ import java.util.UUID;
 
 public interface FileUploadService {
 
-    Long uploadFile(FileUploadDTO fileDTO) throws IOException;
+    Long uploadFile(FileUpload file) throws IOException;
 
     void isValidName(String name);
 
-    FileUploadDTO fileToDTO(MultipartFile file, Map<String, Long> entity) throws IOException;
+    FileUpload fileToEntity(MultipartFile file, Member member) throws IOException;
 
-    default FileUpload DTOtoEntity(FileUploadDTO fileDTO) {
-        FileUpload fileUpload = FileUpload.builder()
-                .fileId(fileDTO.getFileId())
-                .fileName(fileDTO.getFileName())
-                .fileType(fileDTO.getFileType())
+    default FileUploadDTO entityToDTO(FileUpload file) {
+        FileUploadDTO fileUploadDTO = FileUploadDTO.builder()
+                .originalName(file.getOriginalName())
+                .fileName(file.getFileName())
+                .fileType(file.getFileType())
+                .filePath(Paths.get(file.getFilePath()))
                 .build();
-        return fileUpload;
+
+        return fileUploadDTO;
     }
 
 }

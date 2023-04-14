@@ -13,18 +13,12 @@ import java.nio.file.Path;
 @NoArgsConstructor
 public class FileUploadDTO {
 
-    private Long fileId;
-
     private String originalName;
 
     private String fileName;
 
     private String fileType;
 
-    private Path uploadPath;
-
     private Path filePath;
-
-    private byte[] fileData;
 
 }

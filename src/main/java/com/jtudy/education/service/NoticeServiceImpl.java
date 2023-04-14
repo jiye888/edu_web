@@ -5,6 +5,8 @@ import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.FileUpload;
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.NoticeRepository;
@@ -18,7 +20,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +36,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final AcademyRepository academyRepository;
+    private final FileUploadService fileUploadService;
 
     @Override
     @Transactional(readOnly = true)
@@ -70,6 +75,15 @@ public class NoticeServiceImpl implements NoticeService {
         notice.builder().academy(academy).build();
         noticeRepository.save(notice);
         return notice.getNotNum();
+    }
+
+    public void uploadFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        for (MultipartFile file : files) {
+            FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
+            fileUpload.setNotice(notice);
+            fileUploadService.uploadFile(fileUpload);
+        }
     }
 
     @Override

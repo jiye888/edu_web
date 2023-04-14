@@ -25,6 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
@@ -95,7 +96,7 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult,
+    public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, MultipartFile file,
                                    RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
         try {
             if (bindingResult.hasErrors()) {
@@ -105,7 +106,6 @@ public class AcademyController {
                 for (FieldError fieldError : fieldErrors) {
                     map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
                 }
-                System.out.println(map);
                 return ResponseEntity.badRequest().body(map);
             }
             model.addAttribute("academy", new AcademyFormDTO());

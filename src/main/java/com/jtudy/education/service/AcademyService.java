@@ -10,7 +10,9 @@ import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface AcademyService {
@@ -25,6 +27,8 @@ public interface AcademyService {
     Page<AcademyDTO> manageAcademies(Member member, Pageable pageable);
 
     Long register(AcademyFormDTO academyFormDTO, Member member);
+
+    void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException;
 
     Long update(AcademyFormDTO academyFormDTO);
 

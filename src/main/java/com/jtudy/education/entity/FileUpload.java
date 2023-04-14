@@ -20,6 +20,9 @@ public class FileUpload extends BaseEntity{
     @Column(name = "file_id")
     private Long fileId;
 
+    @Column(name = "original_name", nullable = false)
+    private String originalName;
+
     @Column(name = "file_name", nullable = false)
     private String fileName;
 
@@ -28,6 +31,10 @@ public class FileUpload extends BaseEntity{
 
     @Column(name = "file_path", nullable = false)
     private String filePath;
+
+    @Lob
+    @Column(name = "file_data", nullable = false)
+    private byte[] fileData;
 
     @ManyToOne
     private Member uploader;

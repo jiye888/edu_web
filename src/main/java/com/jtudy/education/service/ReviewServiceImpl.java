@@ -3,10 +3,7 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.constant.Roles;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.AcademyMember;
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.Review;
+import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyMemberRepository;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.ReviewRepository;
@@ -16,7 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
+    private final FileUploadService fileUploadService;
 
     @Override
     @Transactional(readOnly = true)
@@ -83,6 +83,15 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = formToEntity(reviewFormDTO, academy, member);
         reviewRepository.save(review);
         return review.getRevNum();
+    }
+
+    public void uploadFile(MultipartFile[] files, Long revNum, Member member) throws IOException {
+        Review review = reviewRepository.findByRevNum(revNum);
+        for (MultipartFile file : files) {
+            FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
+            fileUpload.setReview(review);
+            fileUploadService.uploadFile(fileUpload);
+        }
     }
 
     @Override

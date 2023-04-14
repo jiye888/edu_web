@@ -6,6 +6,7 @@ import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
+import com.jtudy.education.entity.FileUpload;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.repository.specification.AcademySpecification;
@@ -15,8 +16,9 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManagerFactory;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ public class AcademyServiceImpl implements AcademyService{
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
     private final MemberRepository memberRepository;
+    private final FileUploadService fileUploadService;
 
     @Override
     @Transactional(readOnly = true)
@@ -83,6 +86,14 @@ public class AcademyServiceImpl implements AcademyService{
         Academy academy = formToEntity(academyFormDTO, member);
         academy = academyRepository.save(academy);
         return academy.getAcaNum();
+    }
+
+    @Override
+    public void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
+        fileUpload.setAcademy(academy);
+        fileUploadService.uploadFile(fileUpload);
     }
 
     @Override
