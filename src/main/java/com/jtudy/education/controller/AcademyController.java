@@ -2,13 +2,16 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
+import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.FileUpload;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.AcademyService;
+import com.jtudy.education.service.FileUploadService;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +37,7 @@ import org.thymeleaf.context.Context;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.*;
 
@@ -44,6 +48,7 @@ public class AcademyController {
 
     private final AcademyService academyService;
     private final AcademyMemberService academyMemberService;
+    private final FileUploadService fileUploadService;
 
     private final TemplateEngine templateEngine;
 
@@ -96,7 +101,7 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, MultipartFile file,
+    public ResponseEntity register(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart MultipartFile file,
                                    RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
         try {
             if (bindingResult.hasErrors()) {
@@ -111,15 +116,20 @@ public class AcademyController {
             model.addAttribute("academy", new AcademyFormDTO());
             Long number = academyService.register(academyFormDTO, member.getMember());
             model.addAttribute("number", number);
-            return ResponseEntity.status(HttpStatus.OK).body(number);
+            academyService.registerImg(file, number, member.getMember());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(number);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/read")
-    public void academy(@RequestParam(value = "number") Long acaNum, Model model) {
+    public void academy(@RequestParam(value = "number") Long acaNum, Model model) throws FileNotFoundException {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
+        FileUploadDTO fileDTO = fileUploadService.academyMain(acaNum);
+        academyDTO.setImgUrl(fileDTO.getFilePath().toString());
         model.addAttribute("academy", academyDTO);
     }
 
@@ -130,13 +140,14 @@ public class AcademyController {
             model.addAttribute("academy", academyDTO);
             return "academy/modifyForm";
         } else {
-            model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
             return "academy/exception";
         }
     }
 
     @PostMapping("/modify")
-    public ResponseEntity modify(@RequestBody @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, Model model) {
+    public ResponseEntity modify(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart(required = false) MultipartFile file,
+                                 Model model, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -147,10 +158,16 @@ public class AcademyController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
+            if (file != null && !file.isEmpty()) {
+                fileUploadService.deleteAcademyMain(academyFormDTO.getAcaNum());
+                academyService.registerImg(file, academyFormDTO.getAcaNum(), member.getMember());
+            }
             model.addAttribute("number", academyFormDTO.getAcaNum());
             model.addAttribute("academy", academyFormDTO);
             academyService.update(academyFormDTO);
-            return ResponseEntity.ok().build();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            return ResponseEntity.ok().headers(headers).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -163,7 +180,7 @@ public class AcademyController {
         if (academyService.isManager(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
-            model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
             return "academy/exception";
         }
         return "redirect:/academy/list";

@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,7 +52,7 @@ public class FileUploadServiceImpl implements FileUploadService {
         String datePath = date.replaceAll("-", "/");
         Path uploadPath = Paths.get(path + datePath);
         byte[] fileData = file.getBytes();
-        Path filePath = Paths.get(uploadPath + fileName);
+        Path filePath = Paths.get(uploadPath + "\\" + fileName);
 
         FileUpload fileUpload = FileUpload.builder()
                 .originalName(originalName)
@@ -73,20 +71,31 @@ public class FileUploadServiceImpl implements FileUploadService {
         String filePath = file.getFilePath();
         Path uploadPath = Paths.get(filePath.substring(0, filePath.lastIndexOf(file.getFileName())));
 
-        if (Files.exists(uploadPath)) {
-            Files.createDirectory(uploadPath);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
         }
 
-        Files.write(uploadPath, file.getFileData());
+        try {
+            Files.write(Paths.get(filePath), file.getFileData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         FileUpload uploaded = fileUploadRepository.save(file);
-
         return uploaded.getFileId();
     }
 
+    @Override
     public void deleteFile(Long fileId) {
         fileUploadRepository.deleteById(fileId);
     }
 
+    @Override
+    public void deleteAcademyMain(Long acaNum) {
+        FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
+        fileUploadRepository.deleteById(fileUpload.getFileId());
+    }
+
+    @Override
     public List<FileUploadDTO> getList(String entity, Long entityId) throws FileNotFoundException {
         if (entity == "notice") {
             List<FileUpload> fileList = fileUploadRepository.findByNotNum(entityId);
@@ -101,15 +110,14 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
     }
 
-    public byte[] academyMain(Long acaNum) throws FileNotFoundException {
+    @Override
+    public FileUploadDTO academyMain(Long acaNum) throws FileNotFoundException {
         FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
         FileUploadDTO fileDTO = entityToDTO(fileUpload);
-        File file = new File(String.valueOf(fileDTO.getFilePath()));
-        FileInputStream fs = new FileInputStream(file);
-        byte[] bytes = fileUpload.getFileData();
-        return bytes;
+        return fileDTO;
     }
 
+    @Override
     public File getFile(FileUpload fileUpload) throws FileNotFoundException {
         String filePath = fileUpload.getFilePath();
         File file = new File(filePath);
@@ -118,6 +126,5 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
         return file;
     }
-
 
 }

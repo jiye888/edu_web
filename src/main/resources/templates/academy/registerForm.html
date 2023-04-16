@@ -38,6 +38,9 @@
                 <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
                 <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
             </div>
+
+            <span class="custom-span">대표 이미지</span>
+            <input type="file" class="custom-form-control w70" id="inputFile">
         </form>
         <script th:inline="javascript">
 
@@ -81,18 +84,25 @@
             });
             location = $.trim(location);
             var subject = getSubject();
+            var formDTO = {
+                "acaName":acaName,
+                "location":location,
+                "subject":subject
+            };
+
+            var file = $('#inputFile').prop('files')[0];
+            var formData = new FormData();
+            formData.append("academyFormDTO", new Blob([JSON.stringify(formDTO)], {type:"application/json"}));
+            formData.append("file", file);
 
             if (acaName && location && subject) {
 
                 $.ajax({
                     url: '/academy/register',
                     type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        "acaName":acaName,
-                        "subject":subject,
-                        "location":location,
-                    }),
+                    contentType: false,
+                    processData: false,
+                    data: formData,
                     success: function(response) {
                         var number = Number(response);
                         window.location.href = "/academy/read?number="+number;
