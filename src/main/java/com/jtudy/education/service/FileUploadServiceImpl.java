@@ -1,9 +1,8 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.FileUploadDTO;
-import com.jtudy.education.config.exception.CustomException;
-import com.jtudy.education.config.exception.ExceptionCode;
 import com.jtudy.education.entity.FileUpload;
+import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.FileUploadRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
@@ -12,13 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,7 +43,7 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
-    public FileUploadDTO fileToDTO(MultipartFile file, Map<String, Long> entity) throws IOException {
+    public FileUpload fileToEntity(MultipartFile file, Member member) throws IOException {
         String originalName = file.getOriginalFilename();
         isValidName(originalName);
         String fileName = UUID.randomUUID().toString();
@@ -50,31 +52,79 @@ public class FileUploadServiceImpl implements FileUploadService {
         String datePath = date.replaceAll("-", "/");
         Path uploadPath = Paths.get(path + datePath);
         byte[] fileData = file.getBytes();
-        Path filePath = Paths.get(uploadPath + fileName);
+        Path filePath = Paths.get(uploadPath + "\\" + fileName);
 
-        FileUploadDTO fileDTO = FileUploadDTO.builder()
+        FileUpload fileUpload = FileUpload.builder()
                 .originalName(originalName)
                 .fileName(fileName)
-                .fileData(fileData)
-                .uploadPath(uploadPath)
-                .filePath(filePath)
+                .filePath(String.valueOf(filePath))
                 .fileType(fileType)
+                .fileData(fileData)
+                .uploader(member)
                 .build();
 
+        return fileUpload;
+    }
+
+    @Override
+    public Long uploadFile(FileUpload file) throws IOException {
+        String filePath = file.getFilePath();
+        Path uploadPath = Paths.get(filePath.substring(0, filePath.lastIndexOf(file.getFileName())));
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        try {
+            Files.write(Paths.get(filePath), file.getFileData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FileUpload uploaded = fileUploadRepository.save(file);
+        return uploaded.getFileId();
+    }
+
+    @Override
+    public void deleteFile(Long fileId) {
+        fileUploadRepository.deleteById(fileId);
+    }
+
+    @Override
+    public void deleteAcademyMain(Long acaNum) {
+        FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
+        fileUploadRepository.deleteById(fileUpload.getFileId());
+    }
+
+    @Override
+    public List<FileUploadDTO> getList(String entity, Long entityId) throws FileNotFoundException {
+        if (entity == "notice") {
+            List<FileUpload> fileList = fileUploadRepository.findByNotNum(entityId);
+            List<FileUploadDTO> dtoList = fileList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+            return dtoList;
+        } else if (entity == "review") {
+            List<FileUpload> fileList = fileUploadRepository.findByRevNum(entityId);
+            List<FileUploadDTO> dtoList = fileList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+            return dtoList;
+        } else {
+            throw new FileNotFoundException();
+        }
+    }
+
+    @Override
+    public FileUploadDTO academyMain(Long acaNum) throws FileNotFoundException {
+        FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
+        FileUploadDTO fileDTO = entityToDTO(fileUpload);
         return fileDTO;
     }
 
     @Override
-    public Long uploadFile(FileUploadDTO fileDTO) throws IOException {
-        if (Files.exists(fileDTO.getUploadPath())) {
-            Files.createDirectory(fileDTO.getUploadPath());
+    public File getFile(FileUpload fileUpload) throws FileNotFoundException {
+        String filePath = fileUpload.getFilePath();
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException();
         }
-
-        FileUpload fileUpload = DTOtoEntity(fileDTO);
-        Files.write(fileDTO.getFilePath(), fileDTO.getFileData());
-        FileUpload uploaded = fileUploadRepository.save(fileUpload);
-
-        return uploaded.getFileId();
+        return file;
     }
 
 }
