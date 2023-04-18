@@ -48,13 +48,17 @@ public class Academy extends BaseEntity {
     @Builder.Default
     private List<Notice> notice = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(orphanRemoval = true)
     private FileUpload file;
 
     public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
         this.acaName = acaName;
         this.subject = subject;
         this.location = location;
+    }
+
+    public void setFile(FileUpload file) {
+        this.file = file;
     }
 
 }

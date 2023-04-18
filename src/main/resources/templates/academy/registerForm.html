@@ -34,13 +34,20 @@
                 </div>
             </div>
             <p id="subjectError"></p><br>
+
+            <span class="custom-span">대표 이미지</span>
+            <div style="display:flex;">
+                <input type="file" id="inputFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
+                <div class="custom-form-control file-name" id="selectedFile"></div>
+            </div>
+
             <div class="button-distance">
                 <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
                 <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
             </div>
 
-            <span class="custom-span">대표 이미지</span>
-            <input type="file" class="custom-form-control w70" id="inputFile">
+
         </form>
         <script th:inline="javascript">
 
@@ -51,6 +58,13 @@
             $('#cancelBtn').on("click", function() {
                 history.back();
             });
+        });
+
+        const inputFile = document.getElementById('inputFile');
+        const selectedFile = document.getElementById('selectedFile');
+
+        inputFile.addEventListener('change', function() {
+            selectedFile.textContent = inputFile.files[0].name;
         });
 
         function clearText() {
@@ -84,6 +98,7 @@
             });
             location = $.trim(location);
             var subject = getSubject();
+
             var formDTO = {
                 "acaName":acaName,
                 "location":location,

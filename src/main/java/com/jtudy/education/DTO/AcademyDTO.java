@@ -34,8 +34,6 @@ public class AcademyDTO {
 
     private Long reviewCount;
 
-    private String imgUrl;
-
     public AcademyDTO(Academy academy, Double grade, Long count) {
         this.acaNum = academy.getAcaNum();
         this.acaName = academy.getAcaName();
@@ -49,10 +47,6 @@ public class AcademyDTO {
         this.managerName = academy.getManager().getName();
         this.grade = grade;
         this.reviewCount = count;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
     }
 
 }

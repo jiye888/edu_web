@@ -101,8 +101,8 @@ public class AcademyController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart MultipartFile file,
-                                   RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
+    public ResponseEntity register(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart(required = false) MultipartFile file,
+                                   @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -116,9 +116,11 @@ public class AcademyController {
             model.addAttribute("academy", new AcademyFormDTO());
             Long number = academyService.register(academyFormDTO, member.getMember());
             model.addAttribute("number", number);
-            academyService.registerImg(file, number, member.getMember());
+            if (file != null && !file.isEmpty()) {
+                academyService.registerImg(file, number, member.getMember());
+            }
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.setContentType(MediaType.APPLICATION_JSON);
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(number);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -128,9 +130,13 @@ public class AcademyController {
     @GetMapping("/read")
     public void academy(@RequestParam(value = "number") Long acaNum, Model model) throws FileNotFoundException {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
-        FileUploadDTO fileDTO = fileUploadService.academyMain(acaNum);
-        academyDTO.setImgUrl(fileDTO.getFilePath().toString());
         model.addAttribute("academy", academyDTO);
+        try {
+            FileUploadDTO fileDTO = fileUploadService.academyMain(acaNum);
+            model.addAttribute("byte", fileDTO.getFileData());
+        } catch (NullPointerException e) {
+            model.addAttribute("byte", null);
+        }
     }
 
     @GetMapping("/modify")
@@ -165,8 +171,11 @@ public class AcademyController {
             model.addAttribute("number", academyFormDTO.getAcaNum());
             model.addAttribute("academy", academyFormDTO);
             academyService.update(academyFormDTO);
+            if (file != null && !file.isEmpty()) {
+                academyService.registerImg(file, academyFormDTO.getAcaNum(), member.getMember());
+            }
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.setContentType(MediaType.APPLICATION_JSON);
             return ResponseEntity.ok().headers(headers).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

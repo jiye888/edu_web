@@ -93,7 +93,9 @@ public class AcademyServiceImpl implements AcademyService{
         Academy academy = academyRepository.findByAcaNum(acaNum);
         FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
         fileUpload.setAcademy(academy);
+        academy.setFile(fileUpload);
         fileUploadService.uploadFile(fileUpload);
+        academyRepository.save(academy);
     }
 
     @Override

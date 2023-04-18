@@ -38,6 +38,14 @@
                 </div>
             </div>
             <p id="subjectError"></p><br>
+
+            <span class="custom-span">대표 이미지</span>
+            <div style="display:flex;">
+                <input type="file" id="inputFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
+                <div class="custom-form-control file-name" id="selectedFile"></div>
+            </div>
+
             <div class="button-distance">
                 <button type="button" class="custom-button-yellow" id="modifyBtn">수정</button>
                 <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
@@ -56,6 +64,13 @@
                 history.back();
             });
 
+        });
+
+        const inputFile = document.getElementById('inputFile');
+        const selectedFile = document.getElementById('selectedFile');
+
+        inputFile.addEventListener('change', function() {
+            selectedFile.textContent = inputFile.files[0].name;
         });
 
         function clearText() {
@@ -99,19 +114,27 @@
 
             var subject = getSubject();
 
+            var formDTO = {
+                "number":parseInt(number),
+                "acaName":acaName,
+                "subject":subject,
+                "location":location,
+            };
+
+            var file = $('#inputFile').prop('files')[0];
+            var formData = new FormData();
+            formData.append("academyFormDTO", new Blob([JSON.stringify(formDTO)], {type:"application/json"}));
+            formData.append("file", file);
+
             if (acaName && subject.length != 0) {
 
                 $.ajax({
                     url: '/academy/modify',
                     type: "POST",
-                    contentType: "application/json",
+                    contentType: false,
+                    processData: false,
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                    data:JSON.stringify({
-                        "number":parseInt(number),
-                        "acaName":acaName,
-                        "subject":subject,
-                        "location":location,
-                    }),
+                    data: formData,
                     success: function() {
                         history.back();
                     },

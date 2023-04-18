@@ -30,6 +30,7 @@ public interface FileUploadService {
                 .fileName(file.getFileName())
                 .fileType(file.getFileType())
                 .filePath(Paths.get(file.getFilePath()))
+                .fileData(file.getFileData())
                 .build();
 
         return fileUploadDTO;

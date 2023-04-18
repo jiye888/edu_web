@@ -46,7 +46,8 @@ public class FileUploadServiceImpl implements FileUploadService {
     public FileUpload fileToEntity(MultipartFile file, Member member) throws IOException {
         String originalName = file.getOriginalFilename();
         isValidName(originalName);
-        String fileName = UUID.randomUUID().toString();
+        String fileName = UUID.randomUUID()+"."+originalName.substring(originalName.lastIndexOf(".")+1);
+        System.out.println(fileName);
         String fileType = file.getContentType();
         String date = LocalDate.now().toString();
         String datePath = date.replaceAll("-", "/");

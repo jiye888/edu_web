@@ -21,4 +21,6 @@ public class FileUploadDTO {
 
     private Path filePath;
 
+    private byte[] fileData;
+
 }
