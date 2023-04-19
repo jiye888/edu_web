@@ -105,10 +105,10 @@
             location = $.trim(location);
             var subject = getSubject();
 
-            var formDTO = {
-                "acaName":acaName,
-                "location":location,
-                "subject":subject
+            const formDTO = {
+                acaName:acaName,
+                location:location,
+                subject:subject
             };
 
             var file = $('#inputFile').prop('files')[0];
@@ -128,24 +128,22 @@
                         var number = Number(response);
                         window.location.href = "/academy/read?number="+number;
                     },
-                    error: function(xhr, response) {
+                    error: function(xhr, response, errorThrown) {
                         jwtFilter();
-                        try {
-                            var errorMessage = JSON.parse(xhr.responseText);
-                            if (errorMessage.BindingResultError) {
-                                for (var err in errorMessage) {
-                                    if (document.getElementById(err)) {
-                                        var errElement = document.getElementById(err);
-                                        errElement.textContent = errorMessage[err];
-                                        errElement.classList.add("alert", "alert-warning");
+                            if (xhr.status == 422) {
+                                var errorMessage = JSON.parse(xhr.responseText);
+                                if (errorMessage.BindingResultError) {
+                                    for (var err in errorMessage) {
+                                        if (document.getElementById(err)) {
+                                            var errElement = document.getElementById(err);
+                                            errElement.textContent = errorMessage[err];
+                                            errElement.classList.add("alert", "alert-warning");
+                                        }
                                     }
                                 }
                             } else {
                                 console.log(xhr.responseText);
                             }
-                        } catch(e) {
-                            console.error(e.message);
-                        }
                     },
                 });
             } else {

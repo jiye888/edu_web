@@ -111,7 +111,7 @@ public class AcademyController {
                 for (FieldError fieldError : fieldErrors) {
                     map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
                 }
-                return ResponseEntity.badRequest().body(map);
+                return ResponseEntity.status(422).body(map);
             }
             model.addAttribute("academy", new AcademyFormDTO());
             Long number = academyService.register(academyFormDTO, member.getMember());
@@ -162,7 +162,7 @@ public class AcademyController {
                 for (FieldError fieldError : fieldErrors) {
                     map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
                 }
-                return ResponseEntity.badRequest().body(map);
+                return ResponseEntity.status(422).body(map);
             }
             model.addAttribute("number", academyFormDTO.getAcaNum());
             model.addAttribute("academy", academyFormDTO);
@@ -170,7 +170,6 @@ public class AcademyController {
             if (file != null && !file.isEmpty()) {
                 academyService.changeImg(file, academyFormDTO.getAcaNum(), member.getMember());
             }
-            System.out.println("***************img");
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             return ResponseEntity.ok().headers(headers).build();
