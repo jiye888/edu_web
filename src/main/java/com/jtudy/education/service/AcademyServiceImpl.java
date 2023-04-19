@@ -99,6 +99,20 @@ public class AcademyServiceImpl implements AcademyService{
     }
 
     @Override
+    public void changeImg(MultipartFile file, Long acaNum, Member member) throws IOException {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        if (academy.getFile() != null) {
+            removeImg(acaNum);
+        }
+        registerImg(file, acaNum, member);
+    }
+
+    @Override
+    public void removeImg(Long acaNum) {
+        fileUploadService.deleteAcademyMain(acaNum); //*
+    }
+
+    @Override
     public Long update(AcademyFormDTO academyFormDTO) {
         Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),

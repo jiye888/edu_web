@@ -1,8 +1,10 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.FileUploadDTO;
+import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.FileUpload;
 import com.jtudy.education.entity.Member;
+import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.FileUploadRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FileUploadServiceImpl implements FileUploadService {
 
+    private final AcademyRepository academyRepository;
     private final FileUploadRepository fileUploadRepository;
 
     @Value("${upload.dir}")
@@ -92,7 +95,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public void deleteAcademyMain(Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
         FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
+        academy.setFile(null);
+        academyRepository.save(academy);
         fileUploadRepository.deleteById(fileUpload.getFileId());
     }
 

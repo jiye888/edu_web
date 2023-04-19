@@ -164,16 +164,13 @@ public class AcademyController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
-            if (file != null && !file.isEmpty()) {
-                fileUploadService.deleteAcademyMain(academyFormDTO.getAcaNum());
-                academyService.registerImg(file, academyFormDTO.getAcaNum(), member.getMember());
-            }
             model.addAttribute("number", academyFormDTO.getAcaNum());
             model.addAttribute("academy", academyFormDTO);
             academyService.update(academyFormDTO);
             if (file != null && !file.isEmpty()) {
-                academyService.registerImg(file, academyFormDTO.getAcaNum(), member.getMember());
+                academyService.changeImg(file, academyFormDTO.getAcaNum(), member.getMember());
             }
+            System.out.println("***************img");
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             return ResponseEntity.ok().headers(headers).build();
@@ -185,7 +182,6 @@ public class AcademyController {
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
-        //AcademyDTO academyDTO = academyService.getOne(acaNum);
         if (academyService.isManager(acaNum, member)) {
             academyService.delete(acaNum);
         } else {
@@ -193,6 +189,18 @@ public class AcademyController {
             return "academy/exception";
         }
         return "redirect:/academy/list";
+    }
+
+    @PostMapping("/deleteImg")
+    @ResponseBody
+    public String deleteImg(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+        if (academyService.isManager(acaNum, member)) {
+            academyService.removeImg(acaNum);
+            return null;
+        } else {
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "academy/exception";
+        }
     }
 
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})

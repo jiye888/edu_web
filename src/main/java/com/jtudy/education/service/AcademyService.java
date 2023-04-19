@@ -30,6 +30,10 @@ public interface AcademyService {
 
     void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException;
 
+    void changeImg(MultipartFile file, Long acaNum, Member member) throws IOException;
+
+    void removeImg(Long acaNum);
+
     Long update(AcademyFormDTO academyFormDTO);
 
     void delete(Long acaNum);

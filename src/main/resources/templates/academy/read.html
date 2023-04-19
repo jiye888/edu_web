@@ -64,7 +64,10 @@
 
 
         $(function() {
-            document.getElementById('imgByte').src="data:image/png;base64,"+[[${byte}]];
+            if([[${byte}]] != null) {
+                document.getElementById('imgByte').src="data:image/png;base64,"+[[${byte}]];
+            }
+
             $('#membersBtn').on("click", function() {
                 memberList();
             });

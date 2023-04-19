@@ -40,6 +40,7 @@
                 <input type="file" id="inputFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
                 <div class="custom-form-control file-name" id="selectedFile"></div>
+                <input type="button" id="deleteFile" class="custom-button-mint select-file" value="파일 삭제">
             </div>
 
             <div class="button-distance">
@@ -47,11 +48,16 @@
                 <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
             </div>
 
-
         </form>
         <script th:inline="javascript">
 
         $(function() {
+
+            $('#deleteFile').on("click", function() {
+                $('#inputFile').val(null);
+                $('#selectedFile').val(null);
+            });
+
             $('#registerBtn').on("click", function() {
                 register();
             });
@@ -137,7 +143,7 @@
                             } else {
                                 console.log(xhr.responseText);
                             }
-                        } catch (e) {
+                        } catch(e) {
                             console.error(e.message);
                         }
                     },

@@ -44,6 +44,8 @@
                 <input type="file" id="inputFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
                 <div class="custom-form-control file-name" id="selectedFile"></div>
+                <input type="button" id="deleteFile" class="custom-button-mint select-file" value="파일 삭제">
+                <input type="button" id="deletePrevFile" class="custom-button-mint select-file" value="기존 파일 삭제">
             </div>
 
             <div class="button-distance">
@@ -55,6 +57,15 @@
         <script th:inline="javascript">
 
         $(function() {
+
+            $('#deleteFile').on("click", function() {
+                $('#inputFile').val(null);
+                $('#selectedFile').val(null);
+            });
+
+            $('#deletePrevFile').on("click", function() {
+                deleteImg();
+            });
 
             $('#modifyBtn').on("click", function() {
                 modify();
@@ -72,6 +83,22 @@
         inputFile.addEventListener('change', function() {
             selectedFile.textContent = inputFile.files[0].name;
         });
+
+        function deleteImg() {
+            var number = $('#number').val();
+
+            if(confirm("기존에 등록된 학원의 사진을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: '/academy/deleteImg?number='+number,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: {"number":number},
+                    success: function() {
+                        alert("삭제가 완료되었습니다.");
+                    },
+                });
+            }
+        }
 
         function clearText() {
             var pTag = ["acaNameError", "locationError", "subjectError"];
@@ -117,8 +144,8 @@
             var formDTO = {
                 "number":parseInt(number),
                 "acaName":acaName,
-                "subject":subject,
                 "location":location,
+                "subject":subject
             };
 
             var file = $('#inputFile').prop('files')[0];
@@ -129,17 +156,17 @@
             if (acaName && subject.length != 0) {
 
                 $.ajax({
-                    url: '/academy/modify',
+                    url: '/academy/modify?number='+number,
                     type: "POST",
                     contentType: false,
                     processData: false,
-                    headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                     data: formData,
                     success: function() {
-                        history.back();
+                        window.location.href = "/academy/read?number="+number;
                     },
-                    error: function(xhr, response) {
+                    error: function(xhr, response, errorThrown, textStatus) {
                         jwtFilter();
+                        alert(errorThrown, textStatus);
                         try {
                             var errorMessage = JSON.parse(xhr.responseText);
                             if (errorMessage.BindingResultError) {
@@ -154,7 +181,7 @@
                                 console.log(xhr.responseText);
                             }
                         } catch (e) {
-                            console.error(e.message);
+                            //console.error(errorThrown);
                         }
                     },
                 });
