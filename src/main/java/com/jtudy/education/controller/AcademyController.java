@@ -170,9 +170,7 @@ public class AcademyController {
             if (file != null && !file.isEmpty()) {
                 academyService.changeImg(file, academyFormDTO.getAcaNum(), member.getMember());
             }
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            return ResponseEntity.ok().headers(headers).build();
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
