@@ -84,15 +84,15 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(review);
         return review.getRevNum();
     }
-
-    public void uploadFile(MultipartFile[] files, Long revNum, Member member) throws IOException {
+/*
+    public void uploadImages(MultipartFile[] files, Long revNum, Member member) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         for (MultipartFile file : files) {
             Image image = imageService.fileToEntity(file, member);
             image.setReview(review);
             imageService.uploadImage(image, member);
         }
-    }
+    }*/
 
     @Override
     public Long update(ReviewFormDTO reviewFormDTO) {

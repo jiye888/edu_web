@@ -41,5 +41,8 @@ public class Notice extends BaseEntity {
         this.content = content;
     }
 
+    public void addFile(FileUpload fileUpload) {
+        this.files.add(fileUpload);
+    }
 
 }

@@ -90,15 +90,16 @@ public class FileUploadServiceImpl implements FileUploadService{
         return file;
     }
 
-
     @Override
-    public Long uploadFile(MultipartFile file, Member member) throws IOException {
+    public Long uploadFile(FileUpload fileUpload, MultipartFile file) throws IOException {
+        /*
         String fileName = file.getOriginalFilename();
         String extension = fileName.substring(fileName.lastIndexOf(".")+1);
         if (!isValidExtension(extension)) {
             throw new IOException("유효한 파일 형식이 아닙니다.");
         }
         FileUpload fileUpload = fileToEntity(file, member);
+        */
         String filePath = fileUpload.getFilePath();
         Path uploadPath = Paths.get(filePath.substring(0, filePath.lastIndexOf(fileUpload.getFileName())));
 
@@ -111,7 +112,7 @@ public class FileUploadServiceImpl implements FileUploadService{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        fileUploadRepository.save(fileUpload);
+        //fileUploadRepository.save(fileUpload);
         return fileUpload.getFileId();
     }
 

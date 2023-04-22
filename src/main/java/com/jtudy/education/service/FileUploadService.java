@@ -18,5 +18,5 @@ public interface FileUploadService {
 
     File getFile(FileUpload fileUpload) throws FileNotFoundException;
 
-    Long uploadFile(MultipartFile file, Member member) throws IOException;
+    Long uploadFile(FileUpload fileUpload, MultipartFile file) throws IOException;
 }

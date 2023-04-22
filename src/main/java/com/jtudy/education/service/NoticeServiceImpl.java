@@ -3,11 +3,9 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.constant.Roles;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.Image;
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.Notice;
+import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyRepository;
+import com.jtudy.education.repository.FileUploadRepository;
 import com.jtudy.education.repository.NoticeRepository;
 import com.jtudy.education.repository.specification.NoticeSpecification;
 import com.jtudy.education.security.SecurityMember;
@@ -20,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,8 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
     private final AcademyRepository academyRepository;
     private final ImageService imageService;
+    private final FileUploadService fileUploadService;
+    private final FileUploadRepository fileUploadRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -72,15 +75,34 @@ public class NoticeServiceImpl implements NoticeService {
         noticeRepository.save(notice);
         return notice.getNotNum();
     }
-
-    public void uploadFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
+/*
+    public void uploadImages(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         for (MultipartFile file : files) {
             Image image = imageService.fileToEntity(file, member);
             image.setNotice(notice);
             imageService.uploadImage(image, member);
         }
+    }*/
+
+    public void uploadFiles(MultipartFile[] files, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        for (MultipartFile file : files) {
+            String fileName = file.getOriginalFilename();
+            String extension = fileName.substring(fileName.lastIndexOf(".")+1);
+            if (!fileUploadService.isValidExtension(extension)) {
+                throw new IOException("유효한 파일 형식이 아닙니다.");
+            }
+
+            FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
+            fileUpload.setNotice(notice);
+            fileUploadRepository.save(fileUpload);
+            notice.addFile(fileUpload);
+            noticeRepository.save(notice);
+            fileUploadService.uploadFile(fileUpload, file);
+        }
     }
+
 
     @Override
     public Long update(NoticeFormDTO noticeFormDTO) {
