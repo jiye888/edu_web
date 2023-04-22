@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Entity
 @NoArgsConstructor
@@ -38,7 +40,7 @@ public class Review extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @Builder.Default
-    private List<FileUpload> files = new ArrayList<>();
+    private List<Image> image = new ArrayList<>();
 
     public void changeReview(String title, String content, Integer grade) {
         this.title = title;

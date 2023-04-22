@@ -6,7 +6,7 @@ import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.AcademyMember;
-import com.jtudy.education.entity.FileUpload;
+import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.repository.specification.AcademySpecification;
@@ -30,7 +30,8 @@ public class AcademyServiceImpl implements AcademyService{
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
     private final MemberRepository memberRepository;
-    private final FileUploadService fileUploadService;
+    private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -91,10 +92,10 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-        fileUpload.setAcademy(academy);
-        academy.setFile(fileUpload);
-        fileUploadService.uploadFile(fileUpload);
+        Image image = imageService.fileToEntity(file, member);
+        image.setAcademy(academy);
+        academy.setImage(image);
+        imageRepository.save(image);
         academyRepository.save(academy);
     }
 
@@ -107,8 +108,8 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public void removeImg(Long acaNum) {
         Academy academy = academyRepository.findByAcaNum(acaNum);
-        if (academy.getFile() != null) {
-            fileUploadService.deleteAcademyMain(acaNum);
+        if (academy.getImage() != null) {
+            imageService.deleteAcademyMain(acaNum);
         }
     }
 

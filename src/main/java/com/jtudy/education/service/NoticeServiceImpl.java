@@ -1,11 +1,10 @@
 package com.jtudy.education.service;
 
-import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.FileUpload;
+import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.repository.AcademyRepository;
@@ -14,9 +13,7 @@ import com.jtudy.education.repository.specification.NoticeSpecification;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -36,7 +32,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final AcademyRepository academyRepository;
-    private final FileUploadService fileUploadService;
+    private final ImageService imageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -80,9 +76,9 @@ public class NoticeServiceImpl implements NoticeService {
     public void uploadFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         for (MultipartFile file : files) {
-            FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-            fileUpload.setNotice(notice);
-            fileUploadService.uploadFile(fileUpload);
+            Image image = imageService.fileToEntity(file, member);
+            image.setNotice(notice);
+            imageService.uploadImage(image, member);
         }
     }
 

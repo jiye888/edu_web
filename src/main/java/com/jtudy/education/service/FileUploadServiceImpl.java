@@ -1,11 +1,9 @@
 package com.jtudy.education.service;
 
-import com.jtudy.education.DTO.FileUploadDTO;
-import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.FileUpload;
 import com.jtudy.education.entity.Member;
-import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.FileUploadRepository;
+import com.jtudy.education.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,20 +14,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FileUploadServiceImpl implements FileUploadService {
+public class FileUploadServiceImpl implements FileUploadService{
 
-    private final AcademyRepository academyRepository;
+    private final NoticeRepository noticeRepository;
     private final FileUploadRepository fileUploadRepository;
 
     @Value("${upload.dir}")
@@ -46,16 +44,29 @@ public class FileUploadServiceImpl implements FileUploadService {
     }
 
     @Override
+    public boolean isValidExtension(String extension) throws IOException {
+        String[] extensions = {".txt", ".hwp", ".pdf", ".xls", ".xlsx", ".doc", ".docx", ".ppt", ".pptx"};
+        // 확장자명 하나하나 입력해야 하나?
+        for (String e : extensions) {
+            if (e.equals(extension)) {
+                return true;
+            }
+        }
+        throw new IOException("유효한 파일 형식이 아닙니다.");
+    }
+
+    @Override
     public FileUpload fileToEntity(MultipartFile file, Member member) throws IOException {
         String originalName = file.getOriginalFilename();
         isValidName(originalName);
-        String fileName = UUID.randomUUID()+"."+originalName.substring(originalName.lastIndexOf(".")+1);
-        System.out.println(fileName);
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        isValidExtension(extension);
+
+        String fileName = UUID.randomUUID()+extension;
         String fileType = file.getContentType();
         String date = LocalDate.now().toString();
         String datePath = date.replaceAll("-", "/");
         Path uploadPath = Paths.get(path + datePath);
-        byte[] fileData = file.getBytes();
         Path filePath = Paths.get(uploadPath + "\\" + fileName);
 
         FileUpload fileUpload = FileUpload.builder()
@@ -63,65 +74,10 @@ public class FileUploadServiceImpl implements FileUploadService {
                 .fileName(fileName)
                 .filePath(String.valueOf(filePath))
                 .fileType(fileType)
-                .fileData(fileData)
                 .uploader(member)
                 .build();
 
         return fileUpload;
-    }
-
-    @Override
-    public Long uploadFile(FileUpload file) throws IOException {
-        String filePath = file.getFilePath();
-        Path uploadPath = Paths.get(filePath.substring(0, filePath.lastIndexOf(file.getFileName())));
-
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        try {
-            Files.write(Paths.get(filePath), file.getFileData());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        FileUpload uploaded = fileUploadRepository.save(file);
-        return uploaded.getFileId();
-    }
-
-    @Override
-    public void deleteFile(Long fileId) {
-        fileUploadRepository.deleteById(fileId);
-    }
-
-    @Override
-    public void deleteAcademyMain(Long acaNum) {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
-        FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
-        academy.setFile(null);
-        academyRepository.save(academy);
-        fileUploadRepository.deleteById(fileUpload.getFileId());
-    }
-
-    @Override
-    public List<FileUploadDTO> getList(String entity, Long entityId) throws FileNotFoundException {
-        if (entity == "notice") {
-            List<FileUpload> fileList = fileUploadRepository.findByNotNum(entityId);
-            List<FileUploadDTO> dtoList = fileList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-            return dtoList;
-        } else if (entity == "review") {
-            List<FileUpload> fileList = fileUploadRepository.findByRevNum(entityId);
-            List<FileUploadDTO> dtoList = fileList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
-            return dtoList;
-        } else {
-            throw new FileNotFoundException();
-        }
-    }
-
-    @Override
-    public FileUploadDTO academyMain(Long acaNum) throws FileNotFoundException {
-        FileUpload fileUpload = fileUploadRepository.findByAcaNum(acaNum);
-        FileUploadDTO fileDTO = entityToDTO(fileUpload);
-        return fileDTO;
     }
 
     @Override
@@ -132,6 +88,31 @@ public class FileUploadServiceImpl implements FileUploadService {
             throw new FileNotFoundException();
         }
         return file;
+    }
+
+
+    @Override
+    public Long uploadFile(MultipartFile file, Member member) throws IOException {
+        String fileName = file.getOriginalFilename();
+        String extension = fileName.substring(fileName.lastIndexOf(".")+1);
+        if (!isValidExtension(extension)) {
+            throw new IOException("유효한 파일 형식이 아닙니다.");
+        }
+        FileUpload fileUpload = fileToEntity(file, member);
+        String filePath = fileUpload.getFilePath();
+        Path uploadPath = Paths.get(filePath.substring(0, filePath.lastIndexOf(fileUpload.getFileName())));
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        try (InputStream inputStream = file.getInputStream()){
+            Files.copy(inputStream, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fileUploadRepository.save(fileUpload);
+        return fileUpload.getFileId();
     }
 
 }

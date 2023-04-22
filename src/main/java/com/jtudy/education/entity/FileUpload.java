@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -32,32 +31,14 @@ public class FileUpload extends BaseEntity{
     @Column(name = "file_path", nullable = false)
     private String filePath;
 
-    @Lob
-    @Column(name = "file_data", nullable = false)
-    private byte[] fileData;
-
     @ManyToOne
     private Member uploader;
-
-    @OneToOne
-    private Academy academy;
 
     @ManyToOne
     private Notice notice;
 
-    @ManyToOne
-    private Review review;
-
-    public void setAcademy(Academy academy) {
-        this.academy = academy;
-    }
-
     public void setNotice(Notice notice) {
         this.notice = notice;
-    }
-
-    public void setReview(Review review) {
-        this.review = review;
     }
 
 }

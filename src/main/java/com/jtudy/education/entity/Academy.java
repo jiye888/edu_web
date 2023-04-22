@@ -49,7 +49,7 @@ public class Academy extends BaseEntity {
     private List<Notice> notice = new ArrayList<>();
 
     @OneToOne(orphanRemoval = true)
-    private FileUpload file;
+    private Image image;
 
     public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
         this.acaName = acaName;
@@ -57,8 +57,8 @@ public class Academy extends BaseEntity {
         this.location = location;
     }
 
-    public void setFile(FileUpload file) {
-        this.file = file;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
 }

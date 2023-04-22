@@ -27,7 +27,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
-    private final FileUploadService fileUploadService;
+    private final ImageService imageService;
 
     @Override
     @Transactional(readOnly = true)
@@ -88,9 +88,9 @@ public class ReviewServiceImpl implements ReviewService {
     public void uploadFile(MultipartFile[] files, Long revNum, Member member) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         for (MultipartFile file : files) {
-            FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-            fileUpload.setReview(review);
-            fileUploadService.uploadFile(fileUpload);
+            Image image = imageService.fileToEntity(file, member);
+            image.setReview(review);
+            imageService.uploadImage(image, member);
         }
     }
 

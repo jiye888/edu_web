@@ -11,16 +11,16 @@ import java.nio.file.Path;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FileUploadDTO {
+public class ImageDTO {
+
+    private Long imageId;
 
     private String originalName;
 
-    private String fileName;
-
-    private String fileType;
-
-    private Path filePath;
+    private Integer order;
 
     private byte[] fileData;
+
+    private String uploader;
 
 }

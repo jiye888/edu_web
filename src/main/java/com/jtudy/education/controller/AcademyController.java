@@ -2,17 +2,13 @@ package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
-import com.jtudy.education.DTO.FileUploadDTO;
+import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.FileUpload;
-import com.jtudy.education.entity.Member;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.AcademyService;
-import com.jtudy.education.service.FileUploadService;
-import lombok.NoArgsConstructor;
+import com.jtudy.education.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,16 +25,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
-import java.net.URI;
 import java.util.*;
 
 @Controller
@@ -48,7 +39,7 @@ public class AcademyController {
 
     private final AcademyService academyService;
     private final AcademyMemberService academyMemberService;
-    private final FileUploadService fileUploadService;
+    private final ImageService imageService;
 
     private final TemplateEngine templateEngine;
 
@@ -132,7 +123,7 @@ public class AcademyController {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         model.addAttribute("academy", academyDTO);
         try {
-            FileUploadDTO fileDTO = fileUploadService.academyMain(acaNum);
+            ImageDTO fileDTO = imageService.academyMain(acaNum);
             model.addAttribute("byte", fileDTO.getFileData());
         } catch (NullPointerException e) {
             model.addAttribute("byte", null);
