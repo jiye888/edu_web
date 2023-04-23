@@ -30,11 +30,13 @@ public interface ImageService {
         return imageDTO;
     }
 
+    ImageDTO getAcademyMain(Long acaNum);
+
     void deleteAcademyMain(Long acaNum);
 
-    List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
+    void setImagePositions(MultipartFile[] files, List<Integer> orders, String content, Member member) throws IOException;
 
-    ImageDTO academyMain(Long acaNum);
+    List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
 
     //File getFile(Image image) throws FileNotFoundException;
 }

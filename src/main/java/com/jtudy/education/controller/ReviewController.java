@@ -4,6 +4,7 @@ import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyMemberService;
+import com.jtudy.education.service.ImageService;
 import com.jtudy.education.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -39,6 +41,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final AcademyMemberService academyMemberService;
+    private final ImageService imageService;
     private final TemplateEngine templateEngine;
 
     @GetMapping("/list")
@@ -78,7 +81,12 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] files, @RequestPart List<Integer> positions,
+                                   @AuthenticationPrincipal SecurityMember member, Model model) {
+        for (MultipartFile file : files) {
+            //imageService.
+        }
+
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -89,7 +97,7 @@ public class ReviewController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
-            Long revNum = reviewService.register(reviewFormDTO, member.getMember());
+            Long revNum = reviewService.register(reviewFormDTO, files, member.getMember()); //files
             return ResponseEntity.ok().body(revNum);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

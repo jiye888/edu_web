@@ -48,4 +48,12 @@ public class Review extends BaseEntity {
         this.grade = grade;
     }
 
+    public void addImage(Image image) {
+        this.image.add(image);
+    }
+
+    public void removeImage(Image image) {
+        this.image.remove(image);
+    }
+
 }

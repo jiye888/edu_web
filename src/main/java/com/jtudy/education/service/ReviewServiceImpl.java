@@ -6,6 +6,7 @@ import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyMemberRepository;
 import com.jtudy.education.repository.AcademyRepository;
+import com.jtudy.education.repository.ImageRepository;
 import com.jtudy.education.repository.ReviewRepository;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -78,12 +80,25 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewFormDTO reviewFormDTO, Member member) {
+    public Long register(ReviewFormDTO reviewFormDTO, MultipartFile[] files, Member member) throws IOException {
         Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcademy());
         Review review = formToEntity(reviewFormDTO, academy, member);
         reviewRepository.save(review);
+        for (MultipartFile file : files) {
+            Image image = imageService.fileToEntity(file, member);
+            registerImg(image, review);
+        }
         return review.getRevNum();
+    } // save 메서드 남용..... entity manager 고려해보기
+
+    @Override
+    public void registerImg(Image image, Review review) {
+        image.setReview(review);
+        review.addImage(image);
+        imageRepository.save(image);
+        reviewRepository.save(review);
     }
+
 /*
     public void uploadImages(MultipartFile[] files, Long revNum, Member member) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
@@ -104,6 +119,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void delete(Long revNum) {
+        removeAllImg(revNum);
         reviewRepository.deleteById(revNum);
     }
 
@@ -113,6 +129,22 @@ public class ReviewServiceImpl implements ReviewService {
         Page<Review> review = reviewRepository.findByCreatedBy(member.getEmail(), pageable);
         Page<ReviewDTO> reviewDTO = review.map(e -> entityToDTO(e));
         return reviewDTO;
+    }
+
+    @Override
+    public void removeAllImg(Long revNum) {
+        List<Image> images = imageRepository.findByRevNum(revNum);
+        for (Image image : images) {
+            removeImg(image.getImageId(), revNum);
+        }
+    }
+
+    public void removeImg(Long imageId, Long revNum) {
+        Review review = reviewRepository.findByRevNum(revNum);
+        Image image = imageRepository.findByImageId(imageId);
+        review.removeImage(image);
+        reviewRepository.save(review);
+        imageRepository.delete(image);
     }
 
 }

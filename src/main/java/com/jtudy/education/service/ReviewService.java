@@ -3,12 +3,16 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Review;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface ReviewService {
 
@@ -20,7 +24,9 @@ public interface ReviewService {
 
     ReviewDTO getByAcademy(Long acaNum, String email);
 
-    Long register(ReviewFormDTO reviewFormDTO, Member member);
+    //Long register(ReviewFormDTO reviewFormDTO, Member member);
+
+    Long register(ReviewFormDTO reviewFormDTO, MultipartFile[] files, Member member) throws IOException;
 
     Long update(ReviewFormDTO reviewFormDTO);
 
@@ -55,4 +61,8 @@ public interface ReviewService {
                 .build();
         return reviewDTO;
     }
+
+    void registerImg(Image image, Review review) throws IOException;
+
+    void removeAllImg(Long revNum);
 }

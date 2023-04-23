@@ -3,12 +3,15 @@ package com.jtudy.education.service;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.entity.Notice;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +23,17 @@ public interface NoticeService {
 
     NoticeDTO getOne(Long notNum);
 
-    Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
+    //Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
+
+    Long register(NoticeFormDTO noticeFormDTO, Long acaNum, MultipartFile[] files, Member member) throws IOException;
+
+    void registerImg(Image image, Notice notice);
+
+    void uploadFiles(MultipartFile[] files, Long notNum, Member member) throws IOException;
+
+    void deleteFile(Long notNum, Long fileId);
+
+    void deleteFiles(Long notNum);
 
     Long update(NoticeFormDTO noticeFormDTO);
 

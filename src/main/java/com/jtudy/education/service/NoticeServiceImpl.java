@@ -6,6 +6,7 @@ import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.FileUploadRepository;
+import com.jtudy.education.repository.ImageRepository;
 import com.jtudy.education.repository.NoticeRepository;
 import com.jtudy.education.repository.specification.NoticeSpecification;
 import com.jtudy.education.security.SecurityMember;
@@ -18,9 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +32,7 @@ public class NoticeServiceImpl implements NoticeService {
     private final NoticeRepository noticeRepository;
     private final AcademyRepository academyRepository;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
     private final FileUploadService fileUploadService;
     private final FileUploadRepository fileUploadRepository;
 
@@ -68,13 +67,26 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
+    public Long register(NoticeFormDTO noticeFormDTO, Long acaNum, MultipartFile[] files, Member member) throws IOException {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Notice notice = formToEntity(noticeFormDTO);
         notice.builder().academy(academy).build();
         noticeRepository.save(notice);
+        for (MultipartFile file : files) {
+            Image image = imageService.fileToEntity(file, member);
+            registerImg(image, notice);
+        }
         return notice.getNotNum();
     }
+
+    @Override
+    public void registerImg(Image image, Notice notice) {
+        image.setNotice(notice);
+        notice.addImage(image);
+        imageRepository.save(image);
+        noticeRepository.save(notice);
+    }
+
 /*
     public void uploadImages(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
@@ -85,6 +97,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }*/
 
+    @Override
     public void uploadFiles(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         for (MultipartFile file : files) {
@@ -103,6 +116,23 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
+    @Override
+    public void deleteFile(Long notNum, Long fileId) {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        FileUpload fileUpload = fileUploadRepository.findByFileId(fileId);
+        notice.removeFile(fileUpload);
+        fileUploadRepository.delete(fileUpload);
+    }
+
+    @Override
+    public void deleteFiles(Long notNum) {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        List<FileUpload> fileList = fileUploadRepository.findByNotice(notice);
+        for (FileUpload file : fileList) {
+            notice.removeFile(file);
+            fileUploadRepository.delete(file);
+        }
+    }
 
     @Override
     public Long update(NoticeFormDTO noticeFormDTO) {
@@ -114,8 +144,13 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void delete(Long notNum) {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        List<FileUpload> fileList = fileUploadRepository.findByNotice(notice);
+        for (FileUpload file : fileList) {
+            deleteFile(notNum, file.getFileId());
+        }
         noticeRepository.deleteById(notNum);
-    }
+    } // 수정하기
 
     @Override
     @Transactional(readOnly = true)

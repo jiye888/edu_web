@@ -123,7 +123,7 @@ public class AcademyController {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         model.addAttribute("academy", academyDTO);
         try {
-            ImageDTO fileDTO = imageService.academyMain(acaNum);
+            ImageDTO fileDTO = imageService.getAcademyMain(acaNum);
             model.addAttribute("byte", fileDTO.getFileData());
         } catch (NullPointerException e) {
             model.addAttribute("byte", null);

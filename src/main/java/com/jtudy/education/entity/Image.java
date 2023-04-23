@@ -21,8 +21,7 @@ public class Image extends BaseEntity{
     @Column(name = "image_id")
     private Long imageId;
 
-    @Column(name = "image_position")
-    private Integer imagePosition;
+    private Integer position;
 
     @Column(name = "original_name", nullable = false)
     private String originalName;
@@ -55,14 +54,6 @@ public class Image extends BaseEntity{
         this.review = review;
     }
 
-    public void findImagePosition(String content) {
-        String patternString = "\\(IMAGE_INCLUDED\\)";
-
-        Pattern pattern = Pattern.compile(patternString);
-        Matcher matcher = pattern.matcher(content);
-        while (matcher.find()) {
-            this.imagePosition = matcher.start();
-        }
-    }
+    public void setPosition(Integer position) {this.position = position;}
 
 }

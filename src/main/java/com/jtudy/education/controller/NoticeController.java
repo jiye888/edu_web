@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -65,8 +66,8 @@ public class NoticeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult,
-                                   RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member) {
+    public ResponseEntity register(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart("files") MultipartFile[] files, @RequestPart("images") MultipartFile[] images,
+                                   List<Integer> positions, RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -78,7 +79,7 @@ public class NoticeController {
                 return ResponseEntity.badRequest().body(map);
             }
             Long acaNum = noticeFormDTO.getAcademy();
-            Long notNum = noticeService.register(noticeFormDTO, acaNum);
+            Long notNum = noticeService.register(noticeFormDTO, acaNum, files, member.getMember());
             redirectAttributes.addFlashAttribute("message", notNum);
             return ResponseEntity.ok().build();
         } catch (Exception e) {

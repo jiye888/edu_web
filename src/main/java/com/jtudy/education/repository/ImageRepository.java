@@ -19,4 +19,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query("select i from Image i where i.review.revNum = :revNum")
     List<Image> findByRevNum(Long revNum);
 
+    Image findByImageId(Long imageId);
+
 }

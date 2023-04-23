@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,9 +58,36 @@ public class ImageServiceImpl implements ImageService {
                 .fileData(fileData)
                 .uploader(member)
                 .build();
-        //imagePosition;
 
         return image;
+    }
+
+    @Override
+    public void setImagePositions(MultipartFile[] files, List<Integer> orders, String content, Member member) throws IOException {
+        List<Image> images = new ArrayList<>();
+        for (MultipartFile file: files) {
+            images.add(fileToEntity(file, member));
+        }
+        Map<Image, Integer> map = new HashMap<>();
+        for (int i=0; i<files.length; i++) {
+            map.put(images.get(i), orders.get(i));
+        }
+        images.sort((i1, i2) -> map.get(i1) - map.get(i2));
+        //images.sort(Comparator.comparingInt(map::get));
+
+        String string = "\\(IMAGE_INCLUDED\\)";
+        Pattern pattern = Pattern.compile(string);
+        Matcher matcher = pattern.matcher(content);
+
+        List<Integer> positions = new ArrayList<>();
+        while (matcher.find()) {
+            positions.add(matcher.start());
+        }
+        if (images.size() == positions.size()) {
+            for (int i=0; i<images.size(); i++) {
+                images.get(i).setPosition(positions.get(i));
+            }
+        }
     }
 
     @Override
@@ -77,7 +106,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageDTO academyMain(Long acaNum) {
+    public ImageDTO getAcademyMain(Long acaNum) {
         Image image = imageRepository.findByAcaNum(acaNum);
         ImageDTO fileDTO = entityToDTO(image);
         return fileDTO;

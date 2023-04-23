@@ -45,4 +45,16 @@ public class Notice extends BaseEntity {
         this.files.add(fileUpload);
     }
 
+    public void removeFile(FileUpload fileUpload) {
+        this.files.remove(fileUpload);
+    }
+
+    public void addImage(Image image) {
+        this.image.add(image);
+    }
+
+    public void removeImage(Image image) {
+        this.image.remove(image);
+    }
+
 }
