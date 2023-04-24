@@ -11,8 +11,22 @@
         <span class="custom-span span-center">제목</span>
         <input type="text" class="custom-form-control margin-top10 w-auto" th:field="*{title}">
         <p id="titleError"></p><br>
+        <div>
+
+        </div>
         <span class="custom-span span-center">내용</span>
-        <input type="text" class="custom-form-control input-content" th:field="*{content}">
+        <div>
+            <!--<textarea class="custom-form-control input-content" th:field="*{content}" id="textarea"></textarea>-->
+            <div class="custom-form-control input-content" th:field="*{content}" id="textarea" contenteditable="true"></div>
+            <span class="custom-span">첨부 파일 목록</span>
+            <div class="custom-form-control file-name" id="selectedFile" style="display:block; height:fit-content; min-height:32px;"></div>
+            <div class="button-distance" style="margin-top:20px;">
+                <input type="file" id="imageFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="imageFile">이미지 추가</label>
+                <input type="file" id="inputFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
+            </div>
+        </div>
         <p id="contentError"></p><br>
         <div class="button-distance">
             <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
@@ -27,6 +41,65 @@
             $('#cancelBtn').on("click", function() {
                 history.back();
             });
+        });
+
+        const imageFile = document.getElementById('imageFile');
+        const inputFile = document.getElementById('inputFile');
+        const selectedFile = document.getElementById('selectedFile');
+
+        let fileList = [];
+
+        inputFile.addEventListener('change', function() {
+            if(inputFile.files == null) {
+                selectedFile.innerHTML = "첨부 파일 목록";
+            } else {
+                for (var i=0; i<inputFile.files.length; i++) {
+                    const fileDiv = document.createElement("div");
+                    fileDiv.setAttribute("style", "display:flex;");
+                    selectedFile.appendChild(fileDiv);
+                    const fileName = document.createElement("p");
+                    fileName.innerHTML = inputFile.files[i].name;
+                    fileName.setAttribute("id", "fileName"+i);
+                    fileDiv.appendChild(fileName);
+                    fileList.push(inputFile.files[i]);
+                    var deleteButton = document.createElement("button");
+                    deleteButton.textContent = "X";
+                    deleteButton.setAttribute("name", "deleteFile");
+                    deleteButton.setAttribute("type", "button");
+                    deleteButton.setAttribute("id", "delete"+i);
+                    fileDiv.appendChild(deleteButton);
+                }
+            }
+
+            var deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+
+            for (var i=0; i<deleteFiles.length; i++) {
+                const dataName = document.getElementById("fileName"+i);
+                const dataId = document.getElementById("delete"+i);
+                deleteFiles[i].addEventListener('click', function() {
+                    inputFile.files[i] = null; // 수정필요
+                    dataName.remove();
+                    dataId.remove();
+                });
+            }
+
+        });
+
+        imageFile.addEventListener('change', function() {
+            const image = event.target.files[0];
+            const reader = new FileReader();
+            const textarea = document.getElementById('textarea');
+
+            reader.readAsDataURL(image);
+
+            reader.onload = () => {
+                const dataURL = reader.result;
+                const img = document.createElement("img");
+                img.setAttribute("src", dataURL);
+                img.setAttribute("draggable", "true");
+                img.setAttribute("style", "max-height:600px; max-width:600px;");
+                textarea.appendChild(img);
+            };
         });
 
         function clearText() {
