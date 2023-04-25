@@ -15,9 +15,9 @@
 
         </div>
         <span class="custom-span span-center">내용</span>
+        <p id="contentError"></p><br>
         <div>
-            <!--<textarea class="custom-form-control input-content" th:field="*{content}" id="textarea"></textarea>-->
-            <div class="custom-form-control input-content" th:field="*{content}" id="textarea" contenteditable="true"></div>
+            <div class="custom-form-control input-content" th:field="*{content}" id="content" contenteditable="true"></div>
             <span class="custom-span">첨부 파일 목록</span>
             <div class="custom-form-control file-name" id="selectedFile" style="display:block; height:fit-content; min-height:32px;"></div>
             <div class="button-distance" style="margin-top:20px;">
@@ -27,7 +27,6 @@
                 <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
             </div>
         </div>
-        <p id="contentError"></p><br>
         <div class="button-distance">
             <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
             <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
@@ -47,6 +46,7 @@
         const inputFile = document.getElementById('inputFile');
         const selectedFile = document.getElementById('selectedFile');
         let fileList = [];
+        let imgList = [];
 
         inputFile.addEventListener('change', function() {
             for (const file of event.target.files) {
@@ -90,18 +90,48 @@
         imageFile.addEventListener('change', function() {
             const image = event.target.files[0];
             const reader = new FileReader();
-            const textarea = document.getElementById('textarea');
+            const content = document.getElementById('content');
 
             reader.readAsDataURL(image);
 
             reader.onload = () => {
                 const dataURL = reader.result;
+                const imgDiv = document.createElement("div");
+                content.appendChild(imgDiv);
                 const img = document.createElement("img");
                 img.setAttribute("src", dataURL);
                 img.setAttribute("draggable", "true");
                 img.setAttribute("style", "max-height:600px; max-width:600px;");
-                textarea.appendChild(img);
+                img.setAttribute("data-name", image.name);
+                imgDiv.appendChild(img);
+                //const imgIn = document.createElement("p");
+                //imgIn.innerHTML = "(IMAGE_INCLUDED)";
+                //imgIn.setAttribute("style", "display:none;");
+                //imgDiv.appendChild(imgIn);
+                imgList.push(image);
             };
+        });
+
+        const contentDiv = document.getElementById('content');
+        contentDiv.addEventListener('keydown', function() {
+            if (event.key === 'Backspace' || event.keyCode === 8) {
+                const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
+                const tagName = window.getSelection().getRangeAt(0).endContainer.firstChild.dataset.name;
+                console.log(window.getSelection().getRangeAt(0));
+                console.log(tagName);
+                if (selection != null && selection === "IMG") {
+                    if (confirm("사진을 삭제하시겠습니까?")) {
+                        for (var i=0; i<imgList.length; i++) {
+                            if (imgList[i].name == tagName) {
+                                imgList.splice(i, 1);
+                            }
+                        }
+                    } else {
+                        event.preventDefault();
+                    }
+
+                }
+            }
         });
 
         function clearText() {
@@ -118,7 +148,14 @@
             clearText();
             var academy = Number($('#academy').val());
             var title = $('#title').val();
-            var content = $('#content').val();
+            const images = document.getElementById('content').querySelectorAll('img');
+            var imgArr = [];
+            /*
+            images.forEach(img => {
+                document.getElementById('content');
+            });*/
+            const content = document.getElementById('content').value;
+            var allContent = document.getElementById('content').innerHTML;
 
             const json = {
                     "academy":academy,
@@ -126,11 +163,17 @@
                     "content":content,
                 };
 
+            var formData = new FormData();
+            formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
+            formData.append("files", fileList);
+            formData.append("images", allContent);
+
             if (title && content) {
                 $.ajax({
                     url: '/notice/register',
                     type: "POST",
-                    contentType: "application/json",
+                    contentType: false,
+                    processData: false,
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                     data: JSON.stringify(json),
                     success: function() {
