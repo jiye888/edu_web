@@ -23,7 +23,7 @@
             <div class="button-distance" style="margin-top:20px;">
                 <input type="file" id="imageFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="imageFile">이미지 추가</label>
-                <input type="file" id="inputFile" style="display:none;">
+                <input type="file" id="inputFile" style="display:none;" multiple="multiple">
                 <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
             </div>
         </div>
@@ -46,41 +46,43 @@
         const imageFile = document.getElementById('imageFile');
         const inputFile = document.getElementById('inputFile');
         const selectedFile = document.getElementById('selectedFile');
-
         let fileList = [];
 
         inputFile.addEventListener('change', function() {
-            if(inputFile.files == null) {
-                selectedFile.innerHTML = "첨부 파일 목록";
-            } else {
-                for (var i=0; i<inputFile.files.length; i++) {
-                    const fileDiv = document.createElement("div");
-                    fileDiv.setAttribute("style", "display:flex;");
-                    selectedFile.appendChild(fileDiv);
-                    const fileName = document.createElement("p");
-                    fileName.innerHTML = inputFile.files[i].name;
-                    fileName.setAttribute("id", "fileName"+i);
-                    fileDiv.appendChild(fileName);
-                    fileList.push(inputFile.files[i]);
-                    var deleteButton = document.createElement("button");
-                    deleteButton.textContent = "X";
-                    deleteButton.setAttribute("name", "deleteFile");
-                    deleteButton.setAttribute("type", "button");
-                    deleteButton.setAttribute("id", "delete"+i);
-                    fileDiv.appendChild(deleteButton);
-                }
+            for (const file of event.target.files) {
+                const fileDiv = document.createElement("div");
+                fileDiv.setAttribute("style", "display:flex;");
+                selectedFile.appendChild(fileDiv);
+                const fileName = document.createElement("p");
+                fileName.innerHTML = file.name;
+                fileName.setAttribute("id", file.name);
+                fileDiv.appendChild(fileName);
+                var deleteButton = document.createElement("button");
+                deleteButton.textContent = "X";
+                deleteButton.setAttribute("name", "deleteFile");
+                deleteButton.setAttribute("type", "button");
+                deleteButton.setAttribute("data-name", file.name);
+                fileDiv.appendChild(deleteButton);
+                fileList.push(file);
             }
 
             var deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
-
-            for (var i=0; i<deleteFiles.length; i++) {
-                const dataName = document.getElementById("fileName"+i);
-                const dataId = document.getElementById("delete"+i);
-                deleteFiles[i].addEventListener('click', function() {
-                    inputFile.files[i] = null; // 수정필요
-                    dataName.remove();
-                    dataId.remove();
-                });
+            if (deleteFiles.length != 0) {
+                for (var i=0; i<deleteFiles.length; i++) {
+                    const number = i;
+                    const fileN = deleteFiles[i].getAttribute("data-name");
+                    deleteFiles[i].addEventListener('click', function() {
+                        for (var i=0; i<fileList.length; i++) {
+                            if (fileList[i].name == fileN) {
+                                const index = i;
+                                fileList.splice(index,1);
+                            }
+                        }
+                            document.getElementById(fileN).remove();
+                            event.target.remove();
+                        deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+                    });
+                }
             }
 
         });
