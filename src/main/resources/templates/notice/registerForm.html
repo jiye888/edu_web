@@ -17,6 +17,7 @@
         <span class="custom-span span-center">내용</span>
         <div>
             <div class="custom-form-control input-content" th:field="*{content}" id="content" contenteditable="true"></div>
+            <div style="display:hidden;" id="sendContent"></div>
             <p id="contentError"></p><br>
             <span class="custom-span">첨부 파일 목록</span>
             <div class="custom-form-control file-name" id="selectedFile" style="display:block; height:fit-content; min-height:32px;"></div>
@@ -115,21 +116,21 @@
         const contentDiv = document.getElementById('content');
         contentDiv.addEventListener('keydown', function() {
             if (event.key === 'Backspace' || event.keyCode === 8) {
-                const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
-                const tagName = window.getSelection().getRangeAt(0).endContainer.firstChild.dataset.name;
-                console.log(window.getSelection().getRangeAt(0));
-                console.log(tagName);
-                if (selection != null && selection === "IMG") {
-                    if (confirm("사진을 삭제하시겠습니까?")) {
-                        for (var i=0; i<imgList.length; i++) {
-                            if (imgList[i].name == tagName) {
-                                imgList.splice(i, 1);
+                if (window.getSelection().getRangeAt(0).endContainer.firstChild != null) {
+                    const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
+                    const tagName = window.getSelection().getRangeAt(0).endContainer.firstChild.dataset.name;
+                    if (selection != null && selection === "IMG") {
+                        if (confirm("사진을 삭제하시겠습니까?")) {
+                            for (var i=0; i<imgList.length; i++) {
+                                if (imgList[i].name == tagName) {
+                                    imgList.splice(i, 1);
+                                }
                             }
+                        } else {
+                            event.preventDefault();
                         }
-                    } else {
-                        event.preventDefault();
-                    }
 
+                    }
                 }
             }
         });
@@ -139,19 +140,15 @@
             const contentHTML = content.innerHTML;
             let imgIndex = [];
             const images = content.querySelectorAll('img');
-            console.log(images);
             for (var i=0; i<images.length; i++) {
                 const dataName = images[i].getAttribute("data-name");
                 const regex = new RegExp(dataName, 'i');
                 if (contentHTML.match(regex)) {
                     const matchArray = contentHTML.match(regex);
-                    console.log(matchArray);
                     const imgArray = [dataName, i, matchArray.index];
-                    console.log(imgArray);
                     imgIndex.push(imgArray);
                 }
             }
-            console.log(imgIndex);
             return imgIndex;
         }
 
@@ -169,25 +166,33 @@
             clearText();
             var academy = Number($('#academy').val());
             var title = $('#title').val();
+            const imgArray = findImgPosition();
             const images = document.getElementById('content').querySelectorAll('img');
-            var imgArr = [];
+            const content = document.getElementById('content');
+            console.log(content.innerText);
             /*
-            images.forEach(img => {
-                document.getElementById('content');
-            });*/
-            const content = document.getElementById('content').value;
-            var allContent = document.getElementById('content').innerHTML;
-
+            let contentValue = '';
+            for (var i=0; i<content.childNodes.length; i++) {
+                const childNode = content.childNodes[i];
+                console.log(childNode.firstChild.nodeName);
+                if (childNode.firstChild.nodeName.toLowerCase() != 'img') {
+                    contentValue += childNode.outerHTML;
+                }
+            }
+            const sendContent = document.getElementById('sendContent');
+            sendContent.innerHTML = contentValue;
+            const textContent = sendContent.textContent;*/
             const json = {
                     "academy":academy,
                     "title":title,
-                    "content":content,
+                    "content":content.textContent,
                 };
 
             var formData = new FormData();
             formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
             formData.append("files", fileList);
-            formData.append("images", allContent);
+            formData.append("images", imgList);
+            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
             if (title && content) {
                 $.ajax({
