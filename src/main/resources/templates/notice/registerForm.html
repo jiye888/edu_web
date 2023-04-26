@@ -15,9 +15,9 @@
 
         </div>
         <span class="custom-span span-center">내용</span>
-        <p id="contentError"></p><br>
         <div>
             <div class="custom-form-control input-content" th:field="*{content}" id="content" contenteditable="true"></div>
+            <p id="contentError"></p><br>
             <span class="custom-span">첨부 파일 목록</span>
             <div class="custom-form-control file-name" id="selectedFile" style="display:block; height:fit-content; min-height:32px;"></div>
             <div class="button-distance" style="margin-top:20px;">
@@ -133,6 +133,27 @@
                 }
             }
         });
+
+        function findImgPosition() {
+            const content = document.getElementById('content');
+            const contentHTML = content.innerHTML;
+            let imgIndex = [];
+            const images = content.querySelectorAll('img');
+            console.log(images);
+            for (var i=0; i<images.length; i++) {
+                const dataName = images[i].getAttribute("data-name");
+                const regex = new RegExp(dataName, 'i');
+                if (contentHTML.match(regex)) {
+                    const matchArray = contentHTML.match(regex);
+                    console.log(matchArray);
+                    const imgArray = [dataName, i, matchArray.index];
+                    console.log(imgArray);
+                    imgIndex.push(imgArray);
+                }
+            }
+            console.log(imgIndex);
+            return imgIndex;
+        }
 
         function clearText() {
             var pTag = ["title", "content"];
