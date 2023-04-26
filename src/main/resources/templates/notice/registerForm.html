@@ -17,7 +17,6 @@
         <span class="custom-span span-center">내용</span>
         <div>
             <div class="custom-form-control input-content" th:field="*{content}" id="content" contenteditable="true"></div>
-            <div style="display:hidden;" id="sendContent"></div>
             <p id="contentError"></p><br>
             <span class="custom-span">첨부 파일 목록</span>
             <div class="custom-form-control file-name" id="selectedFile" style="display:block; height:fit-content; min-height:32px;"></div>
@@ -169,19 +168,6 @@
             const imgArray = findImgPosition();
             const images = document.getElementById('content').querySelectorAll('img');
             const content = document.getElementById('content');
-            console.log(content.innerText);
-            /*
-            let contentValue = '';
-            for (var i=0; i<content.childNodes.length; i++) {
-                const childNode = content.childNodes[i];
-                console.log(childNode.firstChild.nodeName);
-                if (childNode.firstChild.nodeName.toLowerCase() != 'img') {
-                    contentValue += childNode.outerHTML;
-                }
-            }
-            const sendContent = document.getElementById('sendContent');
-            sendContent.innerHTML = contentValue;
-            const textContent = sendContent.textContent;*/
             const json = {
                     "academy":academy,
                     "title":title,
@@ -201,7 +187,7 @@
                     contentType: false,
                     processData: false,
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                    data: JSON.stringify(json),
+                    data: formData,
                     success: function() {
                         history.back();
                     },
