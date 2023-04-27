@@ -15,7 +15,7 @@ public interface ImageService {
 
     void isValidName(String name);
 
-    boolean isImage(String fileType);
+    boolean isImage(MultipartFile file);
 
     Image fileToEntity(MultipartFile file, Member member) throws IOException;
 
@@ -23,7 +23,10 @@ public interface ImageService {
         ImageDTO imageDTO = ImageDTO.builder()
                 .imageId(image.getImageId())
                 .originalName(image.getOriginalName())
-                .fileData(image.getFileData())
+                .name(image.getName())
+                .path(image.getPath())
+                .order(image.getOrder())
+                .index(image.getIndex())
                 .uploader(image.getUploader().getEmail())
                 .build();
 
@@ -34,9 +37,5 @@ public interface ImageService {
 
     void deleteAcademyMain(Long acaNum);
 
-    void setImagePositions(MultipartFile[] files, List<Integer> orders, String content, Member member) throws IOException;
-
     List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
-
-    //File getFile(Image image) throws FileNotFoundException;
 }

@@ -74,8 +74,7 @@
                     deleteFiles[i].addEventListener('click', function() {
                         for (var i=0; i<fileList.length; i++) {
                             if (fileList[i].name == fileN) {
-                                const index = i;
-                                fileList.splice(index,1);
+                                fileList.splice(i, 1);
                             }
                         }
                             document.getElementById(fileN).remove();
@@ -104,10 +103,6 @@
                 img.setAttribute("style", "max-height:600px; max-width:600px;");
                 img.setAttribute("data-name", image.name);
                 imgDiv.appendChild(img);
-                //const imgIn = document.createElement("p");
-                //imgIn.innerHTML = "(IMAGE_INCLUDED)";
-                //imgIn.setAttribute("style", "display:none;");
-                //imgDiv.appendChild(imgIn);
                 imgList.push(image);
             };
         });
@@ -161,23 +156,31 @@
             }
         }
 
+        function files() {
+            console.log(fileList);
+        }
+
         function register() {
             clearText();
             var academy = Number($('#academy').val());
             var title = $('#title').val();
             const imgArray = findImgPosition();
             const images = document.getElementById('content').querySelectorAll('img');
-            const content = document.getElementById('content');
+            const contentText = document.getElementById('content').innerText;
             const json = {
                     "academy":academy,
                     "title":title,
-                    "content":content.textContent,
+                    "content":contentText,
                 };
 
             var formData = new FormData();
             formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
-            formData.append("files", fileList);
-            formData.append("images", imgList);
+            fileList.forEach(function(file){
+                formData.append("files", file);
+            });
+            imgList.forEach(function(img){
+                formData.append("images", img);
+            });
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
             if (title && content) {

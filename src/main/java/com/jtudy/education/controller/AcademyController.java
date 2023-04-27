@@ -124,9 +124,9 @@ public class AcademyController {
         model.addAttribute("academy", academyDTO);
         try {
             ImageDTO fileDTO = imageService.getAcademyMain(acaNum);
-            model.addAttribute("byte", fileDTO.getFileData());
+            model.addAttribute("path", fileDTO.getPath());
         } catch (NullPointerException e) {
-            model.addAttribute("byte", null);
+            model.addAttribute("path", null);
         }
     }
 

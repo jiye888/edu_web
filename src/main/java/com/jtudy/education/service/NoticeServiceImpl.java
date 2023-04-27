@@ -67,38 +67,15 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Long register(NoticeFormDTO noticeFormDTO, Long acaNum, MultipartFile[] files, Member member) throws IOException {
-        Academy academy = academyRepository.findByAcaNum(acaNum);
+    public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
+        //Academy academy = academyRepository.findByAcaNum(acaNum);
         Notice notice = formToEntity(noticeFormDTO);
-        notice.builder().academy(academy).build();
         noticeRepository.save(notice);
-        for (MultipartFile file : files) {
-            Image image = imageService.fileToEntity(file, member);
-            registerImg(image, notice);
-        }
         return notice.getNotNum();
     }
 
     @Override
-    public void registerImg(Image image, Notice notice) {
-        image.setNotice(notice);
-        notice.addImage(image);
-        imageRepository.save(image);
-        noticeRepository.save(notice);
-    }
-
-/*
-    public void uploadImages(MultipartFile[] files, Long notNum, Member member) throws IOException {
-        Notice notice = noticeRepository.findByNotNum(notNum);
-        for (MultipartFile file : files) {
-            Image image = imageService.fileToEntity(file, member);
-            image.setNotice(notice);
-            imageService.uploadImage(image, member);
-        }
-    }*/
-
-    @Override
-    public void uploadFiles(MultipartFile[] files, Long notNum, Member member) throws IOException {
+    public void registerFileAndImg(MultipartFile[] files, MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         for (MultipartFile file : files) {
             String fileName = file.getOriginalFilename();
@@ -106,14 +83,19 @@ public class NoticeServiceImpl implements NoticeService {
             if (!fileUploadService.isValidExtension(extension)) {
                 throw new IOException("유효한 파일 형식이 아닙니다.");
             }
-
             FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-            fileUpload.setNotice(notice);
-            fileUploadRepository.save(fileUpload);
-            notice.addFile(fileUpload);
-            noticeRepository.save(notice);
             fileUploadService.uploadFile(fileUpload, file);
+            fileUpload.setNotice(notice);
+            notice.addFile(fileUpload);
+            fileUploadRepository.save(fileUpload);
         }
+        for (int i=0; i<images.length; i++) {
+            Image img = imageService.fileToEntity(images[i], member);
+            img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString());
+            notice.addImage(img);
+            imageRepository.save(img);
+        }
+        noticeRepository.save(notice);
     }
 
     @Override

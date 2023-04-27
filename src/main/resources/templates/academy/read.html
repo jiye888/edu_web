@@ -10,7 +10,7 @@
             <table>
                 <tr style="display:flex;">
                     <th>
-                        <img th:if="${byte}" id="imgByte" src="" class="academy-img">
+                        <img th:if="${path}" id="imgByte" src="${path}" class="academy-img">
                     </th>
                     <th>
                         <div style="display:flex;justify-content:space-between;">
@@ -64,9 +64,6 @@
 
 
         $(function() {
-            if([[${byte}]] != null) {
-                document.getElementById('imgByte').src="data:image/png;base64,"+[[${byte}]];
-            }
 
             $('#membersBtn').on("click", function() {
                 memberList();

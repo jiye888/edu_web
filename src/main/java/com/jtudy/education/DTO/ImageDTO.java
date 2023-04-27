@@ -17,9 +17,13 @@ public class ImageDTO {
 
     private String originalName;
 
+    private String name;
+
+    private String path;
+
     private Integer order;
 
-    private byte[] fileData;
+    private String index;
 
     private String uploader;
 

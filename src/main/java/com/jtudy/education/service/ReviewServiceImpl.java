@@ -93,7 +93,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void registerImg(Image image, Review review) {
-        image.setReview(review);
+        //image.setReview(review);
         review.addImage(image);
         imageRepository.save(image);
         reviewRepository.save(review);

@@ -8,12 +8,16 @@ import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +31,9 @@ public class ImageServiceImpl implements ImageService {
     private final AcademyRepository academyRepository;
     private final ImageRepository imageRepository;
 
+    @Value("${upload.dir}")
+    private String path;
+
     @Override
     public void isValidName(String name) throws InvalidFileNameException {
         String[] invalid = {"/", ":"};
@@ -38,30 +45,36 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public boolean isImage(String fileType) {
-        // 확장자명까지
+    public boolean isImage(MultipartFile file) {
+        String fileType = file.getContentType();
         return fileType.contains("image");
     }
 
     @Override
     public Image fileToEntity(MultipartFile file, Member member) throws IOException {
-        if (!isImage(file.getContentType())) {
+        if (!isImage(file)) {
             throw new IOException("유효한 파일 형식이 아닙니다.");
         }
 
         String originalName = file.getOriginalFilename();
         isValidName(originalName);
-        byte[] fileData = file.getBytes();
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        String fileName = UUID.randomUUID()+extension;
+        String date = LocalDate.now()+toString();
+        String datePath = date.replaceAll("-", "/");
+        Path uploadPath = Paths.get(path + datePath);
+        Path filePath = Paths.get(uploadPath + "\\" + fileName);
 
         Image image = Image.builder()
                 .originalName(originalName)
-                .fileData(fileData)
+                .name(fileName)
+                .path(String.valueOf(filePath))
                 .uploader(member)
                 .build();
 
         return image;
     }
-
+/*
     @Override
     public void setImagePositions(MultipartFile[] files, List<Integer> orders, String content, Member member) throws IOException {
         List<Image> images = new ArrayList<>();
@@ -88,7 +101,7 @@ public class ImageServiceImpl implements ImageService {
                 images.get(i).setPosition(positions.get(i));
             }
         }
-    }
+    }*/
 
     @Override
     public List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException {

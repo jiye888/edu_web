@@ -23,13 +23,9 @@ public interface NoticeService {
 
     NoticeDTO getOne(Long notNum);
 
-    //Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
+    Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 
-    Long register(NoticeFormDTO noticeFormDTO, Long acaNum, MultipartFile[] files, Member member) throws IOException;
-
-    void registerImg(Image image, Notice notice);
-
-    void uploadFiles(MultipartFile[] files, Long notNum, Member member) throws IOException;
+    void registerFileAndImg(MultipartFile[] files, MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException;
 
     void deleteFile(Long notNum, Long fileId);
 

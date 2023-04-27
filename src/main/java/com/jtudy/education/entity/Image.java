@@ -21,17 +21,23 @@ public class Image extends BaseEntity{
     @Column(name = "image_id")
     private Long imageId;
 
-    private Integer position;
-
-    @Column(name = "original_name", nullable = false)
+    @Column(name = "image_original_name", nullable = false)
     private String originalName;
 
-    @Lob
-    @Column(name = "file_data", nullable = false)
-    private byte[] fileData;
+    @Column(name = "image_name", nullable = false)
+    private String name;
+
+    @Column(name = "image_path", nullable = false)
+    private String path;
 
     @ManyToOne
     private Member uploader;
+
+    @Column(name = "image_order")
+    private Integer order;
+
+    @Column(name = "image_index")
+    private String index;
 
     @OneToOne
     private Academy academy;
@@ -46,14 +52,16 @@ public class Image extends BaseEntity{
         this.academy = academy;
     }
 
-    public void setNotice(Notice notice) {
+    public void setNotice(Notice notice, Integer order, String index) {
         this.notice = notice;
+        this.order = order;
+        this.index = index;
     }
 
-    public void setReview(Review review) {
+    public void setReview(Review review, Integer order, String index) {
         this.review = review;
+        this.order = order;
+        this.index = index;
     }
-
-    public void setPosition(Integer position) {this.position = position;}
 
 }

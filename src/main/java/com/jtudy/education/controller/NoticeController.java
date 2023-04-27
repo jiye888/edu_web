@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,9 +67,9 @@ public class NoticeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart("files") MultipartFile[] files, @RequestPart("images") MultipartFile[] images,
-                                   List<Integer> positions, RedirectAttributes redirectAttributes, @AuthenticationPrincipal SecurityMember member) {
-        try {
+    public ResponseEntity register(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
+                                   @RequestPart(value = "imgArray", required = false) List<List> imgArray, @AuthenticationPrincipal SecurityMember member) throws IOException {
+        //try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("BindingResultError", "true");
@@ -79,12 +80,12 @@ public class NoticeController {
                 return ResponseEntity.badRequest().body(map);
             }
             Long acaNum = noticeFormDTO.getAcademy();
-            Long notNum = noticeService.register(noticeFormDTO, acaNum, files, member.getMember());
-            redirectAttributes.addFlashAttribute("message", notNum);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            Long notNum = noticeService.register(noticeFormDTO, acaNum);
+            noticeService.registerFileAndImg(files, images, imgArray, notNum, member.getMember());
+            return ResponseEntity.ok().body(notNum);
+        //} catch (Exception e) {
+            //return ResponseEntity.badRequest().body(e.getMessage());
+        //}
     }
 
     @GetMapping("/modify")

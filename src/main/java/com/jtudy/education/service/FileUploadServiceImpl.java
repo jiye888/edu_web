@@ -45,7 +45,7 @@ public class FileUploadServiceImpl implements FileUploadService{
 
     @Override
     public boolean isValidExtension(String extension) throws IOException {
-        String[] extensions = {".txt", ".hwp", ".pdf", ".xls", ".xlsx", ".doc", ".docx", ".ppt", ".pptx"};
+        String[] extensions = {".txt", ".hwp", ".pdf", ".xls", ".xlsx", ".doc", ".docx", ".ppt", ".pptx", ".png", ".jpg"};
         // 확장자명 하나하나 입력해야 하나?
         for (String e : extensions) {
             if (e.equals(extension)) {
