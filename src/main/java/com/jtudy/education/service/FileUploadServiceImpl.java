@@ -7,6 +7,8 @@ import com.jtudy.education.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,7 +78,6 @@ public class FileUploadServiceImpl implements FileUploadService{
                 .fileType(fileType)
                 .uploader(member)
                 .build();
-
         return fileUpload;
     }
 
@@ -88,6 +89,17 @@ public class FileUploadServiceImpl implements FileUploadService{
             throw new FileNotFoundException();
         }
         return file;
+    }
+
+    @Override
+    public Double getFileSize(FileUpload fileUpload) throws IOException {
+        String filePath = fileUpload.getFilePath();
+        Resource resource = new UrlResource("file:"+filePath);
+        if (resource.exists()) {
+            Double fileSize = Double.valueOf(resource.contentLength());
+            return fileSize;
+        }
+        return null;
     }
 
     @Override

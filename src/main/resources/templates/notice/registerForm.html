@@ -156,10 +156,6 @@
             }
         }
 
-        function files() {
-            console.log(fileList);
-        }
-
         function register() {
             clearText();
             var academy = Number($('#academy').val());
@@ -168,9 +164,9 @@
             const images = document.getElementById('content').querySelectorAll('img');
             const contentText = document.getElementById('content').innerText;
             const json = {
-                    "academy":academy,
-                    "title":title,
-                    "content":contentText,
+                    "academy": academy,
+                    "title": title,
+                    "content": contentText,
                 };
 
             var formData = new FormData();

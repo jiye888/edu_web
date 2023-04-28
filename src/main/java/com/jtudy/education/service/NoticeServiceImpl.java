@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.constant.Roles;
@@ -67,8 +68,20 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Transactional
+    public List<FileUploadDTO> getAllFiles(Long notNum) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        List<FileUpload> files = fileUploadRepository.findByNotice(notice);
+        List<FileUploadDTO> fileList = new ArrayList<>();
+        for (FileUpload file : files) {
+            FileUploadDTO fileUploadDTO = fileUploadService.entityToDTO(file);
+            fileList.add(fileUploadDTO);
+        }
+        return fileList;
+    }
+
+    @Override
     public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
-        //Academy academy = academyRepository.findByAcaNum(acaNum);
         Notice notice = formToEntity(noticeFormDTO);
         noticeRepository.save(notice);
         return notice.getNotNum();
@@ -77,23 +90,22 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void registerFileAndImg(MultipartFile[] files, MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
-        for (MultipartFile file : files) {
-            String fileName = file.getOriginalFilename();
-            String extension = fileName.substring(fileName.lastIndexOf(".")+1);
-            if (!fileUploadService.isValidExtension(extension)) {
-                throw new IOException("유효한 파일 형식이 아닙니다.");
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
+                fileUploadService.uploadFile(fileUpload, file);
+                fileUpload.setNotice(notice);
+                notice.addFile(fileUpload);
+                fileUploadRepository.save(fileUpload);
             }
-            FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-            fileUploadService.uploadFile(fileUpload, file);
-            fileUpload.setNotice(notice);
-            notice.addFile(fileUpload);
-            fileUploadRepository.save(fileUpload);
         }
-        for (int i=0; i<images.length; i++) {
-            Image img = imageService.fileToEntity(images[i], member);
-            img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString());
-            notice.addImage(img);
-            imageRepository.save(img);
+        if (images != null && images.length > 0) {
+            for (int i = 0; i < images.length; i++) {
+                Image img = imageService.fileToEntity(images[i], member);
+                img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString());
+                notice.addImage(img);
+                imageRepository.save(img);
+            }
         }
         noticeRepository.save(notice);
     }

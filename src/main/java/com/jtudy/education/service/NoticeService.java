@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.entity.Academy;
@@ -9,6 +10,7 @@ import com.jtudy.education.entity.Notice;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,6 +24,8 @@ public interface NoticeService {
     Page<NoticeDTO> getAll(Long acaNum, Pageable pageable);
 
     NoticeDTO getOne(Long notNum);
+
+    List<FileUploadDTO> getAllFiles(Long notNum) throws IOException;
 
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 

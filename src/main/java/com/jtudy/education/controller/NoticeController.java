@@ -1,11 +1,13 @@
 package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.AcademyDTO;
+import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
+import com.jtudy.education.service.FileUploadService;
 import com.jtudy.education.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ import java.util.Map;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final FileUploadService fileUploadService;
 
     @GetMapping("/list")
     public String list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
@@ -47,10 +50,12 @@ public class NoticeController {
     }
 
     @GetMapping("/read")
-    public String read(@RequestParam("number") Long notNum, Model model) {
+    public String read(@RequestParam("number") Long notNum, Model model) throws IOException {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
+        List<FileUploadDTO> fileList = noticeService.getAllFiles(notNum);
         model.addAttribute("notice", noticeDTO);
         model.addAttribute("academy", noticeDTO.getAcaNum());
+        model.addAttribute("files", fileList);
         return "notice/read";
     }
 
