@@ -13,7 +13,7 @@
                 <span th:text="${#temporals.format(notice.createdAt, 'yyyy년 MM월 dd일')}" id="createdAt" class="title-date"></span><br>
             </div>
             <div class="content-box">
-                <span th:text="${notice.content}" id="content"></span><br>
+                <div th:utext="${notice.content}" id="content" style="white-space:pre-line;"></div><br>
                 <div th:each="file : ${files}" class="file-info">
                     <a href="${file.filePath}" class="file-name" download>[[${file.originalName}]]</a>
                     <p th:text="${file.fileSize}" class="file-size"></p>

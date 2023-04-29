@@ -12,4 +12,6 @@ public interface FileUploadRepository extends JpaRepository<FileUpload, Long> {
 
     List<FileUpload> findByNotice(Notice notice);
 
+    FileUpload findByOriginalName(String originalName);
+
 }

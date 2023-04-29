@@ -17,12 +17,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -126,6 +129,36 @@ public class FileUploadServiceImpl implements FileUploadService{
         }
         //fileUploadRepository.save(fileUpload);
         return fileUpload.getFileId();
+    }
+
+    @Override
+    public boolean isNullOrEmpty(MultipartFile[] files) {
+        return files != null && files.length > 0;
+    }
+
+    @Override
+    public boolean needsUpdate(MultipartFile[] files, List<FileUpload> existFiles) throws IOException {
+        if (existFiles == null || existFiles.isEmpty()) {
+            return true;
+        }
+        List<String> existNames = existFiles.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
+        if (isNullOrEmpty(files)) {
+            for (MultipartFile file : files) {
+                if (!(existNames.contains(file.getOriginalFilename()))) {
+                    return true;
+                } else {
+                    FileUpload existFile = fileUploadRepository.findByOriginalName(file.getOriginalFilename());
+                    Resource resource = new UrlResource("file:"+existFile);
+                    Double existSize = (double) resource.contentLength();
+                    Double fileSize = (double) file.getSize();
+                    boolean isInRange = (existSize * 0.9 <= fileSize) && (existSize * 1.1 >= fileSize);
+                    if (!isInRange) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

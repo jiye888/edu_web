@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -88,7 +89,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void registerFileAndImg(MultipartFile[] files, MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
+    public void registerFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
@@ -99,6 +100,13 @@ public class NoticeServiceImpl implements NoticeService {
                 fileUploadRepository.save(fileUpload);
             }
         }
+
+        noticeRepository.save(notice);
+    }
+
+    @Override
+    public void registerImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
         if (images != null && images.length > 0) {
             for (int i = 0; i < images.length; i++) {
                 Image img = imageService.fileToEntity(images[i], member);
@@ -106,8 +114,8 @@ public class NoticeServiceImpl implements NoticeService {
                 notice.addImage(img);
                 imageRepository.save(img);
             }
+            noticeRepository.save(notice);
         }
-        noticeRepository.save(notice);
     }
 
     @Override
@@ -118,6 +126,7 @@ public class NoticeServiceImpl implements NoticeService {
         fileUploadRepository.delete(fileUpload);
     }
 
+
     @Override
     public void deleteFiles(Long notNum) {
         Notice notice = noticeRepository.findByNotNum(notNum);
@@ -125,6 +134,37 @@ public class NoticeServiceImpl implements NoticeService {
         for (FileUpload file : fileList) {
             notice.removeFile(file);
             fileUploadRepository.delete(file);
+        }
+    }
+
+    public void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        if (fileUploadRepository.findByNotice(notice) != null || !fileUploadRepository.findByNotice(notice).isEmpty()) {
+            List<FileUpload> existFiles = fileUploadRepository.findByNotice(notice);
+            if (fileUploadService.needsUpdate(files, existFiles)) {
+                for (MultipartFile file : files) {
+                    FileUpload temp = fileUploadRepository.findByOriginalName(file.getOriginalFilename());
+                    if (temp == null) {
+                        FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
+                        fileUploadService.uploadFile(fileUpload, file);
+                    } else if (temp != null) {
+                        existFiles.remove(temp);
+                    }
+                }
+                for (FileUpload leftFile : existFiles) {
+                    deleteFile(notNum, leftFile.getFileId());
+                }
+            }
+        }
+    }
+
+    public void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        if(imageRepository.findByNotNum(notNum) != null || !imageRepository.findByNotNum(notNum).isEmpty()) {
+            List<Image> existImages = imageRepository.findByNotNum(notNum);
+            if (imageService.needsUpdate(images, imgArray, existImages)) {
+                //
+            }
         }
     }
 

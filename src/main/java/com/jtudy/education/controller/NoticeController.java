@@ -8,6 +8,7 @@ import com.jtudy.education.entity.Academy;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.FileUploadService;
+import com.jtudy.education.service.ImageService;
 import com.jtudy.education.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
     private final FileUploadService fileUploadService;
+    private final ImageService imageService;
 
     @GetMapping("/list")
     public String list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
@@ -74,7 +76,7 @@ public class NoticeController {
     @PostMapping("/register")
     public ResponseEntity register(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
                                    @RequestPart(value = "imgArray", required = false) List<List> imgArray, @AuthenticationPrincipal SecurityMember member) throws IOException {
-        //try {
+        try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("BindingResultError", "true");
@@ -86,11 +88,16 @@ public class NoticeController {
             }
             Long acaNum = noticeFormDTO.getAcademy();
             Long notNum = noticeService.register(noticeFormDTO, acaNum);
-            noticeService.registerFileAndImg(files, images, imgArray, notNum, member.getMember());
+            if (files != null && files.length > 0) {
+                noticeService.registerFile(files, notNum, member.getMember());
+            }
+            if (imageService.isNullOrEmpty(images, imgArray)) {
+                noticeService.registerImg(images, imgArray, notNum, member.getMember());
+            }
             return ResponseEntity.ok().body(notNum);
-        //} catch (Exception e) {
-            //return ResponseEntity.badRequest().body(e.getMessage());
-        //}
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/modify")
@@ -135,7 +142,7 @@ public class NoticeController {
         }
     }
 
-    @RequestMapping(value = "/search", method = {RequestMethod.GET/*, RequestMethod.POST*/})
+    @GetMapping(value = "/search")
     public String search(@RequestParam(value="academy") Long acaNum, @RequestParam(required = false) String title, @RequestParam(required = false) String content, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "notNum");
         try {

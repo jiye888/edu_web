@@ -38,4 +38,8 @@ public interface ImageService {
     void deleteAcademyMain(Long acaNum);
 
     List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
+
+    boolean isNullOrEmpty(MultipartFile[] images, List<List> imgArray);
+
+    boolean needsUpdate(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException;
 }

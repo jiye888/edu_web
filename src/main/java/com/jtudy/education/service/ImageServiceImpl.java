@@ -9,6 +9,8 @@ import com.jtudy.education.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,8 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,5 +133,47 @@ public class ImageServiceImpl implements ImageService {
         academyRepository.save(academy);
         imageRepository.deleteById(image.getImageId());
     }
+
+    @Override
+    public boolean isNullOrEmpty(MultipartFile[] images, List<List> imgArray) {
+        if (images == null || !(images.length > 0)) {
+            return false;
+        } else if (imgArray == null || imgArray.isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public boolean needsUpdate(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException {
+        if (existImages == null || existImages.isEmpty()) {
+            return true;
+        }
+        List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
+        if (isNullOrEmpty(images, imgArray)) {
+            for (MultipartFile image : images) {
+                if (!(existNames.contains(image.getOriginalFilename()))) {
+                    return true;
+                } else {
+                    Image existImage = imageRepository.findByOriginalName(image.getOriginalFilename());
+                    Resource resource = new UrlResource("file:"+existImage.getPath());
+                    Double existSize = (double) resource.contentLength();
+                    Double imageSize = (double) image.getSize();
+                    boolean isInRange = (existSize * 0.9 <= imageSize) && (existSize * 1.1 >= imageSize);
+                    if (!isInRange) {
+                        return true;
+                    } else {
+                        List<Object> imgArr = imgArray.stream().filter(list -> list.contains(image.getOriginalFilename())).findFirst().orElse(null);
+                        if (imgArr.get(1) != existImage.getOrder() || imgArr.get(2).toString() != existImage.getIndex()) {
+                            return true; // 테스트 코드 작성해야
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
 }

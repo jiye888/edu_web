@@ -21,4 +21,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     Image findByImageId(Long imageId);
 
+    Image findByOriginalName(String originalName);
+
 }

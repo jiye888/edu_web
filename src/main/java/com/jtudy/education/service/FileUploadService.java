@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.List;
 
 public interface FileUploadService {
 
@@ -51,4 +52,8 @@ public interface FileUploadService {
 
         return fileUploadDTO;
     }
+
+    boolean isNullOrEmpty(MultipartFile[] files);
+
+    boolean needsUpdate(MultipartFile[] files, List<FileUpload> fileUploadList) throws IOException;
 }

@@ -18,7 +18,7 @@
 
             </div>
             <div class="content-box">
-                <span th:text="${review.content}">내용</span><br>
+                <span th:utext="${review.content}" style="white-space:pre-line;">내용</span><br>
             </div>
             <input type="hidden" th:field="${review.acaNum}" id="academy">
             <input type="hidden" th:field="${review.revNum}" id="number">
