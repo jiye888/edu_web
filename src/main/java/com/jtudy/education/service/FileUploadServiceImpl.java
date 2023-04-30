@@ -64,6 +64,7 @@ public class FileUploadServiceImpl implements FileUploadService{
     public FileUpload fileToEntity(MultipartFile file, Member member) throws IOException {
         String originalName = file.getOriginalFilename();
         isValidName(originalName);
+
         String extension = originalName.substring(originalName.lastIndexOf("."));
         isValidExtension(extension);
 
@@ -73,6 +74,10 @@ public class FileUploadServiceImpl implements FileUploadService{
         String datePath = date.replaceAll("-", "/");
         Path uploadPath = Paths.get(path + datePath);
         Path filePath = Paths.get(uploadPath + "\\" + fileName);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
 
         FileUpload fileUpload = FileUpload.builder()
                 .originalName(originalName)
@@ -106,29 +111,15 @@ public class FileUploadServiceImpl implements FileUploadService{
     }
 
     @Override
-    public Long uploadFile(FileUpload fileUpload, MultipartFile file) throws IOException {
-        /*
-        String fileName = file.getOriginalFilename();
-        String extension = fileName.substring(fileName.lastIndexOf(".")+1);
-        if (!isValidExtension(extension)) {
-            throw new IOException("유효한 파일 형식이 아닙니다.");
-        }
+    public FileUpload uploadFile(MultipartFile file, Member member) throws IOException {
         FileUpload fileUpload = fileToEntity(file, member);
-        */
-        String filePath = fileUpload.getFilePath();
-        Path uploadPath = Paths.get(filePath.substring(0, filePath.lastIndexOf(fileUpload.getFileName())));
-
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
 
         try (InputStream inputStream = file.getInputStream()){
-            Files.copy(inputStream, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(inputStream, Paths.get(fileUpload.getFilePath()), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //fileUploadRepository.save(fileUpload);
-        return fileUpload.getFileId();
+        return fileUpload;
     }
 
     @Override

@@ -93,8 +93,7 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
-                FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-                fileUploadService.uploadFile(fileUpload, file);
+                FileUpload fileUpload = fileUploadService.uploadFile(file, member);
                 fileUpload.setNotice(notice);
                 notice.addFile(fileUpload);
                 fileUploadRepository.save(fileUpload);
@@ -109,7 +108,8 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (images != null && images.length > 0) {
             for (int i = 0; i < images.length; i++) {
-                Image img = imageService.fileToEntity(images[i], member);
+                //Image img = imageService.fileToEntity(images[i], member);
+                Image img = imageService.uploadImage(images[i], member);
                 img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString());
                 notice.addImage(img);
                 imageRepository.save(img);
@@ -145,8 +145,7 @@ public class NoticeServiceImpl implements NoticeService {
                 for (MultipartFile file : files) {
                     FileUpload temp = fileUploadRepository.findByOriginalName(file.getOriginalFilename());
                     if (temp == null) {
-                        FileUpload fileUpload = fileUploadService.fileToEntity(file, member);
-                        fileUploadService.uploadFile(fileUpload, file);
+                        fileUploadService.uploadFile(file, member);
                     } else if (temp != null) {
                         existFiles.remove(temp);
                     }
@@ -159,11 +158,47 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     public void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
-        Notice notice = noticeRepository.findByNotNum(notNum);
         if(imageRepository.findByNotNum(notNum) != null || !imageRepository.findByNotNum(notNum).isEmpty()) {
             List<Image> existImages = imageRepository.findByNotNum(notNum);
-            if (imageService.needsUpdate(images, imgArray, existImages)) {
-                //
+            List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
+            if (imageService.needsUpdateFile(images, existImages)) {
+                for (MultipartFile image : images) {
+                    Integer existIndex = existNames.indexOf(image.getOriginalFilename());
+                    if (existIndex > -1) { // 이름이 같은 파일이 존재
+                        Image existImage = existImages.get(existIndex);
+                        if (!imageService.isInRangeSize(image, existImage)) { // 같은 파일x
+                            imageService.uploadImage(image, member);
+                        }
+                    } else {
+                        imageService.uploadImage(image, member); //이름 같은 파일x > 추가
+                    }
+                }
+            } if (imageService.needsUpdateInfo(images, imgArray, existImages)) { // 이름, 크기 같은 파일 > 수정
+                for (MultipartFile image : images) {
+                    Integer existIndex = existNames.indexOf(image.getOriginalFilename());
+                    if (existIndex > -1) {
+                        Image existImage = existImages.get(existIndex);
+                        if (imageService.isInRangeSize(image, existImage)) {
+                            for (List<Object> imgArr : imgArray) {
+                                if (imgArr.get(0).equals(existImage)) {
+                                    imageService.updateImage(existImage, imgArr);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                existImages.forEach(i -> {
+                    try {
+                        imageService.deleteImage(i);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });// 남은 existImages 삭제
+            }
+        } else { // 기존에 파일이 없던 경우 > 추가
+            for (MultipartFile image :images) {
+                imageService.uploadImage(image, member);
             }
         }
     }

@@ -37,9 +37,19 @@ public interface ImageService {
 
     void deleteAcademyMain(Long acaNum);
 
+    Image uploadImage(MultipartFile img, Member member) throws IOException;
+
     List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
 
     boolean isNullOrEmpty(MultipartFile[] images, List<List> imgArray);
 
-    boolean needsUpdate(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException;
+    boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException;
+
+    boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages) throws IOException;
+
+    boolean needsUpdateInfo(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException;
+
+    Image updateImage(Image image, List<Object> imgArray);
+
+    void deleteImage(Image image) throws IOException;
 }

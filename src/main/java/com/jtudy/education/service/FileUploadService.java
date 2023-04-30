@@ -25,7 +25,7 @@ public interface FileUploadService {
 
     Double getFileSize(FileUpload fileUpload) throws IOException;
 
-    Long uploadFile(FileUpload fileUpload, MultipartFile file) throws IOException;
+    FileUpload uploadFile(MultipartFile file, Member member) throws IOException;
 
     default FileUploadDTO entityToDTO(FileUpload fileUpload) throws IOException {
         Double fileSize = getFileSize(fileUpload);

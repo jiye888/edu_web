@@ -15,10 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,6 +69,10 @@ public class ImageServiceImpl implements ImageService {
         Path uploadPath = Paths.get(path + datePath);
         Path filePath = Paths.get(uploadPath + "\\" + fileName);
 
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
         Image image = Image.builder()
                 .originalName(originalName)
                 .name(fileName)
@@ -74,34 +82,18 @@ public class ImageServiceImpl implements ImageService {
 
         return image;
     }
-/*
+
     @Override
-    public void setImagePositions(MultipartFile[] files, List<Integer> orders, String content, Member member) throws IOException {
-        List<Image> images = new ArrayList<>();
-        for (MultipartFile file: files) {
-            images.add(fileToEntity(file, member));
-        }
-        Map<Image, Integer> map = new HashMap<>();
-        for (int i=0; i<files.length; i++) {
-            map.put(images.get(i), orders.get(i));
-        }
-        images.sort((i1, i2) -> map.get(i1) - map.get(i2));
-        //images.sort(Comparator.comparingInt(map::get));
+    public Image uploadImage(MultipartFile img, Member member) throws IOException {
+        Image image = fileToEntity(img, member);
 
-        String string = "\\(IMAGE_INCLUDED\\)";
-        Pattern pattern = Pattern.compile(string);
-        Matcher matcher = pattern.matcher(content);
-
-        List<Integer> positions = new ArrayList<>();
-        while (matcher.find()) {
-            positions.add(matcher.start());
+        try (InputStream inputStream = img.getInputStream()) {
+            Files.copy(inputStream, Paths.get(image.getPath()), StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (images.size() == positions.size()) {
-            for (int i=0; i<images.size(); i++) {
-                images.get(i).setPosition(positions.get(i));
-            }
-        }
-    }*/
+        return image;
+    }
 
     @Override
     public List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException {
@@ -146,34 +138,86 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public boolean needsUpdate(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException {
+    public boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException {;
+        if (existImage != null) {
+            Resource resource = new UrlResource("file:" + existImage.getPath());
+            Double existSize = (double) resource.contentLength();
+            Double imageSize = (double) newImage.getSize();
+            return (existSize * 0.9 <= imageSize) && (existSize * 1.1 >= imageSize);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages) throws IOException {
         if (existImages == null || existImages.isEmpty()) {
             return true;
         }
         List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
-        if (isNullOrEmpty(images, imgArray)) {
+        if (images != null) {
             for (MultipartFile image : images) {
                 if (!(existNames.contains(image.getOriginalFilename()))) {
                     return true;
                 } else {
-                    Image existImage = imageRepository.findByOriginalName(image.getOriginalFilename());
-                    Resource resource = new UrlResource("file:"+existImage.getPath());
-                    Double existSize = (double) resource.contentLength();
-                    Double imageSize = (double) image.getSize();
-                    boolean isInRange = (existSize * 0.9 <= imageSize) && (existSize * 1.1 >= imageSize);
-                    if (!isInRange) {
+                    Integer existIndex = existNames.indexOf(image.getOriginalFilename());
+                    Image existImage = existImages.get(existIndex);
+                    if (!isInRangeSize(image, existImage)) {
                         return true;
-                    } else {
-                        List<Object> imgArr = imgArray.stream().filter(list -> list.contains(image.getOriginalFilename())).findFirst().orElse(null);
-                        if (imgArr.get(1) != existImage.getOrder() || imgArr.get(2).toString() != existImage.getIndex()) {
-                            return true; // 테스트 코드 작성해야
+                    }
+                }
+            }
+        } else if (images == null || !(images.length > 0)) {
+            return true; // 기존 파일이 존재하고 전달할 파일은 존재하지 x > 삭제(수정)
+        }
+        return false;
+    } // 파일 업로드 및 삭제 필요한 경우
+
+    @Override
+    public boolean needsUpdateInfo(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException {
+        if (existImages != null && !(existImages.isEmpty()) && !(isNullOrEmpty(images, imgArray))) {
+            List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
+            for (int i=0; i<images.length; i++) {
+                MultipartFile image = images[i];
+                Integer existIndex = existNames.indexOf(image.getOriginalFilename());
+                if (existIndex > -1) {
+                    Image existImage = existImages.get(existIndex);
+                    if (isInRangeSize(image, existImage)) {
+                        for (List<Object> imgArr : imgArray) {
+                            if (imgArr.get(0).equals(existImage.getOriginalName())) {
+                                boolean isSameOrder = imgArr.get(1) == existImage.getOrder();
+                                boolean isSameIndex = imgArr.get(2) == existImage.getIndex();
+                                return isSameOrder && isSameIndex;
+                            }
                         }
                     }
                 }
             }
         }
         return false;
+    } // 파일 엔티티 수정 필요한 경우(order, index)
+
+    @Override
+    public Image updateImage(Image image, List<Object> imgArray) {
+        image.changeInfo((int) imgArray.get(1), imgArray.get(2).toString());
+        imageRepository.save(image);
+        return image;
     }
 
+    @Override
+    public void deleteImage(Image image) throws IOException {
+        Files.delete(Paths.get(image.getPath()));
+
+        String date = LocalDate.now()+toString();
+        String datePath = date.replaceAll("-", "/");
+        Path uploadPath = Paths.get(path + datePath);
+
+        String folderPath = image.getPath().substring(0, image.getPath().lastIndexOf("/"));
+        if (!folderPath.equals(uploadPath)) {
+            File folder = new File(folderPath);
+            if (folder.isDirectory() && folder.list().length == 0) {
+                folder.delete();
+            }
+        }
+    }
 
 }

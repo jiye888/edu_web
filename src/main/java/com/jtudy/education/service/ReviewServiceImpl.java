@@ -85,7 +85,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = formToEntity(reviewFormDTO, academy, member);
         reviewRepository.save(review);
         for (MultipartFile file : files) {
-            Image image = imageService.fileToEntity(file, member);
+            Image image = imageService.uploadImage(file, member);
             registerImg(image, review);
         }
         return review.getRevNum();

@@ -64,4 +64,9 @@ public class Image extends BaseEntity{
         this.index = index;
     }
 
+    public void changeInfo(Integer order, String index) {
+        this.order = order;
+        this.index = index;
+    }
+
 }
