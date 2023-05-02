@@ -11,15 +11,12 @@
         <span class="custom-span span-center">제목</span>
         <input type="text" class="custom-form-control margin-top10 w-auto" th:field="*{title}">
         <p id="titleError"></p><br>
-        <div>
-
-        </div>
         <span class="custom-span span-center">내용</span>
         <div>
             <div class="custom-form-control input-content" th:field="*{content}" id="content" contenteditable="true"></div>
             <p id="contentError"></p><br>
             <span class="custom-span">첨부 파일 목록</span>
-            <div class="custom-form-control file-name" id="selectedFile" style="display:block; height:fit-content; min-height:32px;"></div>
+            <div class="custom-form-control file-name file-list" id="selectedFile"></div>
             <div class="button-distance" style="margin-top:20px;">
                 <input type="file" id="imageFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="imageFile">이미지 추가</label>
@@ -70,15 +67,15 @@
             if (deleteFiles.length != 0) {
                 for (var i=0; i<deleteFiles.length; i++) {
                     const number = i;
-                    const fileN = deleteFiles[i].getAttribute("data-name");
+                    const deleteName = deleteFiles[i].getAttribute("data-name");
                     deleteFiles[i].addEventListener('click', function() {
                         for (var i=0; i<fileList.length; i++) {
-                            if (fileList[i].name == fileN) {
+                            if (fileList[i].name == deleteName) {
                                 fileList.splice(i, 1);
                             }
                         }
-                            document.getElementById(fileN).remove();
-                            event.target.remove();
+                        document.getElementById(deleteName).remove();
+                        event.target.remove();
                         deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
                     });
                 }
@@ -90,6 +87,13 @@
             const image = event.target.files[0];
             const reader = new FileReader();
             const content = document.getElementById('content');
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                if (event.target.files[0].name == img.getAttribute("data-name")) {
+                    alert("동일한 이름의 이미지가 추가되어있습니다.");
+                    event.target.value = null;
+                }
+            })
 
             reader.readAsDataURL(image);
 
@@ -128,21 +132,116 @@
                 }
             }
         });
+/*
+        function findImgPosition() {
+            const allImg = document.querySelectorAll('img');
+            let imgIndex = [];
+
+
+                const firstPrev = (allImg[i].previousSibling === null || allImg[i].previousSibling === undefined) ? "" : allImg[i].previousSibling;
+                const secondPrev = (firstPrev.previousSibling === null || firstPrev.previousSibling === undefined) ? "" : firstPrev.previousSibling;
+                const thirdPrev = (secondPrev.previousSibling === null || secondPrev.previousSibling === undefined) ? "" : secondPrev.previousSibling;
+                var preTexts = [firstPrev, secondPrev, thirdPrev];
+                var preText = "";
+
+                preTexts.forEach(function(pre) {
+                    pre === "" ? null : (pre.nodeType === Node.TEXT_NODE ? preText += pre.textContent : null);
+                });
+
+                preText = preText.slice(-10);
+
+                const firstNext = (allImg[i].nextSibling === null || allImg[i].nextSibling === undefined) ? "" : allImg[i].nextSibling;
+                const secondNext = (firstNext.nextSibling === null || firstNext.nextSibling === undefined) ? "" : firstNext.nextSibling;
+                const thirdNext = (secondNext.nextSibling === null || secondNext.nextSibling === undefined) ? "" : secondNext.nextSibling;
+                var nextTexts = [firstNext, secondNext, thirdNext];
+                var nextText = "";
+
+                nextTexts.forEach(function(next) {
+                    next === "" ? null : (next.nodeType === Node.TEXT_NODE ? nextText += next.textContent : null);
+                });
+
+                //const nextTexts = firstNext.textContent + secondNext.textContent + thirdNext.textContent;
+                //const nextText = nextTexts === "" ? "" : nextTexts.slice(0, 10);
+
+
+                const imgArray = [dataName, i, preText, nextText];
+                imgIndex.push(imgArray);
+            }
+
+            return imgIndex;
+        }*/
+/*
+        function findImgPosition() {
+            const images = document.querySelectorAll('img');
+            let imgIndex = [];
+
+            images.forEach(img => {
+                const dataName = img.getAttribute("data-name");
+
+                const prevDiv = document.createElement('div');
+                var prevText = "";
+                var prev = img.previousSibling;
+                while (prev !== null && prev !== undefined && prevText.length <= 10) {
+                    if (prev.nodeType === Node.ELEMENT_NODE && prev.tagName !== 'IMG') {
+                        prevDiv.innerText = prev;
+                        prevText += prevDiv.innerText;
+                    }
+                    prev = prev.previousSibling;
+                }
+
+                const nextDiv = document.createElement('div');
+                var nextText = "";
+                var next = img.nextSibling;
+                while (next !== null && next !== undefined && prevText.length >= 10) {
+                    if (next.nodeType === Node.ELEMENT_NODE && next.tagName !== 'IMG') {
+                        nextDiv.innerText = next;
+                        nextText += nextDiv.innerText;
+                    }
+                    next = next.nextSibling;
+                }
+
+                imgIndex.push([dataName, prevText, nextText]);
+
+            })
+
+        }*/
 
         function findImgPosition() {
-            const content = document.getElementById('content');
-            const contentHTML = content.innerHTML;
+            const images = document.querySelectorAll('img');
             let imgIndex = [];
-            const images = content.querySelectorAll('img');
-            for (var i=0; i<images.length; i++) {
-                const dataName = images[i].getAttribute("data-name");
-                const regex = new RegExp(dataName, 'i');
-                if (contentHTML.match(regex)) {
-                    const matchArray = contentHTML.match(regex);
-                    const imgArray = [dataName, i, matchArray.index];
-                    imgIndex.push(imgArray);
+            var i = 0;
+
+            images.forEach(img => {
+                const dataName = img.getAttribute("data-name");
+                const dataStr = "::IMAGE_INCLUDED_HERE::" + dataName;
+
+                const hiddenDiv = document.createElement('div');
+                hiddenDiv.setAttribute("style", "display:none;");
+                hiddenDiv.innerText = dataStr;
+                img.appendChild(hiddenDiv, img);
+
+                const regStr = dataStr.replace(".", "\.").replace(":", "\:");
+                const regex = new RegExp(regStr);
+                const contentText = document.getElementById('content').textContent;
+                const match = contentText.match(regex);
+                var prevText = "";
+                var nextText = "";
+                if (match !== null) {
+                    if (match.length === 1) {
+                        prevText += contentText.slice(match.index - 10, match.index);
+                        nextText += contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
+                    } else {
+                        hiddenDiv.innerText += "_Dup";
+                        const dupMatch = contentText.match(new RegExp(dataStr+"Dup"));
+                        prevText += contentText.slice(dupMatch.index - 10, dupMatch.index);
+                        nextText += contentText.slice(dupMatch.index + dupMatch[0].length, dupMatch.index + dupMatch[0].length + 10);
+                    }
                 }
-            }
+
+                imgIndex.push([dataName, i, prevText, nextText]);
+                i++;
+                hiddenDiv.remove();
+            })
             return imgIndex;
         }
 
@@ -171,12 +270,16 @@
 
             var formData = new FormData();
             formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
-            fileList.forEach(function(file){
-                formData.append("files", file);
-            });
-            imgList.forEach(function(img){
-                formData.append("images", img);
-            });
+            if (fileList.length > 0) {
+                fileList.forEach(function(file){
+                    formData.append("files", file);
+                });
+            }
+            if (imgList.length > 0) {
+                imgList.forEach(function(img){
+                    formData.append("images", img);
+                });
+            }
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
             if (title && content) {

@@ -21,7 +21,7 @@ public class Image extends BaseEntity{
     @Column(name = "image_id")
     private Long imageId;
 
-    @Column(name = "image_original_name", nullable = false)
+    @Column(name = "original_name", nullable = false)
     private String originalName;
 
     @Column(name = "image_name", nullable = false)
@@ -36,8 +36,11 @@ public class Image extends BaseEntity{
     @Column(name = "image_order")
     private Integer order;
 
-    @Column(name = "image_index")
-    private String index;
+    @Column(name = "pre_text")
+    private String preText;
+
+    @Column(name = "post_text")
+    private String postText;
 
     @OneToOne
     private Academy academy;
@@ -52,21 +55,24 @@ public class Image extends BaseEntity{
         this.academy = academy;
     }
 
-    public void setNotice(Notice notice, Integer order, String index) {
+    public void setNotice(Notice notice, Integer order, String preText, String postText) {
         this.notice = notice;
         this.order = order;
-        this.index = index;
+        this.preText = preText;
+        this.postText = postText;
     }
 
-    public void setReview(Review review, Integer order, String index) {
+    public void setReview(Review review, Integer order, String preText, String postText) {
         this.review = review;
         this.order = order;
-        this.index = index;
+        this.preText = preText;
+        this.postText = postText;
     }
 
-    public void changeInfo(Integer order, String index) {
+    public void changeInfo(Integer order, String preText, String postText) {
         this.order = order;
-        this.index = index;
+        this.preText = preText;
+        this.postText = postText;
     }
 
 }

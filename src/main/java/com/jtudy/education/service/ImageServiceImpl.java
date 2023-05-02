@@ -92,6 +92,7 @@ public class ImageServiceImpl implements ImageService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return image;
     }
 
@@ -185,8 +186,9 @@ public class ImageServiceImpl implements ImageService {
                         for (List<Object> imgArr : imgArray) {
                             if (imgArr.get(0).equals(existImage.getOriginalName())) {
                                 boolean isSameOrder = imgArr.get(1) == existImage.getOrder();
-                                boolean isSameIndex = imgArr.get(2) == existImage.getIndex();
-                                return isSameOrder && isSameIndex;
+                                boolean isSamePreText = imgArr.get(2) == existImage.getPreText();
+                                boolean isSamePostText = imgArr.get(3) == existImage.getPostText();
+                                return isSameOrder && isSamePreText && isSamePostText;
                             }
                         }
                     }
@@ -198,7 +200,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image updateImage(Image image, List<Object> imgArray) {
-        image.changeInfo((int) imgArray.get(1), imgArray.get(2).toString());
+        image.changeInfo((int) imgArray.get(1), imgArray.get(2).toString(), imgArray.get(3).toString());
         imageRepository.save(image);
         return image;
     }

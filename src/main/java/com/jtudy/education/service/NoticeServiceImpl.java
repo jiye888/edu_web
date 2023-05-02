@@ -108,9 +108,8 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (images != null && images.length > 0) {
             for (int i = 0; i < images.length; i++) {
-                //Image img = imageService.fileToEntity(images[i], member);
                 Image img = imageService.uploadImage(images[i], member);
-                img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString());
+                img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString(), imgArray.get(i).get(3).toString());
                 notice.addImage(img);
                 imageRepository.save(img);
             }
@@ -137,6 +136,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
+    @Override
     public void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (fileUploadRepository.findByNotice(notice) != null || !fileUploadRepository.findByNotice(notice).isEmpty()) {
@@ -157,6 +157,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
+    @Override
     public void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
         if(imageRepository.findByNotNum(notNum) != null || !imageRepository.findByNotNum(notNum).isEmpty()) {
             List<Image> existImages = imageRepository.findByNotNum(notNum);
@@ -212,11 +213,16 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void delete(Long notNum) {
+    public void delete(Long notNum) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<FileUpload> fileList = fileUploadRepository.findByNotice(notice);
         for (FileUpload file : fileList) {
             deleteFile(notNum, file.getFileId());
+        }
+        List<Image> imageList = imageRepository.findByNotNum(notNum);
+        for (Image image : imageList) {
+            notice.removeImage(image);
+            imageService.deleteImage(image);
         }
         noticeRepository.deleteById(notNum);
     } // 수정하기

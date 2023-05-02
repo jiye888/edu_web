@@ -23,7 +23,9 @@ public class ImageDTO {
 
     private Integer order;
 
-    private String index;
+    private String preText;
+
+    private String postText;
 
     private String uploader;
 

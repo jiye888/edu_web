@@ -473,6 +473,12 @@ a:hover {
     height: 40px;
 }
 
+.file-list {
+    display:block;
+    height:fit-content;
+    min-height:32px;
+}
+
 .file-info {
     display: flex;
     justify-content: space-evenly;

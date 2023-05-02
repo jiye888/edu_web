@@ -10,11 +10,21 @@
         <input type="hidden" th:field="*{acaNum}" id="academy">
         <input type="hidden" th:field="*{notNum}" id="number">
         <span class="custom-span span-center margin-top10">제목</span>
-        <input type="text" class="custom-form-control" th:field="*{title}">
+        <input type="text" class="custom-form-control margin-top10 w-auto" th:field="*{title}">
         <p id="titleError"></p><br>
         <span class="custom-span span-center">내용</span>
-        <input type="text" class="custom-form-control input-content" th:field="*{content}">
-        <p id="contentError"></p><br>
+        <div>
+            <div class="custom-form-control input-content" th:field="*{content}" id="content" contenteditable="true"></div>
+            <p id="contentError"></p><br>
+            <span class="custom-span">첨부 파일 목록</span>
+            <div class="custom-form-control file-name file-list" id="selectedFile"></div>
+            <div class="button-distance" style="margin-top:20px;">
+                <input type="file" id="imageFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="imageFile">이미지 추가</label>
+                <input type="file" id="inputFile" style="display:none;" multiple="multiple">
+                <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
+            </div>
+        </div>
         <div class="button-distance">
             <button type="button" id="modifyBtn" class="custom-button-yellow">수정</button>
             <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
@@ -31,6 +41,129 @@
             });
         });
 
+        const imageFile = document.getElementById('imageFile');
+        const inputFile = document.getElementById('inputFile');
+        let fileList = [];
+        let imgList = [];
+
+        inputFile.addEventListener('change', function() {
+            for (const file of event.target.files) {
+                const fileDiv = document.createElement("div");
+                fileDiv.setAttribute("style", "display:flex;");
+                selectedFile.appendChild(fileDiv);
+                const fileName = document.createElement("p");
+                fileName.innerHTML = file.name;
+                fileName.setAttribute("id", file.name);
+                fileDiv.appendChild(fileName);
+                var deleteButton = document.createElement("button");
+                deleteButton.textContent = "X";
+                deleteButton.setAttribute("name", "deleteFile");
+                deleteButton.setAttribute("type", "button");
+                deleteButton.setAttribute("data-name", file.name);
+                fileDiv.appendChild(deleteButton);
+                fileList.push(file);
+            }
+
+            var deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+            if (deleteFiles.length != 0) {
+                for (var i=0; i<deleteFiles.length; i++) {
+                    const number = i;
+                    const deleteName = deleteFiles[i].getAttribute("data-name");
+                    deleteFiles[i].addEventListener('click', function() {
+                        for (var i=0; i<fileList.length; i++) {
+                            if (fileList[i].name == deleteName) {
+                                fileList.splice(i, 1);
+                            }
+                        }
+                        document.getElementById(deleteName).remove();
+                        event.target.remove();
+                        deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+                    });
+                }
+            }
+        });
+
+        imageFile.addEventListener('change', function() {
+            const image = event.target.files[0];
+            const reader = new FileReader();
+            const content = document.getElementById('content');
+
+            reader.readAsDataURL(image);
+
+            reader.onload = () => {
+                const dataURL = reader.result;
+                const imgDiv = document.createElement('div');
+                content.appendChild(imgDiv);
+                const img = document.createElement('img');
+                img.setAttribute("src", dataURL);
+                img.setAttribute("draggable", "true");
+                img.setAttribute("style", "max-height:600px; max-width:600px;");
+                img.setAttribute("data-name", image.name);
+                imgDiv.appendChild(img);
+                imgList.push(image);
+            };
+        });
+
+        const contentDiv = document.getElementById('content');
+        contentDiv.addEventListener('keydown', function() {
+            if (event.key === 'Backspace' || event.keyCode === 8) {
+                if (window.getSelection().getRangeAt(0).endContainer.firstChild != null) {
+                    const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
+                    const tagName = window.getSelection().getRangeAt(0).endContainer.dataset.name;
+                    if (selection != null && selection === "IMG") {
+                        if (confirm("사진을 삭제하시겠습니까?")) {
+                            for (var i=0; i<imgList.length; i++) {
+                                if (imgList[i].name == tagName) {
+                                    imgList.splice(i, 1);
+                                }
+                            }
+                        } else {
+                            event.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
+
+        function findImgPosition() {
+            const images = document.querySelectorAll('img');
+            let imgIndex = [];
+            var i = 0;
+
+            images.forEach(img => {
+                const dataName = img.getAttribute("data-name");
+                const dataStr = "::IMAGE_INCLUDED_HERE::" + dataName;
+
+                const hiddenDiv = document.createElement('div');
+                hiddenDiv.setAttribute("style", "display:none;");
+                hiddenDiv.innerText = dataStr;
+                img.appendChild(hiddenDiv, img);
+
+                const regStr = dataStr.replace(".", "\.").replace(":", "\:");
+                const regex = new RegExp(regStr);
+                const contentText = document.getElementById('content').textContent;
+                const match = contentText.match(regex);
+                var prevText = "";
+                var nextText = "";
+                if (match !== null) {
+                    if (match.length === 1) {
+                        prevText += contentText.slice(match.index - 10, match.index);
+                        nextText += contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
+                    } else {
+                        hiddenDiv.innerText += "_Dup";
+                        const dupMatch = contentText.match(new RegExp(dataStr+"Dup"));
+                        prevText += contentText.slice(dupMatch.index - 10, dupMatch.index);
+                        nextText += contentText.slice(dupMatch.index + dupMatch[0].length, dupMatch.index + dupMatch[0].length + 10);
+                    }
+                }
+
+                imgIndex.push([dataName, i, prevText, nextText]);
+                i++;
+                hiddenDiv.remove();
+            })
+            return imgIndex;
+        }
+
         function clearText() {
             var pTag = ["titleError", "contentError"];
             for (var tag in pTag) {
@@ -41,8 +174,6 @@
             }
         }
 
-
-
         function modify() {
             clearText();
             var academy = $('#academy').val();
@@ -50,19 +181,35 @@
             var title = $('#title').val();
             var content = $('#content').val();
 
+            const imgArray = findImgPosition();
+            const images = document.getElementById('content').querySelectorAll('img');
+            const contentText = document.getElementById('content').innerText;
+            const json = {
+                "academy": academy,
+                "number": number,
+                "title": title,
+                "content": content,
+            };
+
+            var formData = new FormData();
+            formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
+            fileList.forEach(function(file) {
+                formData.append("files", file);
+            });
+            imgList.forEach(function(img) {
+                formData.append("images", img);
+            });
+            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
+
             if (title && content) {
 
                 $.ajax({
                     url: '/notice/modify',
                     type: "POST",
-                    contentType: "application/json",
+                    contentType: false,
+                    processData: false,
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
-                    data: JSON.stringify({
-                        "academy":academy,
-                        "number":number,
-                        "title":title,
-                        "content":content,
-                    }),
+                    data: formData,
                     success: function() {
                         location.href = "/notice/list?academy="+academy;
                     },

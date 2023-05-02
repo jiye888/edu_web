@@ -112,7 +112,8 @@ public class NoticeController {
     }
 
     @PostMapping("/modify")
-    public ResponseEntity modify(@RequestBody @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public ResponseEntity modify(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
+                                 @RequestPart(value = "imgArray", required = false) List<List> imgArray, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -124,7 +125,12 @@ public class NoticeController {
                 return ResponseEntity.badRequest().body(map);
             }
             Long notNum = noticeService.update(noticeFormDTO);
-            redirectAttributes.addFlashAttribute("message", notNum);
+            if (files != null && files.length > 0) {
+                noticeService.updateFile(files, notNum, member.getMember());
+            }
+            if (imageService.isNullOrEmpty(images, imgArray)) {
+                noticeService.updateImg(images, imgArray, notNum, member.getMember());
+            }
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -133,7 +139,7 @@ public class NoticeController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public void delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
+    public void delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) throws IOException {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
             noticeService.delete(notNum);

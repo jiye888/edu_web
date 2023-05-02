@@ -37,9 +37,13 @@ public interface NoticeService {
 
     void deleteFiles(Long notNum);
 
+    void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException;
+
+    void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException;
+
     Long update(NoticeFormDTO noticeFormDTO);
 
-    void delete(Long notNum);
+    void delete(Long notNum) throws IOException;
 
     Page<NoticeDTO> search(Long acaNum, Map<String, String> map, Pageable pageable);
 
