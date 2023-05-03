@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.FileUploadDTO;
+import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.constant.Roles;
@@ -69,7 +70,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FileUploadDTO> getAllFiles(Long notNum) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<FileUpload> files = fileUploadRepository.findByNotice(notice);
@@ -79,6 +80,14 @@ public class NoticeServiceImpl implements NoticeService {
             fileList.add(fileUploadDTO);
         }
         return fileList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ImageDTO> getAllImages(Long notNum) {
+        List<Image> image = imageRepository.findByNotNum(notNum);
+        List<ImageDTO> images = image.stream().map(e -> imageService.entityToDTO(e)).collect(Collectors.toList());
+        return images;
     }
 
     @Override
@@ -109,7 +118,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (images != null && images.length > 0) {
             for (int i = 0; i < images.length; i++) {
                 Image img = imageService.uploadImage(images[i], member);
-                img.setNotice(notice, (Integer) imgArray.get(i).get(1), imgArray.get(i).get(2).toString(), imgArray.get(i).get(3).toString());
+                img.setNotice(notice, imgArray.get(i).get(1).toString(), imgArray.get(i).get(2).toString(), imgArray.get(i).get(3).toString());
                 notice.addImage(img);
                 imageRepository.save(img);
             }

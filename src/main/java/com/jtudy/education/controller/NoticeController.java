@@ -1,10 +1,8 @@
 package com.jtudy.education.controller;
 
-import com.jtudy.education.DTO.AcademyDTO;
-import com.jtudy.education.DTO.FileUploadDTO;
-import com.jtudy.education.DTO.NoticeDTO;
-import com.jtudy.education.DTO.NoticeFormDTO;
+import com.jtudy.education.DTO.*;
 import com.jtudy.education.entity.Academy;
+import com.jtudy.education.entity.Image;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.FileUploadService;
@@ -55,9 +53,11 @@ public class NoticeController {
     public String read(@RequestParam("number") Long notNum, Model model) throws IOException {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         List<FileUploadDTO> fileList = noticeService.getAllFiles(notNum);
+        List<ImageDTO> images = noticeService.getAllImages(notNum);
         model.addAttribute("notice", noticeDTO);
         model.addAttribute("academy", noticeDTO.getAcaNum());
         model.addAttribute("files", fileList);
+        model.addAttribute("image", images);
         return "notice/read";
     }
 
@@ -101,10 +101,14 @@ public class NoticeController {
     }
 
     @GetMapping("/modify")
-    public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+    public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) throws IOException {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
+        List<FileUploadDTO> files = noticeService.getAllFiles(notNum);
+        List<ImageDTO> image = noticeService.getAllImages(notNum);
         if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
             model.addAttribute("notice", noticeDTO);
+            model.addAttribute("files", files);
+            model.addAttribute("image", image);
         } else {
             throw new IllegalArgumentException("관리자 권한이 없습니다."); //*exception
         }

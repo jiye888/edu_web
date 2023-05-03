@@ -46,6 +46,30 @@
         let fileList = [];
         let imgList = [];
 
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const images = /*[[${image}]]*/ [];
+            const size = images.length;
+            var contentText = document.getElementById('content').textContent;
+
+            images.forEach(image => {
+                const insertImg = "<img src="+image.path+" data-name="+image.originalName+">";
+                const preText = image.preText;
+                const postText = image.postText;
+
+                const regex = new RegExp(image.index);
+                const content = document.getElementById('content')
+                const match = content.textContent.match(regex);
+                if (match !== null && match.length === 1) {
+                    var tempPre = preText !== undefined ? content.textContent.slice(match.index - preText.length, match.index) : "";
+                    var tempNext = postText !== undefined ? content.textContent.slice(match.index + image.index.length, match.index + image.index.length + postText.length) : "";
+                    if(tempPre === preText && tempNext === postText) {
+                        content.innerHTML = content.innerHTML.replace(regex, insertImg);
+                    }
+                }
+            })
+        });
+
         inputFile.addEventListener('change', function() {
             for (const file of event.target.files) {
                 const fileDiv = document.createElement("div");
@@ -125,41 +149,59 @@
             }
         });
 
+        function getRandomImgId() {
+            var imgId = '';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            for (var i=0; i<12; i++) {
+                imgId += characters.charAt(Math.floor(Math.random()*characters.length));
+            }
+            return imgId;
+        }
+
+        function matchContent(id) {
+            var regex = new RegExp(id);
+            var contentText = document.getElementById('content').textContent;
+            var match = contentText.match(regex);
+            return match;
+        }
+
         function findImgPosition() {
             const images = document.querySelectorAll('img');
             let imgIndex = [];
-            var i = 0;
 
             images.forEach(img => {
                 const dataName = img.getAttribute("data-name");
-                const dataStr = "::IMAGE_INCLUDED_HERE::" + dataName;
+                var id = getRandomImgId();
+                var match = matchContent(id);
+
+                var preText = "";
+                var nextText = "";
 
                 const hiddenDiv = document.createElement('div');
                 hiddenDiv.setAttribute("style", "display:none;");
-                hiddenDiv.innerText = dataStr;
+                hiddenDiv.innerText = id;
                 img.appendChild(hiddenDiv, img);
 
-                const regStr = dataStr.replace(".", "\.").replace(":", "\:");
-                const regex = new RegExp(regStr);
-                const contentText = document.getElementById('content').textContent;
-                const match = contentText.match(regex);
-                var prevText = "";
-                var nextText = "";
-                if (match !== null) {
-                    if (match.length === 1) {
-                        prevText += contentText.slice(match.index - 10, match.index);
-                        nextText += contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
-                    } else {
-                        hiddenDiv.innerText += "_Dup";
-                        const dupMatch = contentText.match(new RegExp(dataStr+"Dup"));
-                        prevText += contentText.slice(dupMatch.index - 10, dupMatch.index);
-                        nextText += contentText.slice(dupMatch.index + dupMatch[0].length, dupMatch.index + dupMatch[0].length + 10);
+                var revisedText = document.getElementById('content').textContent;
+                var revisedMatch = revisedText.match(id);
+
+                while (match !== null && revisedMatch.length === null) {
+                    if (match === null && revisedMatch.length === 1) {
+                        break;
                     }
+                    id = getRandomImgId();
+                        match = matchContent(id);
+                        hiddenDiv.innerText = "";
+                        hiddenDiv.innerText = id;
+                        revisedText = document.getElementById('content').textContent;
+                        revisedMatch = revisedText.match(id);
                 }
 
-                imgIndex.push([dataName, i, prevText, nextText]);
-                i++;
-                hiddenDiv.remove();
+                preText += revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
+                nextText += revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
+
+                imgIndex.push([dataName, id, preText, nextText]);
+
             })
             return imgIndex;
         }
@@ -193,13 +235,17 @@
 
             var formData = new FormData();
             formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
-            fileList.forEach(function(file) {
-                formData.append("files", file);
-            });
-            imgList.forEach(function(img) {
-                formData.append("images", img);
-            });
-            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
+            if (fileList.length > 0) {
+                fileList.forEach(function(file){
+                    formData.append("files", file);
+                });
+            }
+            if (imgList.length > 0) {
+                imgList.forEach(function(img){
+                    formData.append("images", img);
+                });
+                formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
+            }
 
             if (title && content) {
 

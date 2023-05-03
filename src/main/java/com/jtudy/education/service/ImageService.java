@@ -25,7 +25,7 @@ public interface ImageService {
                 .originalName(image.getOriginalName())
                 .name(image.getName())
                 .path(image.getPath())
-                .order(image.getOrder())
+                .index(image.getIndex())
                 .preText(image.getPreText())
                 .postText(image.getPostText())
                 .uploader(image.getUploader().getEmail())

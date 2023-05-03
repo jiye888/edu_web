@@ -132,115 +132,60 @@
                 }
             }
         });
-/*
-        function findImgPosition() {
-            const allImg = document.querySelectorAll('img');
-            let imgIndex = [];
 
-
-                const firstPrev = (allImg[i].previousSibling === null || allImg[i].previousSibling === undefined) ? "" : allImg[i].previousSibling;
-                const secondPrev = (firstPrev.previousSibling === null || firstPrev.previousSibling === undefined) ? "" : firstPrev.previousSibling;
-                const thirdPrev = (secondPrev.previousSibling === null || secondPrev.previousSibling === undefined) ? "" : secondPrev.previousSibling;
-                var preTexts = [firstPrev, secondPrev, thirdPrev];
-                var preText = "";
-
-                preTexts.forEach(function(pre) {
-                    pre === "" ? null : (pre.nodeType === Node.TEXT_NODE ? preText += pre.textContent : null);
-                });
-
-                preText = preText.slice(-10);
-
-                const firstNext = (allImg[i].nextSibling === null || allImg[i].nextSibling === undefined) ? "" : allImg[i].nextSibling;
-                const secondNext = (firstNext.nextSibling === null || firstNext.nextSibling === undefined) ? "" : firstNext.nextSibling;
-                const thirdNext = (secondNext.nextSibling === null || secondNext.nextSibling === undefined) ? "" : secondNext.nextSibling;
-                var nextTexts = [firstNext, secondNext, thirdNext];
-                var nextText = "";
-
-                nextTexts.forEach(function(next) {
-                    next === "" ? null : (next.nodeType === Node.TEXT_NODE ? nextText += next.textContent : null);
-                });
-
-                //const nextTexts = firstNext.textContent + secondNext.textContent + thirdNext.textContent;
-                //const nextText = nextTexts === "" ? "" : nextTexts.slice(0, 10);
-
-
-                const imgArray = [dataName, i, preText, nextText];
-                imgIndex.push(imgArray);
+        function getRandomImgId() {
+            var imgId = '';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            for (var i=0; i<12; i++) {
+                imgId += characters.charAt(Math.floor(Math.random()*characters.length));
             }
+            return imgId;
+        }
 
-            return imgIndex;
-        }*/
-/*
+        function matchContent(id) {
+            var regex = new RegExp(id);
+            var contentText = document.getElementById('content').textContent;
+            var match = contentText.match(regex);
+            return match;
+        }
+
         function findImgPosition() {
             const images = document.querySelectorAll('img');
             let imgIndex = [];
 
             images.forEach(img => {
                 const dataName = img.getAttribute("data-name");
+                var id = getRandomImgId();
+                var match = matchContent(id);
 
-                const prevDiv = document.createElement('div');
-                var prevText = "";
-                var prev = img.previousSibling;
-                while (prev !== null && prev !== undefined && prevText.length <= 10) {
-                    if (prev.nodeType === Node.ELEMENT_NODE && prev.tagName !== 'IMG') {
-                        prevDiv.innerText = prev;
-                        prevText += prevDiv.innerText;
-                    }
-                    prev = prev.previousSibling;
-                }
-
-                const nextDiv = document.createElement('div');
+                var preText = "";
                 var nextText = "";
-                var next = img.nextSibling;
-                while (next !== null && next !== undefined && prevText.length >= 10) {
-                    if (next.nodeType === Node.ELEMENT_NODE && next.tagName !== 'IMG') {
-                        nextDiv.innerText = next;
-                        nextText += nextDiv.innerText;
-                    }
-                    next = next.nextSibling;
-                }
-
-                imgIndex.push([dataName, prevText, nextText]);
-
-            })
-
-        }*/
-
-        function findImgPosition() {
-            const images = document.querySelectorAll('img');
-            let imgIndex = [];
-            var i = 0;
-
-            images.forEach(img => {
-                const dataName = img.getAttribute("data-name");
-                const dataStr = "::IMAGE_INCLUDED_HERE::" + dataName;
 
                 const hiddenDiv = document.createElement('div');
                 hiddenDiv.setAttribute("style", "display:none;");
-                hiddenDiv.innerText = dataStr;
+                hiddenDiv.innerText = id;
                 img.appendChild(hiddenDiv, img);
 
-                const regStr = dataStr.replace(".", "\.").replace(":", "\:");
-                const regex = new RegExp(regStr);
-                const contentText = document.getElementById('content').textContent;
-                const match = contentText.match(regex);
-                var prevText = "";
-                var nextText = "";
-                if (match !== null) {
-                    if (match.length === 1) {
-                        prevText += contentText.slice(match.index - 10, match.index);
-                        nextText += contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
-                    } else {
-                        hiddenDiv.innerText += "_Dup";
-                        const dupMatch = contentText.match(new RegExp(dataStr+"Dup"));
-                        prevText += contentText.slice(dupMatch.index - 10, dupMatch.index);
-                        nextText += contentText.slice(dupMatch.index + dupMatch[0].length, dupMatch.index + dupMatch[0].length + 10);
+                var revisedText = document.getElementById('content').textContent;
+                var revisedMatch = revisedText.match(id);
+
+                while (match !== null && revisedMatch.length === null) {
+                    if (match === null && revisedMatch.length === 1) {
+                        break;
                     }
+                    id = getRandomImgId();
+                        match = matchContent(id);
+                        hiddenDiv.innerText = "";
+                        hiddenDiv.innerText = id;
+                        revisedText = document.getElementById('content').textContent;
+                        revisedMatch = revisedText.match(id);
                 }
 
-                imgIndex.push([dataName, i, prevText, nextText]);
-                i++;
-                hiddenDiv.remove();
+                preText += revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
+                nextText += revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
+
+                imgIndex.push([dataName, id, preText, nextText]);
+
             })
             return imgIndex;
         }
@@ -261,7 +206,7 @@
             var title = $('#title').val();
             const imgArray = findImgPosition();
             const images = document.getElementById('content').querySelectorAll('img');
-            const contentText = document.getElementById('content').innerText;
+            const contentText = document.getElementById('content').textContent;
             const json = {
                     "academy": academy,
                     "title": title,
@@ -279,8 +224,8 @@
                 imgList.forEach(function(img){
                     formData.append("images", img);
                 });
+                formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
             }
-            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
             if (title && content) {
                 $.ajax({

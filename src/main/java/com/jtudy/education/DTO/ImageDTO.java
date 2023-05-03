@@ -21,7 +21,7 @@ public class ImageDTO {
 
     private String path;
 
-    private Integer order;
+    private String index;
 
     private String preText;
 

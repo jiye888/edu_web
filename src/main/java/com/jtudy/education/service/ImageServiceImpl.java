@@ -185,10 +185,10 @@ public class ImageServiceImpl implements ImageService {
                     if (isInRangeSize(image, existImage)) {
                         for (List<Object> imgArr : imgArray) {
                             if (imgArr.get(0).equals(existImage.getOriginalName())) {
-                                boolean isSameOrder = imgArr.get(1) == existImage.getOrder();
+                                boolean isSameIndex = imgArr.get(1).equals(existImage.getIndex());
                                 boolean isSamePreText = imgArr.get(2) == existImage.getPreText();
                                 boolean isSamePostText = imgArr.get(3) == existImage.getPostText();
-                                return isSameOrder && isSamePreText && isSamePostText;
+                                return isSameIndex && isSamePreText && isSamePostText;
                             }
                         }
                     }
@@ -200,7 +200,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image updateImage(Image image, List<Object> imgArray) {
-        image.changeInfo((int) imgArray.get(1), imgArray.get(2).toString(), imgArray.get(3).toString());
+        image.changeInfo(imgArray.get(1).toString(), imgArray.get(2).toString(), imgArray.get(3).toString());
         imageRepository.save(image);
         return image;
     }

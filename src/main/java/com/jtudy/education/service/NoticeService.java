@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.FileUploadDTO;
+import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
 import com.jtudy.education.entity.Academy;
@@ -26,6 +27,9 @@ public interface NoticeService {
     NoticeDTO getOne(Long notNum);
 
     List<FileUploadDTO> getAllFiles(Long notNum) throws IOException;
+
+    @Transactional(readOnly = true)
+    List<ImageDTO> getAllImages(Long notNum);
 
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 
