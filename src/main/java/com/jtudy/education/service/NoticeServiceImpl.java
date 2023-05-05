@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -274,4 +276,33 @@ public class NoticeServiceImpl implements NoticeService {
         Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
         return noticeDTO;
     }
+
+    @Override
+    public List<byte[]> getFilesByte(Long notNum) throws IOException {
+        List<FileUploadDTO> files = getAllFiles(notNum);
+        List<byte[]> filesData = new ArrayList<>();
+        if (files != null && !files.isEmpty()) {
+            List<String> filesPath = files.stream().map(e -> e.getFilePath()).collect(Collectors.toList());
+            for (String path : filesPath) {
+                byte[] fileData = Files.readAllBytes(Paths.get(path));
+                filesData.add(fileData);
+            }
+        }
+        return filesData;
+    }
+
+    @Override
+    public List<byte[]> getImagesByte(Long notNum) throws IOException {
+        List<ImageDTO> images = getAllImages(notNum);
+        List<byte[]> imagesData = new ArrayList<>();
+        if (images != null && !images.isEmpty()) {
+            List<String> imagesPath = images.stream().map(e -> e.getPath()).collect(Collectors.toList());
+            for (String path : imagesPath) {
+                byte[] imageData = Files.readAllBytes(Paths.get(path));
+                imagesData.add(imageData);
+            }
+        }
+        return imagesData;
+    }
+
 }

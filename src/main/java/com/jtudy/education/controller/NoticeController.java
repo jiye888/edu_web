@@ -9,10 +9,13 @@ import com.jtudy.education.service.FileUploadService;
 import com.jtudy.education.service.ImageService;
 import com.jtudy.education.service.NoticeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,11 +28,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/notice")
@@ -117,7 +126,7 @@ public class NoticeController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                 @RequestPart(value = "imgArray", required = false) List<List> imgArray, @AuthenticationPrincipal SecurityMember member) {
+                                 @RequestPart(value = "imgArray", required = false) List<List> imgArray, @RequestPart(value = "existingFile", required = false) List<String> existingFile, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -150,6 +159,22 @@ public class NoticeController {
         } else {
             //throw new IllegalArgumentException("관리자 권한이 없습니다."); //*exception
         }
+    }
+
+    @GetMapping("/files")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getFiles(@RequestParam("number") Long notNum) throws IOException {
+        List<byte[]> filesData = noticeService.getFilesByte(notNum);
+        List<byte[]> imagesData = noticeService.getImagesByte(notNum);
+        Integer size = filesData.size() + imagesData.size();
+        Map<String, Object> map = new HashMap<>();
+        map.put("files", filesData);
+        map.put("images", imagesData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentLength(size);
+        //headers.setContentDispositionFormData("inline", );
+        return ResponseEntity.ok().headers(headers).body(map);
     }
 
     @GetMapping(value = "/search")

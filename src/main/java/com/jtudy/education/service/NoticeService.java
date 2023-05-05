@@ -28,7 +28,6 @@ public interface NoticeService {
 
     List<FileUploadDTO> getAllFiles(Long notNum) throws IOException;
 
-    @Transactional(readOnly = true)
     List<ImageDTO> getAllImages(Long notNum);
 
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
@@ -96,4 +95,7 @@ public interface NoticeService {
         return noticeDTO;
     }
 
+    List<byte[]> getFilesByte(Long notNum) throws IOException;
+
+    List<byte[]> getImagesByte(Long notNum) throws IOException;
 }

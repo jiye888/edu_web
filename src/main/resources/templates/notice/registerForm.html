@@ -66,12 +66,11 @@
             var deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
             if (deleteFiles.length != 0) {
                 for (var i=0; i<deleteFiles.length; i++) {
-                    const number = i;
                     const deleteName = deleteFiles[i].getAttribute("data-name");
                     deleteFiles[i].addEventListener('click', function() {
-                        for (var i=0; i<fileList.length; i++) {
-                            if (fileList[i].name == deleteName) {
-                                fileList.splice(i, 1);
+                        for (var j=0; j<fileList.length; j++) {
+                            if (fileList[j].name == deleteName) {
+                                fileList.splice(j, 1);
                             }
                         }
                         document.getElementById(deleteName).remove();

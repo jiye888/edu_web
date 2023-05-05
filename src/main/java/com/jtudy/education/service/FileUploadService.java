@@ -46,7 +46,8 @@ public interface FileUploadService {
                 .fileName(fileUpload.getFileName())
                 .filePath(fileUpload.getFilePath())
                 .fileType(fileUpload.getFileType())
-                .uploader(fileUpload.getUploader())
+                .uploaderName(fileUpload.getUploader().getName())
+                .uploaderEmail(fileUpload.getUploader().getEmail())
                 .fileSize(sizeString)
                 .build();
 

@@ -25,6 +25,8 @@ public class FileUploadDTO {
 
     private String fileSize;
 
-    private Member uploader;
+    private String uploaderName;
+
+    private String uploaderEmail;
 
 }
