@@ -170,6 +170,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
         if(imageRepository.findByNotNum(notNum) != null || !imageRepository.findByNotNum(notNum).isEmpty()) {
             List<Image> existImages = imageRepository.findByNotNum(notNum);
             List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
@@ -179,7 +180,15 @@ public class NoticeServiceImpl implements NoticeService {
                     if (existIndex > -1) { // 이름이 같은 파일이 존재
                         Image existImage = existImages.get(existIndex);
                         if (!imageService.isInRangeSize(image, existImage)) { // 같은 파일x
-                            imageService.uploadImage(image, member);
+                            Image img = imageService.uploadImage(image, member);
+                            for (List<Object> imgArr : imgArray) {
+                                if (imgArr.get(0).toString() == img.getOriginalName()) {
+                                    img.setNotice(notice, imgArr.get(1).toString(), imgArr.get(2).toString(), imgArr.get(3).toString());
+                                    imageRepository.save(img);
+                                    notice.addImage(img);
+                                    noticeRepository.save(notice);
+                                }
+                            }
                         }
                     } else {
                         imageService.uploadImage(image, member); //이름 같은 파일x > 추가
@@ -210,7 +219,10 @@ public class NoticeServiceImpl implements NoticeService {
             }
         } else { // 기존에 파일이 없던 경우 > 추가
             for (MultipartFile image :images) {
-                imageService.uploadImage(image, member);
+                Image img = imageService.uploadImage(image, member);
+                imageRepository.save(img);
+                notice.addImage(img);
+                noticeRepository.save(notice);
             }
         }
     }

@@ -100,7 +100,7 @@ public class NoticeController {
             if (files != null && files.length > 0) {
                 noticeService.registerFile(files, notNum, member.getMember());
             }
-            if (imageService.isNullOrEmpty(images, imgArray)) {
+            if (imageService.isNotNullOrEmpty(images, imgArray)) {
                 noticeService.registerImg(images, imgArray, notNum, member.getMember());
             }
             return ResponseEntity.ok().body(notNum);
@@ -141,7 +141,7 @@ public class NoticeController {
             if (files != null && files.length > 0) {
                 noticeService.updateFile(files, notNum, member.getMember());
             }
-            if (imageService.isNullOrEmpty(images, imgArray)) {
+            if (imageService.isNotNullOrEmpty(images, imgArray)) {
                 noticeService.updateImg(images, imgArray, notNum, member.getMember());
             }
             return ResponseEntity.ok().build();
@@ -159,22 +159,6 @@ public class NoticeController {
         } else {
             //throw new IllegalArgumentException("관리자 권한이 없습니다."); //*exception
         }
-    }
-
-    @GetMapping("/files")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getFiles(@RequestParam("number") Long notNum) throws IOException {
-        List<byte[]> filesData = noticeService.getFilesByte(notNum);
-        List<byte[]> imagesData = noticeService.getImagesByte(notNum);
-        Integer size = filesData.size() + imagesData.size();
-        Map<String, Object> map = new HashMap<>();
-        map.put("files", filesData);
-        map.put("images", imagesData);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentLength(size);
-        //headers.setContentDispositionFormData("inline", );
-        return ResponseEntity.ok().headers(headers).body(map);
     }
 
     @GetMapping(value = "/search")

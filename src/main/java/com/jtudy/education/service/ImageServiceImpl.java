@@ -64,10 +64,10 @@ public class ImageServiceImpl implements ImageService {
         isValidName(originalName);
         String extension = originalName.substring(originalName.lastIndexOf("."));
         String fileName = UUID.randomUUID()+extension;
-        String date = LocalDate.now()+toString();
+        String date = LocalDate.now().toString();
         String datePath = date.replaceAll("-", "/");
         Path uploadPath = Paths.get(path + datePath);
-        Path filePath = Paths.get(uploadPath + "\\" + fileName);
+        String filePath = uploadPath + "\\" + fileName;
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -76,7 +76,7 @@ public class ImageServiceImpl implements ImageService {
         Image image = Image.builder()
                 .originalName(originalName)
                 .name(fileName)
-                .path(String.valueOf(filePath))
+                .path(filePath)
                 .uploader(member)
                 .build();
 
@@ -128,7 +128,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public boolean isNullOrEmpty(MultipartFile[] images, List<List> imgArray) {
+    public boolean isNotNullOrEmpty(MultipartFile[] images, List<List> imgArray) {
         if (images == null || !(images.length > 0)) {
             return false;
         } else if (imgArray == null || imgArray.isEmpty()) {
@@ -175,7 +175,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public boolean needsUpdateInfo(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException {
-        if (existImages != null && !(existImages.isEmpty()) && !(isNullOrEmpty(images, imgArray))) {
+        if (existImages != null && !(existImages.isEmpty()) && (isNotNullOrEmpty(images, imgArray))) {
             List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
             for (int i=0; i<images.length; i++) {
                 MultipartFile image = images[i];

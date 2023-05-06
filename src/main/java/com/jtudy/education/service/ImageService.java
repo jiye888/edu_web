@@ -42,7 +42,7 @@ public interface ImageService {
 
     List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
 
-    boolean isNullOrEmpty(MultipartFile[] images, List<List> imgArray);
+    boolean isNotNullOrEmpty(MultipartFile[] images, List<List> imgArray);
 
     boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException;
 

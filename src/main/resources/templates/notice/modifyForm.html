@@ -46,6 +46,7 @@
         let fileList = [];
         let imgList = [];
         let fileNames = [];
+        let existImages = [[${image}]];
 
         function setFileNames() {
             const existFiles = [[${files}]];
@@ -81,12 +82,19 @@
 
         }
 
+        function setExistImages() {
+            existImages.forEach(existImage => {
+                imageNames.push(existImage);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const noticeContentText = [[${notice.content}]];
             const noticeContent = document.getElementById('content');
             noticeContent.innerHTML = noticeContentText;
 
             setFileNames();
+            setExistImages();
 
             const images = /*[[${image}]]*/ [];
             const size = images.length;
@@ -112,23 +120,7 @@
                 })
             }
         });
-/*
-        function setFilesAndImages() {
-            const number = $('number').val();
 
-            $.ajax({
-                url: 'notice/files',
-                method: 'GET',
-                data: {"number":number},
-                responseType: arrayBuffer,
-                success: function(response) {
-                    var file = new Blob([response], {type:'image/jpeg'});
-                    var formData = new FormData();
-                    formData.append('file', file, 'file.jpg');
-                    $('file-input').prop('files', formData.getAll('file'));
-                },
-            });
-        }*/
 
         inputFile.addEventListener('change', function() {
             for (const file of event.target.files) {
@@ -194,6 +186,7 @@
                     const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
                     const tagName = window.getSelection().getRangeAt(0).endContainer.dataset.name;
                     if (selection != null && selection === "IMG") {
+                    console.log(selection);
                         if (confirm("사진을 삭제하시겠습니까?")) {
                             for (var i=0; i<imgList.length; i++) {
                                 if (imgList[i].name == tagName) {
@@ -280,22 +273,20 @@
             var academy = $('#academy').val();
             var number = $('#number').val();
             var title = $('#title').val();
-            var content = $('#content').val();
 
             const imgArray = findImgPosition();
             const images = document.getElementById('content').querySelectorAll('img');
-            const contentText = document.getElementById('content').innerText;
+            const contentText = document.getElementById('content').textContent;
             const json = {
                 "academy": academy,
                 "number": number,
                 "title": title,
-                "content": content,
+                "content": contentText,
             };
 
             var formData = new FormData();
             formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
-            const existingFile = {"existingFile" : fileNames};
-            formData.append("existingFile", new Blob([JSON.stringify(existingFile)], {type:"application/json"}));
+            formData.append("existingFile", new Blob([JSON.stringify(fileNames)], {type:"application/json"}));
             if (fileList.length > 0) {
                 fileList.forEach(function(file){
                     formData.append("files", file);
@@ -318,7 +309,7 @@
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                     data: formData,
                     success: function() {
-                        location.href = "/notice/list?academy="+academy;
+                        location.href = "/notice/read?number="+number;
                     },
                     error: function(xhr, response) {
                         jwtFilter();
