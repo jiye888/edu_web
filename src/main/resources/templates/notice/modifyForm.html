@@ -46,7 +46,6 @@
         let fileList = [];
         let imgList = [];
         let fileNames = [];
-        let existImages = [[${image}]];
 
         function setFileNames() {
             const existFiles = [[${files}]];
@@ -82,19 +81,12 @@
 
         }
 
-        function setExistImages() {
-            existImages.forEach(existImage => {
-                imageNames.push(existImage);
-            });
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             const noticeContentText = [[${notice.content}]];
             const noticeContent = document.getElementById('content');
             noticeContent.innerHTML = noticeContentText;
 
             setFileNames();
-            setExistImages();
 
             const images = /*[[${image}]]*/ [];
             const size = images.length;
@@ -103,7 +95,7 @@
 
             if (size !== 0) {
                 images.forEach(image => {
-                    const insertImg = "<img src="+image.path+" data-name="+image.originalName+">";
+                    const insertImg = "<img src="+image.path+" data-id="+image.index+" data-name="+image.originalName+" name=\"exist\">";
                     const preText = image.preText;
                     const postText = image.postText;
 
@@ -172,6 +164,7 @@
                 const img = document.createElement('img');
                 img.setAttribute("src", dataURL);
                 img.setAttribute("draggable", "true");
+                img.setAttribute("name", "new");
                 img.setAttribute("style", "max-height:600px; max-width:600px;");
                 img.setAttribute("data-name", image.name);
                 imgDiv.appendChild(img);
@@ -217,8 +210,8 @@
             return match;
         }
 
-        function findImgPosition() {
-            const images = document.querySelectorAll('img');
+        function findNewImgPosition() {
+            const images = document.querySelector('img[name="new"]');
             let imgIndex = [];
 
             images.forEach(img => {
@@ -236,6 +229,7 @@
 
                 var revisedText = document.getElementById('content').textContent;
                 var revisedMatch = revisedText.match(id);
+                //revisedText 제거하고 existImaged의 data-id값과 비교하도록 수정하기.
 
                 while (match !== null && revisedMatch.length === null) {
                     if (match === null && revisedMatch.length === 1) {
@@ -248,14 +242,27 @@
                         revisedText = document.getElementById('content').textContent;
                         revisedMatch = revisedText.match(id);
                 }
-
+                if (revisedMatch.index < 10) {
+                    preText += revisedText.slice(0, revisedMatch.index);
+                } else {
                 preText += revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
+                }
                 nextText += revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
 
                 imgIndex.push([dataName, id, preText, nextText]);
 
             })
             return imgIndex;
+        }
+
+        function findExistImgPosition() {
+            const images = document.querySelector('img[name="exist"]');
+            let existIndex = [];
+
+            images.forEach(img => {
+                const dataName = img.getAttribute('data-name');
+                var id = img.getAttribute('data-id');
+            })
         }
 
         function clearText() {
@@ -296,8 +303,8 @@
                 imgList.forEach(function(img){
                     formData.append("images", img);
                 });
-                formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
             }
+            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
             if (title && content) {
 

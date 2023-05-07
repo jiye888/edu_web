@@ -128,7 +128,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public boolean isNotNullOrEmpty(MultipartFile[] images, List<List> imgArray) {
+    public boolean isNotNullOrEmpty(MultipartFile[] images, List<List<String>> imgArray) {
         if (images == null || !(images.length > 0)) {
             return false;
         } else if (imgArray == null || imgArray.isEmpty()) {
@@ -174,7 +174,7 @@ public class ImageServiceImpl implements ImageService {
     } // 파일 업로드 및 삭제 필요한 경우
 
     @Override
-    public boolean needsUpdateInfo(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException {
+    public boolean needsUpdateInfo(MultipartFile[] images, List<List<String>> imgArray, List<Image> existImages) throws IOException {
         if (existImages != null && !(existImages.isEmpty()) && (isNotNullOrEmpty(images, imgArray))) {
             List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
             for (int i=0; i<images.length; i++) {
@@ -183,7 +183,7 @@ public class ImageServiceImpl implements ImageService {
                 if (existIndex > -1) {
                     Image existImage = existImages.get(existIndex);
                     if (isInRangeSize(image, existImage)) {
-                        for (List<Object> imgArr : imgArray) {
+                        for (List<String> imgArr : imgArray) {
                             if (imgArr.get(0).equals(existImage.getOriginalName())) {
                                 boolean isSameIndex = imgArr.get(1).equals(existImage.getIndex());
                                 boolean isSamePreText = imgArr.get(2) == existImage.getPreText();
@@ -199,8 +199,8 @@ public class ImageServiceImpl implements ImageService {
     } // 파일 엔티티 수정 필요한 경우(order, index)
 
     @Override
-    public Image updateImage(Image image, List<Object> imgArray) {
-        image.changeInfo(imgArray.get(1).toString(), imgArray.get(2).toString(), imgArray.get(3).toString());
+    public Image updateImage(Image image, List<String> imgArray) {
+        image.changeInfo(imgArray.get(1), imgArray.get(2), imgArray.get(3));
         imageRepository.save(image);
         return image;
     }
@@ -220,6 +220,16 @@ public class ImageServiceImpl implements ImageService {
                 folder.delete();
             }
         }
+    }
+
+    @Override
+    public List<String> matchArray(Image image, List<List<String>> imgArray) {
+        for (List<String> imgArr : imgArray) {
+            if (imgArr.get(0).equals(image.getOriginalName())) {
+                return imgArr;
+            }
+        }
+        return null;
     }
 
 }

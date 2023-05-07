@@ -93,6 +93,16 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    public Image setNotice(Image image, Long notNum, List<String> imgArray) {
+        if (image != null && notNum != null && imgArray != null) {
+            Notice notice = noticeRepository.findByNotNum(notNum);
+            image.setNotice(notice, imgArray.get(1), imgArray.get(2), imgArray.get(3));
+            return image;
+        }
+        return null; //exception
+    }
+
+    @Override
     public Long register(NoticeFormDTO noticeFormDTO, Long acaNum) {
         Notice notice = formToEntity(noticeFormDTO);
         noticeRepository.save(notice);
@@ -115,7 +125,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void registerImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
+    public void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (images != null && images.length > 0) {
             for (int i = 0; i < images.length; i++) {
@@ -150,7 +160,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
-        if (fileUploadRepository.findByNotice(notice) != null || !fileUploadRepository.findByNotice(notice).isEmpty()) {
+        if (fileUploadRepository.findByNotice(notice) != null && !fileUploadRepository.findByNotice(notice).isEmpty()) {
             List<FileUpload> existFiles = fileUploadRepository.findByNotice(notice);
             if (fileUploadService.needsUpdate(files, existFiles)) {
                 for (MultipartFile file : files) {
@@ -169,9 +179,9 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException {
+    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
-        if(imageRepository.findByNotNum(notNum) != null || !imageRepository.findByNotNum(notNum).isEmpty()) {
+        if(imageRepository.findByNotNum(notNum) != null && !(imageRepository.findByNotNum(notNum).isEmpty())) {
             List<Image> existImages = imageRepository.findByNotNum(notNum);
             List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
             if (imageService.needsUpdateFile(images, existImages)) {
@@ -181,13 +191,12 @@ public class NoticeServiceImpl implements NoticeService {
                         Image existImage = existImages.get(existIndex);
                         if (!imageService.isInRangeSize(image, existImage)) { // 같은 파일x
                             Image img = imageService.uploadImage(image, member);
-                            for (List<Object> imgArr : imgArray) {
-                                if (imgArr.get(0).toString() == img.getOriginalName()) {
-                                    img.setNotice(notice, imgArr.get(1).toString(), imgArr.get(2).toString(), imgArr.get(3).toString());
-                                    imageRepository.save(img);
-                                    notice.addImage(img);
-                                    noticeRepository.save(notice);
-                                }
+                            List<String> imgArr = imageService.matchArray(img, imgArray);
+                            if (imgArr != null) {
+                                img = setNotice(img, notNum, imgArr);
+                                imageRepository.save(img);
+                                notice.addImage(img);
+                                noticeRepository.save(notice);
                             }
                         }
                     } else {
@@ -200,7 +209,7 @@ public class NoticeServiceImpl implements NoticeService {
                     if (existIndex > -1) {
                         Image existImage = existImages.get(existIndex);
                         if (imageService.isInRangeSize(image, existImage)) {
-                            for (List<Object> imgArr : imgArray) {
+                            for (List<String> imgArr : imgArray) {
                                 if (imgArr.get(0).equals(existImage)) {
                                     imageService.updateImage(existImage, imgArr);
                                 }
@@ -220,9 +229,14 @@ public class NoticeServiceImpl implements NoticeService {
         } else { // 기존에 파일이 없던 경우 > 추가
             for (MultipartFile image :images) {
                 Image img = imageService.uploadImage(image, member);
-                imageRepository.save(img);
-                notice.addImage(img);
-                noticeRepository.save(notice);
+                List<String> imgArr = imageService.matchArray(img, imgArray);
+                if (imgArr != null) {
+                    System.out.println("@@@ imgArr not null");
+                    img = setNotice(img, notNum, imgArr);
+                    imageRepository.save(img);
+                    notice.addImage(img);
+                    noticeRepository.save(notice);
+                }
             }
         }
     }

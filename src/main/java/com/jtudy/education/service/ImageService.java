@@ -42,15 +42,17 @@ public interface ImageService {
 
     List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
 
-    boolean isNotNullOrEmpty(MultipartFile[] images, List<List> imgArray);
+    boolean isNotNullOrEmpty(MultipartFile[] images, List<List<String>> imgArray);
 
     boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException;
 
     boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages) throws IOException;
 
-    boolean needsUpdateInfo(MultipartFile[] images, List<List> imgArray, List<Image> existImages) throws IOException;
+    boolean needsUpdateInfo(MultipartFile[] images, List<List<String>> imgArray, List<Image> existImages) throws IOException;
 
-    Image updateImage(Image image, List<Object> imgArray);
+    Image updateImage(Image image, List<String> imgArray);
 
     void deleteImage(Image image) throws IOException;
+
+    List<String> matchArray(Image image, List<List<String>> imgArray);
 }

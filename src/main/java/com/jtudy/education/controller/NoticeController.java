@@ -84,7 +84,7 @@ public class NoticeController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                   @RequestPart(value = "imgArray", required = false) List<List> imgArray, @AuthenticationPrincipal SecurityMember member) throws IOException {
+                                   @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @AuthenticationPrincipal SecurityMember member) throws IOException {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -126,7 +126,7 @@ public class NoticeController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                 @RequestPart(value = "imgArray", required = false) List<List> imgArray, @RequestPart(value = "existingFile", required = false) List<String> existingFile, @AuthenticationPrincipal SecurityMember member) {
+                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existingFile", required = false) List<String> existingFile, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();

@@ -30,11 +30,13 @@ public interface NoticeService {
 
     List<ImageDTO> getAllImages(Long notNum);
 
+    Image setNotice(Image image, Long notNum, List<String> imgArray);
+
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 
     void registerFile(MultipartFile[] files, Long notNum, Member member) throws IOException;
 
-    void registerImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException;
+    void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
 
     void deleteFile(Long notNum, Long fileId);
 
@@ -42,7 +44,7 @@ public interface NoticeService {
 
     void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException;
 
-    void updateImg(MultipartFile[] images, List<List> imgArray, Long notNum, Member member) throws IOException;
+    void updateImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
 
     Long update(NoticeFormDTO noticeFormDTO);
 
