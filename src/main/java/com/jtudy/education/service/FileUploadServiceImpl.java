@@ -7,6 +7,7 @@ import com.jtudy.education.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -102,7 +103,7 @@ public class FileUploadServiceImpl implements FileUploadService{
     @Override
     public Double getFileSize(FileUpload fileUpload) throws IOException {
         String filePath = fileUpload.getFilePath();
-        Resource resource = new UrlResource("file:"+filePath);
+        Resource resource = new PathResource(filePath);
         if (resource.exists()) {
             Double fileSize = Double.valueOf(resource.contentLength());
             return fileSize;
@@ -139,7 +140,7 @@ public class FileUploadServiceImpl implements FileUploadService{
                     return true;
                 } else {
                     FileUpload existFile = fileUploadRepository.findByOriginalName(file.getOriginalFilename());
-                    Resource resource = new UrlResource("file:"+existFile);
+                    Resource resource = new PathResource(existFile.getFilePath());
                     Double existSize = (double) resource.contentLength();
                     Double fileSize = (double) file.getSize();
                     boolean isInRange = (existSize * 0.9 <= fileSize) && (existSize * 1.1 >= fileSize);

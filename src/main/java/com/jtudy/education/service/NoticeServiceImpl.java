@@ -231,7 +231,6 @@ public class NoticeServiceImpl implements NoticeService {
                 Image img = imageService.uploadImage(image, member);
                 List<String> imgArr = imageService.matchArray(img, imgArray);
                 if (imgArr != null) {
-                    System.out.println("@@@ imgArr not null");
                     img = setNotice(img, notNum, imgArr);
                     imageRepository.save(img);
                     notice.addImage(img);

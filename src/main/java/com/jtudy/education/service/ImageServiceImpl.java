@@ -9,6 +9,7 @@ import com.jtudy.education.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -141,7 +142,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException {;
         if (existImage != null) {
-            Resource resource = new UrlResource("file:" + existImage.getPath());
+            Resource resource = new PathResource(existImage.getPath());
             Double existSize = (double) resource.contentLength();
             Double imageSize = (double) newImage.getSize();
             return (existSize * 0.9 <= imageSize) && (existSize * 1.1 >= imageSize);

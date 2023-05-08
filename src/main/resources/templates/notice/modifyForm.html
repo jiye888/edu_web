@@ -46,6 +46,7 @@
         let fileList = [];
         let imgList = [];
         let fileNames = [];
+        let existImages = /*[[${image}]]*/ [];
 
         function setFileNames() {
             const existFiles = [[${files}]];
@@ -78,7 +79,6 @@
                 });
             });
 
-
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -88,13 +88,12 @@
 
             setFileNames();
 
-            const images = /*[[${image}]]*/ [];
-            const size = images.length;
+            const size = existImages.length;
 
             var contentText = document.getElementById('content').textContent;
 
             if (size !== 0) {
-                images.forEach(image => {
+                existImages.forEach(image => {
                     const insertImg = "<img src="+image.path+" data-id="+image.index+" data-name="+image.originalName+" name=\"exist\">";
                     const preText = image.preText;
                     const postText = image.postText;
@@ -102,7 +101,7 @@
                     const regex = new RegExp(image.index);
                     const content = document.getElementById('content')
                     const match = content.textContent.match(regex);
-                    if (match !== null && match.length === 1) {
+                    if (match != null && match.length === 1) {
                         var tempPre = preText !== undefined ? content.textContent.slice(match.index - preText.length, match.index) : "";
                         var tempNext = postText !== undefined ? content.textContent.slice(match.index + image.index.length, match.index + image.index.length + postText.length) : "";
                         if(tempPre === preText && tempNext === postText) {
@@ -211,58 +210,83 @@
         }
 
         function findNewImgPosition() {
-            const images = document.querySelector('img[name="new"]');
+            const images = document.querySelectorAll('img[name="new"]');
             let imgIndex = [];
+            if (images != null) {
+                Array.from(images).forEach(img => {
+                    const dataName = img.getAttribute("data-name");
+                    var id = getRandomImgId();
+                    var match = matchContent(id);
 
-            images.forEach(img => {
-                const dataName = img.getAttribute("data-name");
-                var id = getRandomImgId();
-                var match = matchContent(id);
+                    const hiddenDiv = document.createElement('div');
+                    hiddenDiv.setAttribute("style", "display:none;");
+                    hiddenDiv.innerText = id;
+                    img.appendChild(hiddenDiv, img);
 
-                var preText = "";
-                var nextText = "";
-
-                const hiddenDiv = document.createElement('div');
-                hiddenDiv.setAttribute("style", "display:none;");
-                hiddenDiv.innerText = id;
-                img.appendChild(hiddenDiv, img);
-
-                var revisedText = document.getElementById('content').textContent;
-                var revisedMatch = revisedText.match(id);
-                //revisedText 제거하고 existImaged의 data-id값과 비교하도록 수정하기.
-
-                while (match !== null && revisedMatch.length === null) {
-                    if (match === null && revisedMatch.length === 1) {
-                        break;
+                    var revisedText = document.getElementById('content').textContent;
+                    var revisedMatch = revisedText.match(id);
+                    if (existImages != null) {
+                        existImages.forEach(exist => {
+                            if (id == exist.index) {
+                                id = getRandomImgId();
+                                match = matchContent(id);
+                            }
+                        });
                     }
-                    id = getRandomImgId();
-                        match = matchContent(id);
-                        hiddenDiv.innerText = "";
-                        hiddenDiv.innerText = id;
-                        revisedText = document.getElementById('content').textContent;
-                        revisedMatch = revisedText.match(id);
-                }
-                if (revisedMatch.index < 10) {
-                    preText += revisedText.slice(0, revisedMatch.index);
-                } else {
-                preText += revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
-                }
-                nextText += revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
 
-                imgIndex.push([dataName, id, preText, nextText]);
+                    while (match != null && revisedMatch.length == null) {
+                        if (match == null && revisedMatch.length === 1) {
+                            break;
+                        }
+                        id = getRandomImgId();
+                            match = matchContent(id);
+                            hiddenDiv.innerText = "";
+                            hiddenDiv.innerText = id;
+                            revisedText = document.getElementById('content').textContent;
+                            revisedMatch = revisedText.match(id);
+                    }
+                    if (revisedMatch.index < 10) {
+                        var preText = revisedText.slice(0, revisedMatch.index);
+                    } else {
+                        var preText = revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
+                    }
+                    var nextText = revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
 
-            })
+                    imgIndex.push([dataName, id, preText, nextText]);
+                })
+            }
             return imgIndex;
         }
 
         function findExistImgPosition() {
             const images = document.querySelector('img[name="exist"]');
             let existIndex = [];
+            if (images != null) {
+                Array.from(images).forEach(img => {
+                    const dataName = img.getAttribute('data-name');
+                    var id = img.getAttribute('data-id');
 
-            images.forEach(img => {
-                const dataName = img.getAttribute('data-name');
-                var id = img.getAttribute('data-id');
-            })
+                    const hiddenDiv = document.createElement('div');
+                    hiddenDiv.setAttribute("style", "display:none;");
+                    hiddenDiv.innerText = id;
+                    img.appendChild(hiddenDiv, img);
+
+                    const contentText = document.getElementById("content").textContent;
+
+                    var match = matchContent(id);
+                    if (match.length == 1) {
+                        if (match.index < 10) {
+                            var preText = contentText.slice(0, match.index);
+                        } else {
+                            var preText = contentText.slice(match.index - 10, match.index);
+                        }
+                        var nextText = contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
+                    }
+
+                    existIndex.push([dataName, id, preText, nextText]);
+                })
+            }
+            return existIndex;
         }
 
         function clearText() {
@@ -281,7 +305,8 @@
             var number = $('#number').val();
             var title = $('#title').val();
 
-            const imgArray = findImgPosition();
+            const imgArray = findNewImgPosition();
+            const existImgArray = findExistImgPosition();
             const images = document.getElementById('content').querySelectorAll('img');
             const contentText = document.getElementById('content').textContent;
             const json = {
@@ -293,7 +318,8 @@
 
             var formData = new FormData();
             formData.append("noticeFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
-            formData.append("existingFile", new Blob([JSON.stringify(fileNames)], {type:"application/json"}));
+
+            formData.append("existFiles", new Blob([JSON.stringify(fileNames)], {type:"application/json"}));
             if (fileList.length > 0) {
                 fileList.forEach(function(file){
                     formData.append("files", file);
@@ -305,6 +331,7 @@
                 });
             }
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
+            formData.append("existImgArray", new Blob([JSON.stringify(existImgArray)], {type:"application/json"}));
 
             if (title && content) {
 
