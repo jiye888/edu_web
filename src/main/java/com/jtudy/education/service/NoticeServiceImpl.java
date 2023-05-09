@@ -88,7 +88,14 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional(readOnly = true)
     public List<ImageDTO> getAllImages(Long notNum) {
         List<Image> image = imageRepository.findByNotNum(notNum);
-        List<ImageDTO> images = image.stream().map(e -> imageService.entityToDTO(e)).collect(Collectors.toList());
+        List<ImageDTO> images = image.stream().map(e -> {
+            try {
+                return imageService.entityToDTO(e);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }).collect(Collectors.toList());
         return images;
     }
 

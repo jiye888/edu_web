@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -85,6 +86,30 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public ImageDTO entityToDTO(Image image) throws IOException {
+        PathResource resource = new PathResource(image.getPath());
+        File file = resource.getFile();
+        String mimeType = Files.probeContentType(file.toPath());
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        String base64 = Base64Utils.encodeToString(bytes);
+
+        ImageDTO imageDTO = ImageDTO.builder()
+                .imageId(image.getImageId())
+                .originalName(image.getOriginalName())
+                .name(image.getName())
+                .path(image.getPath())
+                .mimeType(mimeType)
+                .base64(base64)
+                .index(image.getIndex())
+                .preText(image.getPreText())
+                .postText(image.getPostText())
+                .uploader(image.getUploader().getEmail())
+                .build();
+
+        return imageDTO;
+    }
+
+    @Override
     public Image uploadImage(MultipartFile img, Member member) throws IOException {
         Image image = fileToEntity(img, member);
 
@@ -101,11 +126,25 @@ public class ImageServiceImpl implements ImageService {
     public List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException {
         if (entity == "notice") {
             List<Image> fileList = imageRepository.findByNotNum(entityId);
-            List<ImageDTO> dtoList = fileList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+            List<ImageDTO> dtoList = fileList.stream().map(e -> {
+                try {
+                    return entityToDTO(e);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            }).collect(Collectors.toList());
             return dtoList;
         } else if (entity == "review") {
             List<Image> fileList = imageRepository.findByRevNum(entityId);
-            List<ImageDTO> dtoList = fileList.stream().map(e -> entityToDTO(e)).collect(Collectors.toList());
+            List<ImageDTO> dtoList = fileList.stream().map(e -> {
+                try {
+                    return entityToDTO(e);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            }).collect(Collectors.toList());
             return dtoList;
         } else {
             throw new FileNotFoundException();
@@ -113,7 +152,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageDTO getAcademyMain(Long acaNum) {
+    public ImageDTO getAcademyMain(Long acaNum) throws IOException {
         Image image = imageRepository.findByAcaNum(acaNum);
         ImageDTO fileDTO = entityToDTO(image);
         return fileDTO;

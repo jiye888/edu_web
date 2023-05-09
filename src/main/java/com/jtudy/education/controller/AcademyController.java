@@ -30,6 +30,7 @@ import org.thymeleaf.TemplateEngine;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 @Controller
@@ -127,6 +128,8 @@ public class AcademyController {
             model.addAttribute("path", fileDTO.getPath());
         } catch (NullPointerException e) {
             model.addAttribute("path", null);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

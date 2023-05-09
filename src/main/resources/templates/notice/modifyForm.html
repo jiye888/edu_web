@@ -14,7 +14,7 @@
         <p id="titleError"></p><br>
         <span class="custom-span span-center">내용</span>
         <div>
-            <div class="custom-form-control input-content" id="content" contenteditable="true" style="white-space:pre-line;"></div>
+            <div class="custom-form-control input-content scroll" id="content" contenteditable="true"></div>
             <p id="contentError"></p><br>
             <span class="custom-span">첨부 파일 목록</span>
             <div class="custom-form-control file-name file-list" id="selectedFile"></div>
@@ -108,7 +108,7 @@
                             content.innerHTML = content.innerHTML.replace(regex, insertImg);
                         }
                     }
-                })
+                });
             }
         });
 
@@ -178,7 +178,6 @@
                     const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
                     const tagName = window.getSelection().getRangeAt(0).endContainer.dataset.name;
                     if (selection != null && selection === "IMG") {
-                    console.log(selection);
                         if (confirm("사진을 삭제하시겠습니까?")) {
                             for (var i=0; i<imgList.length; i++) {
                                 if (imgList[i].name == tagName) {
@@ -209,19 +208,25 @@
             return match;
         }
 
+        function appendHiddenDiv(tag, id) {
+            const hiddenDiv = document.createElement('div');
+            hiddenDiv.setAttribute("style", "display:none;");
+            hiddenDiv.innerText = id;
+            tag.appendChild(hiddenDiv);
+
+            return hiddenDiv
+        }
+
         function findNewImgPosition() {
             const images = document.querySelectorAll('img[name="new"]');
             let imgIndex = [];
             if (images != null) {
-                Array.from(images).forEach(img => {
+                images.forEach(img => {
                     const dataName = img.getAttribute("data-name");
                     var id = getRandomImgId();
                     var match = matchContent(id);
 
-                    const hiddenDiv = document.createElement('div');
-                    hiddenDiv.setAttribute("style", "display:none;");
-                    hiddenDiv.innerText = id;
-                    img.appendChild(hiddenDiv, img);
+                    var hiddenDiv = appendHiddenDiv(img, id);
 
                     var revisedText = document.getElementById('content').textContent;
                     var revisedMatch = revisedText.match(id);
@@ -230,6 +235,7 @@
                             if (id == exist.index) {
                                 id = getRandomImgId();
                                 match = matchContent(id);
+                                appendHiddenDiv(img, id);
                             }
                         });
                     }
@@ -250,26 +256,27 @@
                     } else {
                         var preText = revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
                     }
-                    var nextText = revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
+                    if ((revisedMatch.index + revisedMatch[0].length) + 10 < revisedText.length) {
+                        var nextText = revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedText.length);
+                    } else {
+                        var nextText = revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
+                    }
 
                     imgIndex.push([dataName, id, preText, nextText]);
-                })
+                });
             }
             return imgIndex;
         }
 
         function findExistImgPosition() {
-            const images = document.querySelector('img[name="exist"]');
+            const images = document.querySelectorAll('img[name="exist"]');
             let existIndex = [];
             if (images != null) {
-                Array.from(images).forEach(img => {
+                images.forEach(img => {
                     const dataName = img.getAttribute('data-name');
                     var id = img.getAttribute('data-id');
 
-                    const hiddenDiv = document.createElement('div');
-                    hiddenDiv.setAttribute("style", "display:none;");
-                    hiddenDiv.innerText = id;
-                    img.appendChild(hiddenDiv, img);
+                    appendHiddenDiv(img, id);
 
                     const contentText = document.getElementById("content").textContent;
 
@@ -280,11 +287,15 @@
                         } else {
                             var preText = contentText.slice(match.index - 10, match.index);
                         }
-                        var nextText = contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
+                        if ((match.index + match[0].length + 10) < contentText.length) {
+                            var nextText = contentText.slice(match.index + match[0].length, contentText.length);
+                        } else {
+                            var nextText = contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
+                        }
                     }
 
                     existIndex.push([dataName, id, preText, nextText]);
-                })
+                });
             }
             return existIndex;
         }
@@ -330,8 +341,10 @@
                     formData.append("images", img);
                 });
             }
+
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
             formData.append("existImgArray", new Blob([JSON.stringify(existImgArray)], {type:"application/json"}));
+
 
             if (title && content) {
 
@@ -343,7 +356,7 @@
                     headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                     data: formData,
                     success: function() {
-                        location.href = "/notice/read?number="+number;
+                        history.back();
                     },
                     error: function(xhr, response) {
                         jwtFilter();

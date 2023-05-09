@@ -21,6 +21,10 @@ public class ImageDTO {
 
     private String path;
 
+    private String mimeType;
+
+    private String base64;
+
     private String index;
 
     private String preText;

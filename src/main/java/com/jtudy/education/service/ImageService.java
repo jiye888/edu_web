@@ -19,22 +19,9 @@ public interface ImageService {
 
     Image fileToEntity(MultipartFile file, Member member) throws IOException;
 
-    default ImageDTO entityToDTO(Image image) {
-        ImageDTO imageDTO = ImageDTO.builder()
-                .imageId(image.getImageId())
-                .originalName(image.getOriginalName())
-                .name(image.getName())
-                .path(image.getPath())
-                .index(image.getIndex())
-                .preText(image.getPreText())
-                .postText(image.getPostText())
-                .uploader(image.getUploader().getEmail())
-                .build();
+    ImageDTO entityToDTO(Image image) throws IOException;
 
-        return imageDTO;
-    }
-
-    ImageDTO getAcademyMain(Long acaNum);
+    ImageDTO getAcademyMain(Long acaNum) throws IOException;
 
     void deleteAcademyMain(Long acaNum);
 
