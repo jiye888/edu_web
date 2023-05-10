@@ -173,11 +173,11 @@
                         break;
                     }
                     id = getRandomImgId();
-                        match = matchContent(id);
-                        hiddenDiv.innerText = "";
-                        hiddenDiv.innerText = id;
-                        revisedText = document.getElementById('content').textContent;
-                        revisedMatch = revisedText.match(id);
+                    match = matchContent(id);
+                    hiddenDiv.innerText = "";
+                    hiddenDiv.innerText = id;
+                    revisedText = document.getElementById('content').textContent;
+                    revisedMatch = revisedText.match(id);
                 }
 
                 preText += revisedText.slice(revisedMatch.index - 10, revisedMatch.index);

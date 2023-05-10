@@ -94,7 +94,7 @@
 
             if (size !== 0) {
                 existImages.forEach(image => {
-                    const insertImg = "<img src="+image.path+" data-id="+image.index+" data-name="+image.originalName+" name=\"exist\">";
+                    const insertImg = '<img src="data:'+image.mimeType+';base64 ,'+image.base64+'" data-name='+image.originalName+' name=\"exist\">';
                     const preText = image.preText;
                     const postText = image.postText;
 
@@ -220,7 +220,7 @@
         function findNewImgPosition() {
             const images = document.querySelectorAll('img[name="new"]');
             let imgIndex = [];
-            if (images != null) {
+            if (images.length !== 0) {
                 images.forEach(img => {
                     const dataName = img.getAttribute("data-name");
                     var id = getRandomImgId();
@@ -271,7 +271,7 @@
         function findExistImgPosition() {
             const images = document.querySelectorAll('img[name="exist"]');
             let existIndex = [];
-            if (images != null) {
+            if (images.length !== 0) {
                 images.forEach(img => {
                     const dataName = img.getAttribute('data-name');
                     var id = img.getAttribute('data-id');
@@ -281,7 +281,7 @@
                     const contentText = document.getElementById("content").textContent;
 
                     var match = matchContent(id);
-                    if (match.length == 1) {
+                    if (match != null && match.length === 1) {
                         if (match.index < 10) {
                             var preText = contentText.slice(0, match.index);
                         } else {
@@ -292,6 +292,15 @@
                         } else {
                             var nextText = contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
                         }
+
+                    } else {
+                        var newId = getRandomImgId();
+                        var newMatch = matchContent(newId);
+                        while (newMatch != null && newMatch.length === 1) {
+                            newId = getRandomImgId();
+                            newMatch = matchContent(newId);
+                        }
+                        img.setAttribute('data-id', newId);
                     }
 
                     existIndex.push([dataName, id, preText, nextText]);
