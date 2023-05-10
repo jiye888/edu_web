@@ -44,7 +44,7 @@ public interface NoticeService {
 
     void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException;
 
-    void updateImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
+    void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long notNum, Member member) throws IOException;
 
     Long update(NoticeFormDTO noticeFormDTO);
 

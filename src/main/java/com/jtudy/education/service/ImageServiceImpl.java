@@ -11,7 +11,6 @@ import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
@@ -190,12 +189,16 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages) throws IOException {
-        if (existImages == null || existImages.isEmpty()) {
-            return true;
+    public boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages, List<List<String>> existImgArray) throws IOException {
+        /*if (existImages == null || existImages.isEmpty()) {
+            if (images.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
         }
         List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
-        if (images != null) {
+        if (images != null && images.length > 0) {
             for (MultipartFile image : images) {
                 if (!(existNames.contains(image.getOriginalFilename()))) {
                     return true;
@@ -210,12 +213,34 @@ public class ImageServiceImpl implements ImageService {
         } else if (images == null || !(images.length > 0)) {
             return true; // 기존 파일이 존재하고 전달할 파일은 존재하지 x > 삭제(수정)
         }
+        return false;*/
+        if (images != null && images.length > 0) { // 추가되는 이미지 존재
+            return true;
+        } else if (!(existImages.isEmpty())) { // 추가될 이미지x & 기존 이미지 존재
+            if (existImgArray.isEmpty()) {
+                for (Image existImage : existImages) {
+                    String originalName = existImage.getOriginalName();
+                    String index = existImage.getIndex();
+                    for (List<String> existImgArr : existImgArray) {
+                        if (existImgArr.get(0) == originalName && existImgArr.get(1) == index) {
+                            existImages.remove(existImage);
+                        } else {
+                            return true;
+                        }
+                    }
+                    if (!(existImages.isEmpty())) { // 기존 이미지와 기존 이미지 목록 일치x > 삭제
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
+
     } // 파일 업로드 및 삭제 필요한 경우
 
     @Override
-    public boolean needsUpdateInfo(MultipartFile[] images, List<List<String>> imgArray, List<Image> existImages) throws IOException {
-        if (existImages != null && !(existImages.isEmpty()) && (isNotNullOrEmpty(images, imgArray))) {
+    public boolean needsUpdateInfo(List<Image> existImages, List<List<String>> existImgArray) throws IOException {
+        /*if (existImages != null && !(existImages.isEmpty()) && (isNotNullOrEmpty(images, imgArray))) {
             List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
             for (int i=0; i<images.length; i++) {
                 MultipartFile image = images[i];
@@ -235,8 +260,38 @@ public class ImageServiceImpl implements ImageService {
                 }
             }
         }
+        return false;*/
+        if (existImages != null && !(existImages.isEmpty()) && existImgArray != null && !(existImages.isEmpty())) {
+            // 기존 이미지가 존재해야 수정 & 새로 들어올 데이터가 있어야 수정
+            for (Image existImage : existImages) {
+                String originalName = existImage.getOriginalName();
+                String index = existImage.getIndex();
+                String preText = existImage.getPreText();
+                String postText = existImage.getPostText();
+                for (List<String> existImgArr : existImgArray) {
+                    if (originalName == existImgArr.get(0)) {
+                        if (index != existImgArr.get(1) || preText != existImgArr.get(2) || postText != existImgArr.get(3)) {
+                            return true;
+                        }
+                    }
+
+                }
+            }
+        }
         return false;
     } // 파일 엔티티 수정 필요한 경우(order, index)
+
+    public List<Image> getUpdatesToDelete(List<Image> existImages, List<List<String>> existImgArray) {
+        List<Image> result = new ArrayList<>(existImages);
+        // 기존 엔티티에 존재하고 목록에 존재x
+        return result;
+    }
+
+    public List<Image> getUpdatesToModify(List<Image> existImages, List<List<String>> existImgArray) {
+        List<Image> result = new ArrayList<>(existImages);
+        // 기존 엔티티에 존재하고 목록에도 존재
+        return result;
+    }
 
     @Override
     public Image updateImage(Image image, List<String> imgArray) {

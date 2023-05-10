@@ -186,12 +186,12 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
+    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if(imageRepository.findByNotNum(notNum) != null && !(imageRepository.findByNotNum(notNum).isEmpty())) {
             List<Image> existImages = imageRepository.findByNotNum(notNum);
             List<String> existNames = existImages.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
-            if (imageService.needsUpdateFile(images, existImages)) {
+            if (imageService.needsUpdateFile(images, existImages, existImgArray)) {
                 for (MultipartFile image : images) {
                     Integer existIndex = existNames.indexOf(image.getOriginalFilename());
                     if (existIndex > -1) { // 이름이 같은 파일이 존재
@@ -210,7 +210,7 @@ public class NoticeServiceImpl implements NoticeService {
                         imageService.uploadImage(image, member); //이름 같은 파일x > 추가
                     }
                 }
-            } if (imageService.needsUpdateInfo(images, imgArray, existImages)) { // 이름, 크기 같은 파일 > 수정
+            } if (imageService.needsUpdateInfo(existImages, existImgArray)) { // 이름, 크기 같은 파일 > 수정
                 for (MultipartFile image : images) {
                     Integer existIndex = existNames.indexOf(image.getOriginalFilename());
                     if (existIndex > -1) {

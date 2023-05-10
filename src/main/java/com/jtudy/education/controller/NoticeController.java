@@ -142,7 +142,7 @@ public class NoticeController {
                 noticeService.updateFile(files, notNum, member.getMember());
             }
             if (imageService.isNotNullOrEmpty(images, imgArray)) {
-                noticeService.updateImg(images, imgArray, notNum, member.getMember());
+                noticeService.updateImg(images, imgArray, existImgArray, notNum, member.getMember());
             }
             return ResponseEntity.ok().build();
         } catch (Exception e) {
