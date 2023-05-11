@@ -101,9 +101,14 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public Image setNotice(Image image, Long notNum, List<String> imgArray) {
-        if (image != null && notNum != null && imgArray != null) {
+        if (image != null && notNum != null && imgArray != null && !(imgArray.isEmpty())) {
             Notice notice = noticeRepository.findByNotNum(notNum);
             image.setNotice(notice, imgArray.get(1), imgArray.get(2), imgArray.get(3));
+            String name = image.getOriginalName();
+            if(imageRepository.existsByOriginalNameAndNotNum(name, notNum)) {
+                String newName = name.substring(0, name.indexOf("."))+"(2)"+name.substring(name.indexOf("."));
+                image.changeOriginalName(newName);
+            }
             return image;
         }
         return null; //exception
@@ -135,12 +140,30 @@ public class NoticeServiceImpl implements NoticeService {
     public void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (images != null && images.length > 0) {
-            for (int i = 0; i < images.length; i++) {
-                Image img = imageService.uploadImage(images[i], member);
-                img.setNotice(notice, imgArray.get(i).get(1).toString(), imgArray.get(i).get(2).toString(), imgArray.get(i).get(3).toString());
-                notice.addImage(img);
-                imageRepository.save(img);
+            for (MultipartFile image : images) {
+                List<String> imgArr = imageService.matchArray(image.getOriginalFilename(), imgArray);
+                if (imgArr != null) {
+                    Image img = imageService.fileToEntity(image, member);
+                    img = setNotice(img, notNum, imgArr);
+                    imageService.uploadImage(image, img);
+                    notice.addImage(img);
+                    imageRepository.save(img);
+                }
             }
+            noticeRepository.save(notice);
+        }
+    }
+
+    @Override
+    public void registerImg(MultipartFile image, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        Image img = imageService.fileToEntity(image, member);
+        List<String> imgArr = imageService.matchArray(img.getOriginalName(), imgArray);
+        if (imgArr != null) {
+            img = setNotice(img, notNum, imgArr);
+            imageService.uploadImage(image, img);
+            imageRepository.save(img);
+            notice.addImage(img);
             noticeRepository.save(notice);
         }
     }
@@ -197,17 +220,12 @@ public class NoticeServiceImpl implements NoticeService {
                     if (existIndex > -1) { // 이름이 같은 파일이 존재
                         Image existImage = existImages.get(existIndex);
                         if (!imageService.isInRangeSize(image, existImage)) { // 같은 파일x
-                            Image img = imageService.uploadImage(image, member);
-                            List<String> imgArr = imageService.matchArray(img, imgArray);
-                            if (imgArr != null) {
-                                img = setNotice(img, notNum, imgArr);
-                                imageRepository.save(img);
-                                notice.addImage(img);
-                                noticeRepository.save(notice);
-                            }
+                            //Image img = imageService.uploadImage(image, member);
+                            registerImg(image, imgArray, notNum, member);
                         }
                     } else {
-                        imageService.uploadImage(image, member); //이름 같은 파일x > 추가
+                        registerImg(image, imgArray, notNum, member);
+                        //이름 같은 파일x > 추가
                     }
                 }
             } if (imageService.needsUpdateInfo(existImages, existImgArray)) { // 이름, 크기 같은 파일 > 수정
@@ -216,10 +234,9 @@ public class NoticeServiceImpl implements NoticeService {
                     if (existIndex > -1) {
                         Image existImage = existImages.get(existIndex);
                         if (imageService.isInRangeSize(image, existImage)) {
-                            for (List<String> imgArr : imgArray) {
-                                if (imgArr.get(0).equals(existImage)) {
-                                    imageService.updateImage(existImage, imgArr);
-                                }
+                            List<String> imgArr = imageService.matchArray(existImage.getOriginalName(), imgArray);
+                            if (imgArr != null) {
+                                imageService.updateImage(existImage, imgArr);
                             }
                         }
                     }
@@ -235,14 +252,7 @@ public class NoticeServiceImpl implements NoticeService {
             }
         } else { // 기존에 파일이 없던 경우 > 추가
             for (MultipartFile image :images) {
-                Image img = imageService.uploadImage(image, member);
-                List<String> imgArr = imageService.matchArray(img, imgArray);
-                if (imgArr != null) {
-                    img = setNotice(img, notNum, imgArr);
-                    imageRepository.save(img);
-                    notice.addImage(img);
-                    noticeRepository.save(notice);
-                }
+                registerImg(image, imgArray, notNum, member);
             }
         }
     }

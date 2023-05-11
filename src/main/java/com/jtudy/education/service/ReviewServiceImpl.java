@@ -80,23 +80,43 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewFormDTO reviewFormDTO, MultipartFile[] files, Member member) throws IOException {
+    public Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException {
         Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcademy());
         Review review = formToEntity(reviewFormDTO, academy, member);
         reviewRepository.save(review);
-        for (MultipartFile file : files) {
-            Image image = imageService.uploadImage(file, member);
-            registerImg(image, review);
-        }
         return review.getRevNum();
-    } // save 메서드 남용..... entity manager 고려해보기
+    }
+
+    public Image setReview(Image image, Long revNum, List<String> imgArray) {
+        if (image != null && revNum != null && imgArray != null && !(imgArray.isEmpty())) {
+            Review review = reviewRepository.findByRevNum(revNum);
+            image.setReview(review, imgArray.get(1), imgArray.get(2), imgArray.get(3));
+            String name = image.getOriginalName();
+            if (imageRepository.existsByOriginalNameAndRevNum(name, revNum)) {
+                String newName = name.substring(0, name.indexOf("."))+"(2)"+name.substring(name.indexOf("."));
+                image.changeOriginalName(newName);
+            }
+            return image;
+        }
+        return null;
+    }
 
     @Override
-    public void registerImg(Image image, Review review) {
-        //image.setReview(review);
-        review.addImage(image);
-        imageRepository.save(image);
-        reviewRepository.save(review);
+    public void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException {
+        Review review = reviewRepository.findByRevNum(revNum);
+        if (images != null && images.length > 0) {
+            for (MultipartFile image : images) {
+                List<String> imgArr = imageService.matchArray(image.getOriginalFilename(), imgArray);
+                if (imgArr != null) {
+                    Image img = imageService.fileToEntity(image, member);
+                    img = setReview(img, revNum, imgArr);
+                    imageService.uploadImage(image, img);
+                    review.addImage(img);
+                    imageRepository.save(img);
+                }
+            }
+            reviewRepository.save(review);
+        }
     }
 
 /*
@@ -132,7 +152,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void removeAllImg(Long revNum) {
+        public void removeAllImg(Long revNum) {
         List<Image> images = imageRepository.findByRevNum(revNum);
         for (Image image : images) {
             removeImg(image.getImageId(), revNum);

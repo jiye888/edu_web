@@ -109,8 +109,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image uploadImage(MultipartFile img, Member member) throws IOException {
-        Image image = fileToEntity(img, member);
+    public Image uploadImage(MultipartFile img, Image image){
+        //Image image = fileToEntity(img, member);
 
         try (InputStream inputStream = img.getInputStream()) {
             Files.copy(inputStream, Paths.get(image.getPath()), StandardCopyOption.REPLACE_EXISTING);
@@ -120,6 +120,7 @@ public class ImageServiceImpl implements ImageService {
 
         return image;
     }
+
 
     @Override
     public List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException {
@@ -283,6 +284,20 @@ public class ImageServiceImpl implements ImageService {
 
     public List<Image> getUpdatesToDelete(List<Image> existImages, List<List<String>> existImgArray) {
         List<Image> result = new ArrayList<>(existImages);
+        if (existImages != null && !(existImages.isEmpty())) {
+            if (existImgArray.isEmpty()) {
+                return existImages;
+            } else {
+                for (Image existImage : existImages) {
+                    List<String> existImgNames = existImgArray.stream().map(e -> e.get(0)).collect(Collectors.toList());
+                    if (existImgNames.contains(existImage.getOriginalName())) {
+                        // 동일한 파일인지 사이즈 검사(isInRangeSize처럼)
+                        result.remove(existImage);
+                    }
+                }
+            }
+        }
+
         // 기존 엔티티에 존재하고 목록에 존재x
         return result;
     }
@@ -290,6 +305,7 @@ public class ImageServiceImpl implements ImageService {
     public List<Image> getUpdatesToModify(List<Image> existImages, List<List<String>> existImgArray) {
         List<Image> result = new ArrayList<>(existImages);
         // 기존 엔티티에 존재하고 목록에도 존재
+        //
         return result;
     }
 
@@ -318,9 +334,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<String> matchArray(Image image, List<List<String>> imgArray) {
+    public List<String> matchArray(String name, List<List<String>> imgArray) {
         for (List<String> imgArr : imgArray) {
-            if (imgArr.get(0).equals(image.getOriginalName())) {
+            if (name.equals(imgArr.get(0))) {
                 return imgArr;
             }
         }

@@ -25,7 +25,7 @@ public interface ImageService {
 
     void deleteAcademyMain(Long acaNum);
 
-    Image uploadImage(MultipartFile img, Member member) throws IOException;
+    Image uploadImage(MultipartFile img, Image image);
 
     List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
 
@@ -35,13 +35,11 @@ public interface ImageService {
 
     boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages, List<List<String>> existImgArray) throws IOException;
 
-    //boolean needsUpdateInfo(MultipartFile[] images, List<Image> existImages, List<List<String>> imgArray, List<List<String>> existImgArray) throws IOException;
-
     boolean needsUpdateInfo(List<Image> existImages, List<List<String>> existImgArray) throws IOException;
 
     Image updateImage(Image image, List<String> imgArray);
 
     void deleteImage(Image image) throws IOException;
 
-    List<String> matchArray(Image image, List<List<String>> imgArray);
+    List<String> matchArray(String name, List<List<String>> imgArray);
 }

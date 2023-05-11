@@ -75,4 +75,8 @@ public class Image extends BaseEntity{
         this.postText = postText;
     }
 
+    public void changeOriginalName(String name) {
+        this.originalName = name;
+    }
+
 }

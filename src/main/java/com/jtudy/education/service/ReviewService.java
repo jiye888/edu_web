@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface ReviewService {
 
@@ -26,7 +27,11 @@ public interface ReviewService {
 
     //Long register(ReviewFormDTO reviewFormDTO, Member member);
 
-    Long register(ReviewFormDTO reviewFormDTO, MultipartFile[] files, Member member) throws IOException;
+    Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException;
+
+    void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException;
+
+    //void registerImg(Image image, Review review) throws IOException;
 
     Long update(ReviewFormDTO reviewFormDTO);
 
@@ -62,7 +67,6 @@ public interface ReviewService {
         return reviewDTO;
     }
 
-    void registerImg(Image image, Review review) throws IOException;
 
     void removeAllImg(Long revNum);
 }

@@ -23,4 +23,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     List<Image> findByOriginalName(String originalName);
 
+    @Query("select case when count(i) > 0 then true else false end from Image i where i.originalName = :originalName and i.notice.notNum = :notNum")
+    boolean existsByOriginalNameAndNotNum(String originalName, Long notNum);
+
+    @Query("select case when count(i) > 0 then true else false end from Image i where i.originalName = :originalName and i.review.revNum = :revNum")
+    boolean existsByOriginalNameAndRevNum(String originalName, Long revNum);
 }

@@ -38,6 +38,8 @@ public interface NoticeService {
 
     void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
 
+    void registerImg(MultipartFile image, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
+
     void deleteFile(Long notNum, Long fileId);
 
     void deleteFiles(Long notNum);

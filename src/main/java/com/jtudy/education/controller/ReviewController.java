@@ -81,12 +81,8 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] files, @RequestPart List<Integer> positions,
+    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] images, @RequestPart List<List<String>> imgArray,
                                    @AuthenticationPrincipal SecurityMember member, Model model) {
-        for (MultipartFile file : files) {
-            //imageService.
-        }
-
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -97,7 +93,8 @@ public class ReviewController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
-            Long revNum = reviewService.register(reviewFormDTO, files, member.getMember()); //files
+            Long revNum = reviewService.register(reviewFormDTO, member.getMember()); //files
+            reviewService.registerImg(images, imgArray, revNum, member.getMember());
             return ResponseEntity.ok().body(revNum);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
