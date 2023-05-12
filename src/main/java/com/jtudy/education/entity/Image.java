@@ -69,10 +69,11 @@ public class Image extends BaseEntity{
         this.postText = postText;
     }
 
-    public void changeInfo(String index, String preText, String postText) {
+    public Image changeInfo(String index, String preText, String postText) {
         this.index = index;
         this.preText = preText;
         this.postText = postText;
+        return this;
     }
 
     public void changeOriginalName(String name) {

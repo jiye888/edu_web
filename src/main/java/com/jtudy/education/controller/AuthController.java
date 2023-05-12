@@ -147,7 +147,6 @@ public class AuthController {
     @ResponseBody
     public void acceptAuth(@RequestBody Map<String,Long> map, @AuthenticationPrincipal SecurityMember member) {
         Long authId = map.get("authId");
-        System.out.println(authId);
         AuthDTO authDTO = authService.getOneByAuthId(authId);
         authService.acceptAuth(authDTO.getEmail(), authDTO.getRoles());
     }
@@ -176,7 +175,6 @@ public class AuthController {
     @PostMapping("/remove_role")
     @ResponseBody
     public void removeRoles(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
-        System.out.println(map);
         Long number = Long.parseLong(map.get("number").toString());
         Roles roles = Roles.valueOf(map.get("roles").toString());
         authService.removeRoles(number, roles);
@@ -185,7 +183,6 @@ public class AuthController {
     @PostMapping("/add_role")
     @ResponseBody
     public void addRoles(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
-        System.out.println(map);
         Long number  = Long.parseLong(map.get("number").toString());
         Roles roles = Roles.valueOf(map.get("roles").toString());
         authService.addRoles(number, roles);

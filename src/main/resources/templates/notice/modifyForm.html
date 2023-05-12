@@ -94,7 +94,7 @@
 
             if (size !== 0) {
                 existImages.forEach(image => {
-                    const insertImg = '<img src="data:'+image.mimeType+';base64 ,'+image.base64+'" data-name='+image.originalName+' name=\"exist\">';
+                    const insertImg = '<img src="data:'+image.mimeType+';base64 ,'+image.base64+'" data-name='+image.originalName+' data-id='+image.index+' name=\"exist\">';
                     const preText = image.preText;
                     const postText = image.postText;
 
@@ -211,10 +211,10 @@
         function appendHiddenDiv(tag, id) {
             const hiddenDiv = document.createElement('div');
             hiddenDiv.setAttribute("style", "display:none;");
-            hiddenDiv.innerText = id;
+            hiddenDiv.textContent = id;
             tag.appendChild(hiddenDiv);
 
-            return hiddenDiv
+            return hiddenDiv;
         }
 
         function findNewImgPosition() {
@@ -281,7 +281,7 @@
                     const contentText = document.getElementById("content").textContent;
 
                     var match = matchContent(id);
-                    if (match != null && match.length === 1) {
+                    //if (match != null && match.length === 1) {
                         if (match.index < 10) {
                             var preText = contentText.slice(0, match.index);
                         } else {
@@ -293,18 +293,18 @@
                             var nextText = contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
                         }
 
-                    } else {
-                        var newId = getRandomImgId();
+                    /*} else {
+                        //var newId = getRandomImgId();
                         var newMatch = matchContent(newId);
                         while (newMatch != null && newMatch.length === 1) {
                             newId = getRandomImgId();
                             newMatch = matchContent(newId);
                         }
                         img.setAttribute('data-id', newId);
-                    }
+                    }*/
 
                     existIndex.push([dataName, id, preText, nextText]);
-                });
+                })
             }
             return existIndex;
         }

@@ -110,7 +110,6 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image uploadImage(MultipartFile img, Image image){
-        //Image image = fileToEntity(img, member);
 
         try (InputStream inputStream = img.getInputStream()) {
             Files.copy(inputStream, Paths.get(image.getPath()), StandardCopyOption.REPLACE_EXISTING);
@@ -282,16 +281,16 @@ public class ImageServiceImpl implements ImageService {
         return false;
     } // 파일 엔티티 수정 필요한 경우(order, index)
 
+    @Override
     public List<Image> getUpdatesToDelete(List<Image> existImages, List<List<String>> existImgArray) {
         List<Image> result = new ArrayList<>(existImages);
         if (existImages != null && !(existImages.isEmpty())) {
-            if (existImgArray.isEmpty()) {
-                return existImages;
+            if (existImgArray == null || existImgArray.isEmpty()) {
+                return result;
             } else {
                 for (Image existImage : existImages) {
-                    List<String> existImgNames = existImgArray.stream().map(e -> e.get(0)).collect(Collectors.toList());
-                    if (existImgNames.contains(existImage.getOriginalName())) {
-                        // 동일한 파일인지 사이즈 검사(isInRangeSize처럼)
+                    List<String> existImgArr = matchArray(existImage.getOriginalName(), existImgArray);
+                    if (existImgArr != null) {
                         result.remove(existImage);
                     }
                 }
@@ -302,10 +301,27 @@ public class ImageServiceImpl implements ImageService {
         return result;
     }
 
+    @Override
     public List<Image> getUpdatesToModify(List<Image> existImages, List<List<String>> existImgArray) {
-        List<Image> result = new ArrayList<>(existImages);
+        List<Image> result = new ArrayList<>();
         // 기존 엔티티에 존재하고 목록에도 존재
-        //
+        if (existImages != null && !(existImages.isEmpty())) {
+            if (existImgArray != null && !(existImgArray.isEmpty())) {
+                for (Image existImage : existImages) {
+                    List<String> existImgArr = matchArray(existImage.getOriginalName(), existImgArray);
+                    if (existImgArr != null && !(existImgArr.isEmpty())) {
+                        boolean index = existImage.getIndex().equals(existImgArr.get(1));
+                        boolean preText = existImage.getPreText().equals(existImgArr.get(2));
+                        boolean postText = existImage.getPostText().equals(existImgArr.get(3));
+                        if (!index || !preText || !postText) {
+                            result.add(existImage);
+                        }
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
         return result;
     }
 
@@ -331,6 +347,7 @@ public class ImageServiceImpl implements ImageService {
                 folder.delete();
             }
         }
+        imageRepository.delete(image);
     }
 
     @Override
