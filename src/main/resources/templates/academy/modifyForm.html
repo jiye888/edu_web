@@ -145,13 +145,11 @@
                 location:location,
                 subject:subject
             };
-            console.log(formDTO);
 
             var file = $('#inputFile').prop('files')[0];
             var formData = new FormData();
             formData.append("academyFormDTO", new Blob([JSON.stringify(formDTO)], {type:"application/json"}));
             formData.append("file", file);
-            console.log(formData.keys);
 
             if (acaName && subject.length != 0) {
 

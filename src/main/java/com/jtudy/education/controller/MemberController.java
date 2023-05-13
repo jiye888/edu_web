@@ -59,7 +59,6 @@ public class MemberController {
                 for (FieldError fieldError : fieldErrors) {
                     map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
                 }
-                System.out.println(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map));
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
             }
             memberService.createMember(memberFormDTO);

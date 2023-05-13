@@ -173,11 +173,13 @@
 
         const contentDiv = document.getElementById('content');
         contentDiv.addEventListener('keydown', function() {
+
             if (event.key === 'Backspace' || event.keyCode === 8) {
-                if (window.getSelection().getRangeAt(0).endContainer.firstChild != null) {
-                    const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
-                    const tagName = window.getSelection().getRangeAt(0).endContainer.dataset.name;
-                    if (selection != null && selection === "IMG") {
+                if (window.getSelection().getRangeAt(0).endContainer != null) {
+                    const firstElement = window.getSelection().getRangeAt(0).endContainer.firstElementChild;
+                    const lastElement = window.getSelection().getRangeAt(0).endContainer.lastElementChild;
+
+                    if (firstElement.tagName === "IMG" || lastElement.tagName === "IMG") {
                         if (confirm("사진을 삭제하시겠습니까?")) {
                             for (var i=0; i<imgList.length; i++) {
                                 if (imgList[i].name == tagName) {
@@ -185,6 +187,17 @@
                                 }
                             }
                         } else {
+                            event.preventDefault();
+                        }
+                    }
+                }
+            } else if (event.key === 'Delete' || event.keyCode === 46) {
+                if (window.getSelection().getRangeAt(0).endContainer != null) {
+                    const firstElement = window.getSelection().getRangeAt(0).endContainer.firstElementChild;
+                    const lastElement = window.getSelection().getRangeAt(0).endContainer.lastElementChild;
+
+                    if (firstElement.tagName === "IMG" || lastElement.tagName === "IMG") {
+                        if (!confirm("사진을 삭제하시겠습니까?")) {
                             event.preventDefault();
                         }
                     }
