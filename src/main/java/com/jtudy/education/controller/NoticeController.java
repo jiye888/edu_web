@@ -141,9 +141,9 @@ public class NoticeController {
             if (files != null && files.length > 0) {
                 noticeService.updateFile(files, notNum, member.getMember());
             }
-            if (imageService.isNotNullOrEmpty(images, imgArray)) {
+            //if (imageService.isNotNullOrEmpty(images, imgArray) || existImgArray != null) {
                 noticeService.updateImg(images, imgArray, existImgArray, notNum, member.getMember());
-            }
+            //}
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

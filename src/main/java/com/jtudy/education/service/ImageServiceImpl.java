@@ -282,29 +282,27 @@ public class ImageServiceImpl implements ImageService {
     } // 파일 엔티티 수정 필요한 경우(order, index)
 
     @Override
-    public List<Image> getUpdatesToDelete(List<Image> existImages, List<List<String>> existImgArray) {
-        List<Image> result = new ArrayList<>(existImages);
+    public List<Image> getImagesToDelete(List<Image> existImages, List<List<String>> existImgArray) {
+        List<Image> deleteList = new ArrayList<>();
         if (existImages != null && !(existImages.isEmpty())) {
             if (existImgArray == null || existImgArray.isEmpty()) {
-                return result;
+                deleteList.addAll(existImages);
+                return deleteList;
             } else {
                 for (Image existImage : existImages) {
                     List<String> existImgArr = matchArray(existImage.getOriginalName(), existImgArray);
-                    if (existImgArr != null) {
-                        result.remove(existImage);
+                    if (existImgArr == null) {
+                        deleteList.add(existImage);
                     }
                 }
             }
+            return deleteList;
         }
-
-        // 기존 엔티티에 존재하고 목록에 존재x
-        return result;
+        return null;
     }
 
     @Override
-    public List<Image> getUpdatesToModify(List<Image> existImages, List<List<String>> existImgArray) {
-        List<Image> result = new ArrayList<>();
-        // 기존 엔티티에 존재하고 목록에도 존재
+    public List<Image> modifyImages(List<Image> existImages, List<List<String>> existImgArray) {
         if (existImages != null && !(existImages.isEmpty())) {
             if (existImgArray != null && !(existImgArray.isEmpty())) {
                 for (Image existImage : existImages) {
@@ -314,15 +312,14 @@ public class ImageServiceImpl implements ImageService {
                         boolean preText = existImage.getPreText().equals(existImgArr.get(2));
                         boolean postText = existImage.getPostText().equals(existImgArr.get(3));
                         if (!index || !preText || !postText) {
-                            result.add(existImage);
+                            existImage.changeInfo(existImgArr.get(1), existImgArr.get(2), existImgArr.get(3));
+                            imageRepository.save(existImage);
                         }
                     }
                 }
-            } else {
-                return null;
             }
         }
-        return result;
+        return null;
     }
 
     @Override
@@ -334,19 +331,17 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImage(Image image) throws IOException {
-        Files.delete(Paths.get(image.getPath()));
-
-        String date = LocalDate.now()+toString();
-        String datePath = date.replaceAll("-", "/");
-        Path uploadPath = Paths.get(path + datePath);
-
-        String folderPath = image.getPath().substring(0, image.getPath().lastIndexOf("/"));
-        if (!folderPath.equals(uploadPath)) {
-            File folder = new File(folderPath);
-            if (folder.isDirectory() && folder.list().length == 0) {
-                folder.delete();
-            }
+        if (Files.exists(Paths.get(image.getPath()))) {
+            Files.delete(Paths.get(image.getPath()));
         }
+
+        String folderPath = image.getPath().substring(0, image.getPath().lastIndexOf("\\"));
+
+        File folder = new File(folderPath);
+        if (folder.isDirectory() && folder.list().length == 0) {
+            folder.delete();
+        }
+
         imageRepository.delete(image);
     }
 

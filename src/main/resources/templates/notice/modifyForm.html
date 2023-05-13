@@ -217,6 +217,22 @@
             return hiddenDiv;
         }
 
+        function setTexts(match, contentText) {
+            const index = match.index;
+            if (index < 10) {
+                var preText = contentText.slice(0, index);
+            } else {
+                var preText = contentText.slice(index - 10, index);
+            }
+            const end = index + match[0].length;
+            if ((end + 10) < contentText.length) {
+                var nextText = contentText.slice(end, end + 10);
+            } else {
+                var nextText = contentText.slice(end, content.length);
+            }
+            return [preText, nextText];
+        }
+
         function findNewImgPosition() {
             const images = document.querySelectorAll('img[name="new"]');
             let imgIndex = [];
@@ -251,18 +267,9 @@
                             revisedText = document.getElementById('content').textContent;
                             revisedMatch = revisedText.match(id);
                     }
-                    if (revisedMatch.index < 10) {
-                        var preText = revisedText.slice(0, revisedMatch.index);
-                    } else {
-                        var preText = revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
-                    }
-                    if ((revisedMatch.index + revisedMatch[0].length) + 10 < revisedText.length) {
-                        var nextText = revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedText.length);
-                    } else {
-                        var nextText = revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
-                    }
+                    var texts = setTexts(revisedMatch, revisedText);
 
-                    imgIndex.push([dataName, id, preText, nextText]);
+                    imgIndex.push([dataName, id, texts[0], texts[1]]);
                 });
             }
             return imgIndex;
@@ -278,32 +285,25 @@
 
                     appendHiddenDiv(img, id);
 
-                    const contentText = document.getElementById("content").textContent;
+                    var contentText = document.getElementById("content").textContent;
 
                     var match = matchContent(id);
-                    //if (match != null && match.length === 1) {
-                        if (match.index < 10) {
-                            var preText = contentText.slice(0, match.index);
-                        } else {
-                            var preText = contentText.slice(match.index - 10, match.index);
-                        }
-                        if ((match.index + match[0].length + 10) < contentText.length) {
-                            var nextText = contentText.slice(match.index + match[0].length, contentText.length);
-                        } else {
-                            var nextText = contentText.slice(match.index + match[0].length, match.index + match[0].length + 10);
-                        }
+                    if (match != null && match.length === 1) {
+                        var texts = setTexts(match, contentText);
 
-                    /*} else {
-                        //var newId = getRandomImgId();
+                    } else {
+                        var newId = getRandomImgId();
                         var newMatch = matchContent(newId);
                         while (newMatch != null && newMatch.length === 1) {
                             newId = getRandomImgId();
                             newMatch = matchContent(newId);
                         }
                         img.setAttribute('data-id', newId);
-                    }*/
+                        contentText = document.getElementById("content").textContent;
+                        var texts = setTexts(newMatch, contentText);
+                    }
 
-                    existIndex.push([dataName, id, preText, nextText]);
+                    existIndex.push([dataName, id, texts[0], texts[1]]);
                 })
             }
             return existIndex;
@@ -353,7 +353,6 @@
 
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
             formData.append("existImgArray", new Blob([JSON.stringify(existImgArray)], {type:"application/json"}));
-
 
             if (title && content) {
 

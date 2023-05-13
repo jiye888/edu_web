@@ -37,9 +37,9 @@ public interface ImageService {
 
     boolean needsUpdateInfo(List<Image> existImages, List<List<String>> existImgArray) throws IOException;
 
-    List<Image> getUpdatesToDelete(List<Image> existImages, List<List<String>> existImgArray);
+    List<Image> getImagesToDelete(List<Image> existImages, List<List<String>> existImgArray);
 
-    List<Image> getUpdatesToModify(List<Image> existImages, List<List<String>> existImgArray);
+    List<Image> modifyImages(List<Image> existImages, List<List<String>> existImgArray);
 
     Image updateImage(Image image, List<String> imgArray);
 
