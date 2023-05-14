@@ -69,14 +69,14 @@ public class AcademyController {
 
     @GetMapping("/list")
     public void list(Model model, @RequestParam(value = "page", defaultValue = "1") int page) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<AcademyDTO> academyDTO = academyService.getAll(pageable);
         model.addAttribute("academy", academyDTO);
     }
 
     @GetMapping("/manage")
     public void manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "acaNum"));
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<AcademyDTO> academyDTO = academyService.manageAcademies(member.getMember(), pageable);
         model.addAttribute("academy", academyDTO);
         model.addAttribute("name", member.getMember().getName());
@@ -210,7 +210,7 @@ public class AcademyController {
 
     @GetMapping("/joined")
     public void getAcademies(@RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "acaNum");
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         String name = member.getMember().getName();
         model.addAttribute("name", name);
         Long memNum = member.getMember().getMemNum();
@@ -221,7 +221,7 @@ public class AcademyController {
     @GetMapping("/search")
     public String search(@RequestParam(value="name", required = false) String name, @RequestParam(value="subject", required = false) String[] subject,
                          @RequestParam(value="location", required = false) String location, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        Pageable pageable = PageRequest.of(page-1, 10);
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         List<Subject> subjectList = new ArrayList<>();
         if (subject != null) {
             for (String sub : subject) {

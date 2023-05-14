@@ -7,6 +7,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface AuthRepository extends JpaRepository<Auth, Long> {
 
     @Query("select a from Auth a left outer join a.member m where m.email = :email")
@@ -15,5 +18,8 @@ public interface AuthRepository extends JpaRepository<Auth, Long> {
     Auth findByAuthId(Long authId);
 
     Slice<Auth> findByIsProcessed(boolean isProcessed, Pageable pageable);
+
+    @Query("select a from Auth where a.isProcessed = :isProcessed and a.processedDate = :date")
+    List<Auth> findByIsProcessedAndProcessedDate(boolean isProcessed, LocalDateTime date);
 
 }

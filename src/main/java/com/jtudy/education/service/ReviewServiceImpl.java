@@ -119,22 +119,35 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
-/*
-    public void uploadImages(MultipartFile[] files, Long revNum, Member member) throws IOException {
-        Review review = reviewRepository.findByRevNum(revNum);
-        for (MultipartFile file : files) {
-            Image image = imageService.fileToEntity(file, member);
-            image.setReview(review);
-            imageService.uploadImage(image, member);
-        }
-    }*/
-
     @Override
     public Long update(ReviewFormDTO reviewFormDTO) {
         Review review = reviewRepository.findByRevNum(reviewFormDTO.getNumber());
         review.changeReview(reviewFormDTO.getTitle(), reviewFormDTO.getContent(), reviewFormDTO.getGrade());
         reviewRepository.save(review);
         return review.getRevNum();
+    }
+
+    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long revNum, Member member) throws IOException {
+        Review review = reviewRepository.findByRevNum(revNum);
+        List<Image> existImages = imageRepository.findByRevNum(revNum);
+        List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
+        if (modifyList != null && modifyList.size() > 0) {
+            for (Image modify : modifyList) {
+                review.addImage(modify);
+            }
+            reviewRepository.save(review);
+        }
+        List<Image> deleteList = imageService.getImagesToDelete(existImages, existImgArray);
+        if (deleteList != null && deleteList.size() > 0) {
+            for (Image deleteEntity : deleteList) {
+                review.removeImage(deleteEntity);
+                imageService.deleteImage(deleteEntity);
+            }
+            reviewRepository.save(review);
+        }
+        if (images != null && images.length > 0) {
+            registerImg(images, imgArray, revNum, member);
+        }
     }
 
     @Override

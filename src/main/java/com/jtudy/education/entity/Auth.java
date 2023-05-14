@@ -30,6 +30,9 @@ public class Auth {
 
     private boolean isProcessed;
 
+    @Column(name = "processed_date")
+    private LocalDateTime processedDate;
+
     @ManyToOne
     private Member member;
 

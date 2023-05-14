@@ -46,7 +46,7 @@ public class ReviewController {
 
     @GetMapping("/list")
     public void list(@RequestParam("academy") Long acaNum, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "revNum"));
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ReviewDTO> reviewDTO = reviewService.getAll(acaNum, pageable);
         model.addAttribute("academy", acaNum);
         model.addAttribute("review", reviewDTO);
@@ -145,7 +145,7 @@ public class ReviewController {
     @GetMapping("/by")
     public ResponseEntity reviews(@RequestParam(value = "page", defaultValue = "1") int page,
                                   @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request, HttpServletResponse response) {
-        Pageable pageable = PageRequest.of(page-1, 10, Sort.Direction.DESC, "revNum");
+        Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         try {
             Page<ReviewDTO> review = reviewService.getReviews(member.getMember(), pageable);
             model.addAttribute("review", review);

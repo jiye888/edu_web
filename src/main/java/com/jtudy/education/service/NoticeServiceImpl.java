@@ -213,10 +213,6 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long notNum, Member member) throws IOException {
-        if(existImgArray != null) {
-            for (List<String> existArr : existImgArray) {
-            }
-        }
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<Image> existImages = imageRepository.findByNotNum(notNum);
         List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
@@ -227,7 +223,7 @@ public class NoticeServiceImpl implements NoticeService {
             noticeRepository.save(notice);
         }
         List<Image> deleteList = imageService.getImagesToDelete(existImages, existImgArray);
-        if (deleteList != null && !(deleteList.isEmpty())) {
+        if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {
                 notice.removeImage(deleteEntity);
                 imageService.deleteImage(deleteEntity);
