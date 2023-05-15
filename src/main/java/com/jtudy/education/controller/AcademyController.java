@@ -171,7 +171,6 @@ public class AcademyController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
     public String delete(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         if (academyService.isManager(acaNum, member)) {
             academyService.delete(acaNum);

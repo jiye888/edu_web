@@ -79,7 +79,7 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void validateEmail(String email) throws DuplicateMemberException {
+    public void validateEmail(String email) {
         if(memberRepository.existsByEmail(email)) {
             throw new CustomException(ExceptionCode.DUPLICATE_USERNAME);
         }

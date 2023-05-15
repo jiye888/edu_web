@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Academy;
@@ -23,6 +24,9 @@ public interface ReviewService {
 
     ReviewDTO getOne(Long revNum);
 
+    @Transactional(readOnly = true)
+    List<ImageDTO> getAllImages(Long revNum);
+
     ReviewDTO getByAcademy(Long acaNum, String email);
 
     //Long register(ReviewFormDTO reviewFormDTO, Member member);
@@ -35,7 +39,9 @@ public interface ReviewService {
 
     Long update(ReviewFormDTO reviewFormDTO);
 
-    void delete(Long revNum);
+    void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long revNum, Member member) throws IOException;
+
+    void delete(Long revNum) throws IOException;
 
     Page<ReviewDTO> getReviews(Member member, Pageable pageable);
 
@@ -68,5 +74,5 @@ public interface ReviewService {
     }
 
 
-    void removeAllImg(Long revNum);
+    void removeAllImg(Long revNum) throws IOException;
 }

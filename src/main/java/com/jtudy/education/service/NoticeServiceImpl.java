@@ -4,6 +4,7 @@ import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
+import com.jtudy.education.config.exception.CustomException;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyRepository;
@@ -23,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,13 +78,17 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<FileUploadDTO> getAllFiles(Long notNum) throws IOException {
+    public List<FileUploadDTO> getAllFiles(Long notNum) {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<FileUpload> files = fileUploadRepository.findByNotice(notice);
         List<FileUploadDTO> fileList = new ArrayList<>();
         for (FileUpload file : files) {
-            FileUploadDTO fileUploadDTO = fileUploadService.entityToDTO(file);
-            fileList.add(fileUploadDTO);
+            try {
+                FileUploadDTO fileUploadDTO = fileUploadService.entityToDTO(file);
+                fileList.add(fileUploadDTO);
+            } catch (IOException e) {
+                fileList.add(null);
+            }
         }
         return fileList;
     }
@@ -252,11 +258,19 @@ public class NoticeServiceImpl implements NoticeService {
         }
         List<Image> imageList = imageRepository.findByNotNum(notNum);
         for (Image image : imageList) {
-            notice.removeImage(image);
-            imageService.deleteImage(image);
+            try {
+                notice.removeImage(image);
+                imageService.deleteImage(image);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                notice.removeImage(image);
+                noticeRepository.save(notice);
+            } catch (IOException e) {
+                throw new IOException();
+            }
         }
         noticeRepository.deleteById(notNum);
-    } // 수정하기
+    }
 
     @Override
     @Transactional(readOnly = true)

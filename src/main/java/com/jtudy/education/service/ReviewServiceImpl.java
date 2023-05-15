@@ -1,5 +1,6 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.constant.Roles;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +67,21 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findByRevNum(revNum);
         ReviewDTO reviewDTO = entityToDTO(review);
         return reviewDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ImageDTO> getAllImages(Long revNum) {
+        List<Image> image = imageRepository.findByRevNum(revNum);
+        List<ImageDTO> images = image.stream().map(e -> {
+            try {
+                return imageService.entityToDTO(e);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }).collect(Collectors.toList());
+        return images;
     }
 
     @Override
@@ -127,6 +144,7 @@ public class ReviewServiceImpl implements ReviewService {
         return review.getRevNum();
     }
 
+    @Override
     public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long revNum, Member member) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         List<Image> existImages = imageRepository.findByRevNum(revNum);
@@ -151,7 +169,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void delete(Long revNum) {
+    public void delete(Long revNum) throws IOException {
         removeAllImg(revNum);
         reviewRepository.deleteById(revNum);
     }
@@ -165,19 +183,25 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-        public void removeAllImg(Long revNum) {
+        public void removeAllImg(Long revNum) throws IOException {
         List<Image> images = imageRepository.findByRevNum(revNum);
         for (Image image : images) {
             removeImg(image.getImageId(), revNum);
         }
     }
 
-    public void removeImg(Long imageId, Long revNum) {
+    public void removeImg(Long imageId, Long revNum) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         Image image = imageRepository.findByImageId(imageId);
-        review.removeImage(image);
-        reviewRepository.save(review);
-        imageRepository.delete(image);
+        try {
+            review.removeImage(image);
+            imageService.deleteImage(image);
+            reviewRepository.save(review);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new IOException();
+        }
     }
 
 }

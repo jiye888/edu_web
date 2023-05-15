@@ -26,7 +26,7 @@ public interface NoticeService {
 
     NoticeDTO getOne(Long notNum);
 
-    List<FileUploadDTO> getAllFiles(Long notNum) throws IOException;
+    List<FileUploadDTO> getAllFiles(Long notNum);
 
     List<ImageDTO> getAllImages(Long notNum);
 

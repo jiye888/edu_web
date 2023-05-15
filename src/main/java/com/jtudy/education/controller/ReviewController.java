@@ -1,5 +1,6 @@
 package com.jtudy.education.controller;
 
+import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.security.SecurityMember;
@@ -30,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,15 +111,23 @@ public class ReviewController {
     }
 
     @GetMapping("/modify")
-    public String modify(@RequestParam("number") Long revNum, Model model) {
+    public String modify(@RequestParam("number") Long revNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
-        model.addAttribute("academy", reviewDTO.getAcaNum());
-        model.addAttribute("review", reviewDTO);
+        List<ImageDTO> image = reviewService.getAllImages(revNum);
+        if (reviewService.validateMember(reviewDTO.getRevNum(), member)) {
+            model.addAttribute("academy", reviewDTO.getAcaNum());
+            model.addAttribute("review", reviewDTO);
+            model.addAttribute("image", image);
+        } else {
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "/academy/exception";
+        }
         return "/review/modifyForm";
     }
 
     @PostMapping("/modify")
-    public ResponseEntity modify(@RequestBody @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public ResponseEntity modify(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images,
+                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member, Model model) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -127,7 +138,8 @@ public class ReviewController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
-            reviewService.update(reviewFormDTO);
+            Long revNum = reviewService.update(reviewFormDTO);
+            reviewService.updateImg(images, imgArray, existImgArray, revNum, member.getMember());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -136,10 +148,19 @@ public class ReviewController {
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public void delete(@RequestParam("number") Long revNum, Model model) {
+    public ResponseEntity delete(@RequestParam("number") Long revNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
-        model.addAttribute("academy", reviewDTO.getAcaNum());
-        reviewService.delete(revNum);
+        if (reviewService.validateMember(revNum, member)) {
+            model.addAttribute("academy", reviewDTO.getAcaNum());
+            try {
+                reviewService.delete(revNum);
+            } catch (IOException e) {
+                return ResponseEntity.badRequest().body("IOException");
+            }
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(401).body("권한이 없습니다.");
+        }
     }
 
     @GetMapping("/by")

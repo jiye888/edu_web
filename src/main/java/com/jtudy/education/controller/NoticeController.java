@@ -110,7 +110,7 @@ public class NoticeController {
     }
 
     @GetMapping("/modify")
-    public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) throws IOException {
+    public String modify(@RequestParam("number") Long notNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         List<FileUploadDTO> files = noticeService.getAllFiles(notNum);
         List<ImageDTO> image = noticeService.getAllImages(notNum);
@@ -119,7 +119,8 @@ public class NoticeController {
             model.addAttribute("files", files);
             model.addAttribute("image", image);
         } else {
-            throw new IllegalArgumentException("관리자 권한이 없습니다."); //*exception
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "/academy/exception";
         }
         return "notice/modifyForm";
     }
@@ -141,9 +142,7 @@ public class NoticeController {
             if (files != null && files.length > 0) {
                 noticeService.updateFile(files, notNum, member.getMember());
             }
-            //if (imageService.isNotNullOrEmpty(images, imgArray) || existImgArray != null) {
-                noticeService.updateImg(images, imgArray, existImgArray, notNum, member.getMember());
-            //}
+            noticeService.updateImg(images, imgArray, existImgArray, notNum, member.getMember());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -152,12 +151,17 @@ public class NoticeController {
 
     @PostMapping("/delete")
     @ResponseBody
-    public void delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) throws IOException {
+    public ResponseEntity delete(@RequestParam("number") Long notNum, @AuthenticationPrincipal SecurityMember member) {
         NoticeDTO noticeDTO = noticeService.getOne(notNum);
         if (noticeService.validateMember(noticeDTO.getAcaNum(), member)) {
-            noticeService.delete(notNum);
+            try {
+                noticeService.delete(notNum);
+                return ResponseEntity.ok().build();
+            } catch (IOException e) {
+                return ResponseEntity.badRequest().body("IOException");
+            }
         } else {
-            //throw new IllegalArgumentException("관리자 권한이 없습니다."); //*exception
+            return ResponseEntity.status(401).body("관리자 권한이 없습니다.");
         }
     }
 
