@@ -174,30 +174,21 @@
         const contentDiv = document.getElementById('content');
         contentDiv.addEventListener('keydown', function() {
 
-            if (event.key === 'Backspace' || event.keyCode === 8) {
+            if (event.key === 'Backspace' || event.keyCode === 8 || event.key === 'Delete' || event.keyCode === 46) {
                 if (window.getSelection().getRangeAt(0).endContainer != null) {
                     const firstElement = window.getSelection().getRangeAt(0).endContainer.firstElementChild;
+                    const firstElementTag = firstElement == null ? "" : firstElement.tagName;
                     const lastElement = window.getSelection().getRangeAt(0).endContainer.lastElementChild;
+                    const lastElementTag = lastElement == null ? "" : lastElement.tagName;
 
-                    if (firstElement.tagName === "IMG" || lastElement.tagName === "IMG") {
+                    if (firstElementTag === "IMG" || lastElementTag === "IMG") {
                         if (confirm("사진을 삭제하시겠습니까?")) {
                             for (var i=0; i<imgList.length; i++) {
-                                if (imgList[i].name == tagName) {
+                                if (imgList[i].name === event.target.getAttribute('data-name')) {
                                     imgList.splice(i, 1);
                                 }
                             }
                         } else {
-                            event.preventDefault();
-                        }
-                    }
-                }
-            } else if (event.key === 'Delete' || event.keyCode === 46) {
-                if (window.getSelection().getRangeAt(0).endContainer != null) {
-                    const firstElement = window.getSelection().getRangeAt(0).endContainer.firstElementChild;
-                    const lastElement = window.getSelection().getRangeAt(0).endContainer.lastElementChild;
-
-                    if (firstElement.tagName === "IMG" || lastElement.tagName === "IMG") {
-                        if (!confirm("사진을 삭제하시겠습니까?")) {
                             event.preventDefault();
                         }
                     }
@@ -215,9 +206,9 @@
         }
 
         function matchContent(id) {
-            var regex = new RegExp(id);
-            var contentText = document.getElementById('content').textContent;
-            var match = contentText.match(regex);
+            const regex = new RegExp(id);
+            const contentText = document.getElementById('content').textContent;
+            const match = contentText.match(regex);
             return match;
         }
 
@@ -230,19 +221,12 @@
             return hiddenDiv;
         }
 
-        function setTexts(match, contentText) {
+        function setTexts(match, content) {
             const index = match.index;
-            if (index < 10) {
-                var preText = contentText.slice(0, index);
-            } else {
-                var preText = contentText.slice(index - 10, index);
-            }
-            const end = index + match[0].length;
-            if ((end + 10) < contentText.length) {
-                var nextText = contentText.slice(end, end + 10);
-            } else {
-                var nextText = contentText.slice(end, content.length);
-            }
+            const preText = index < 10 ? content.slice(0, index) : content.slice(index - 10, index);
+            const afterIndex = index + match[0].length;
+            const nextText = (afterIndex + 10) < content.length ? content.slice(afterIndex, afterIndex + 10) : content.slice(afterIndex, content.length);
+
             return [preText, nextText];
         }
 
@@ -274,11 +258,11 @@
                             break;
                         }
                         id = getRandomImgId();
-                            match = matchContent(id);
-                            hiddenDiv.innerText = "";
-                            hiddenDiv.innerText = id;
-                            revisedText = document.getElementById('content').textContent;
-                            revisedMatch = revisedText.match(id);
+                        match = matchContent(id);
+                        hiddenDiv.innerText = "";
+                        hiddenDiv.innerText = id;
+                        revisedText = document.getElementById('content').textContent;
+                        revisedMatch = revisedText.match(id);
                     }
                     var texts = setTexts(revisedMatch, revisedText);
 
