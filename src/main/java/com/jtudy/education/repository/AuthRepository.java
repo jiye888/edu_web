@@ -19,7 +19,7 @@ public interface AuthRepository extends JpaRepository<Auth, Long> {
 
     Slice<Auth> findByIsProcessed(boolean isProcessed, Pageable pageable);
 
-    @Query("select a from Auth where a.isProcessed = :isProcessed and a.processedDate = :date")
-    List<Auth> findByIsProcessedAndProcessedDate(boolean isProcessed, LocalDateTime date);
+    @Query("select a from Auth a where a.isProcessed = :isProcessed and a.processedDate = :processedDate")
+    List<Auth> findByIsProcessedAndProcessedDate(boolean isProcessed, LocalDateTime processedDate);
 
 }

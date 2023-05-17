@@ -87,10 +87,7 @@
                 contentType: "application/json",
                 data: {academy:academy},
                 success: function(response) {
-
-                    } else {
-                        location.href = "/review/register?academy="+academy;
-                    }
+                    location.href = "/review/register?academy="+academy;
                 },
                 error: function(xhr, response) {
                     jwtFilter();

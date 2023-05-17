@@ -31,7 +31,7 @@
             <p id="contentError"></p><br>
             <div class="button-distance" style="margin-top:20px;">
                 <input type="file" id="imageFile" style="display:none;">
-                <label class="custom-button-mint select-file" for="imageFile">이미지 추가</label>
+                <label class="custom-button-mint select-file" for="imageFile" id="imageLabel">이미지 추가</label>
             </div>
         </div>
         <div class="button-distance">
@@ -51,6 +51,7 @@
     });
 
     const imageFile = document.getElementById('imageFile');
+    const imageLabel = document.getElementById('imageLabel');
     let imgList = [];
 
     imageFile.addEventListener('change', function() {
@@ -71,10 +72,18 @@
             img.setAttribute("data-name", image.name);
             imgDiv.appendChild(img);
             imgList.push(image);
+            imageLabel.innerText = "이미지 추가 ("+imgList.length+"/10)";
         };
     });
 
-    content contentDiv = document.getElementById('content');
+    imageLabel.addEventListener('click', function() {
+        if (imgList.length == 10) {
+            alert('업로드 가능한 이미지는 10장입니다.');
+            event.preventDefault();
+        }
+    });
+
+    const contentDiv = document.getElementById('content');
     contentDiv.addEventListener('keydown', function() {
         if (event.key === 'Backspace' || event.keyCode === 8 || event.key === 'Delete' || event.keyCode === 46) {
             if (window.getSelection().getRangeAt(0).endContainer != null) {
@@ -153,7 +162,7 @@
                     }
                     id = getRandomImgId();
                     match = matchContent(id);
-                    hiddenDiv.innerText = "";
+                    //hiddenDiv.innerText = "";
                     hiddenDiv.innerText = id;
                     revisedText = document.getElementById('content').textContent;
                     revisedMatch = revisedText.match(id);
@@ -183,9 +192,8 @@
         var grade = $('input[type=radio][name=grade]:checked').val();
 
         const imgArray = findNewImgPosition();
-        const images = document.getElementById('content').querySelectorAll('img');
         const contentText = document.getElementById('content').textContent;
-        content json = {
+        const json = {
             "academy":academy,
             "title":title,
             "content":contentText,
@@ -201,7 +209,7 @@
         }
         formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
-        if (title && content && grade) {
+        if (title && contentText && grade) {
             $.ajax({
                 url: '/review/register',
                 type: "POST",

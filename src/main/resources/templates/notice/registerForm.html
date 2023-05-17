@@ -19,7 +19,7 @@
             <div class="custom-form-control file-name file-list" id="selectedFile"></div>
             <div class="button-distance" style="margin-top:20px;">
                 <input type="file" id="imageFile" style="display:none;">
-                <label class="custom-button-mint select-file" for="imageFile">이미지 추가</label>
+                <label class="custom-button-mint select-file" for="imageFile" id="imageLabel">이미지 추가</label>
                 <input type="file" id="inputFile" style="display:none;" multiple="multiple">
                 <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
             </div>
@@ -40,6 +40,7 @@
         });
 
         const imageFile = document.getElementById('imageFile');
+        const imageLabel = document.getElementById('imageLabel');
         const inputFile = document.getElementById('inputFile');
         const selectedFile = document.getElementById('selectedFile');
         let fileList = [];
@@ -110,16 +111,26 @@
             };
         });
 
+        imageLabel.addEventListener('click', function() {
+            if (imgList.length == 10) {
+                alert('업로드 가능한 이미지는 10장입니다.');
+                event.preventDefault();
+            }
+        });
+
         const contentDiv = document.getElementById('content');
         contentDiv.addEventListener('keydown', function() {
-            if (event.key === 'Backspace' || event.keyCode === 8) {
-                if (window.getSelection().getRangeAt(0).endContainer.firstChild != null) {
-                    const selection = window.getSelection().getRangeAt(0).endContainer.firstChild.nodeName;
-                    const tagName = window.getSelection().getRangeAt(0).endContainer.firstChild.dataset.name;
-                    if (selection != null && selection === "IMG") {
+            if (event.key === 'Backspace' || event.keyCode === 8 || event.key === 'Delete' || event.keyCode === 46) {
+                if (window.getSelection().getRangeAt(0).endContainer != null) {
+                    const firstElement = window.getSelection().getRangeAt(0).endContainer.firstElementChild;
+                    const firstElementTag = firstElement == null ? "" : firstElement.tagName;
+                    const lastElement = window.getSelection().getRangeAt(0).endContainer.lastElementChild;
+                    const lastElementTag = lastElement == null ? "" : lastElement.tagName;
+
+                    if (firstElementTag === "IMG" || lastElementTag === "IMG") {
                         if (confirm("사진을 삭제하시겠습니까?")) {
                             for (var i=0; i<imgList.length; i++) {
-                                if (imgList[i].name == tagName) {
+                                if (imgList[i].name === event.target.getAttribute('data-name')) {
                                     imgList.splice(i, 1);
                                 }
                             }
@@ -142,50 +153,59 @@
         }
 
         function matchContent(id) {
-            var regex = new RegExp(id);
-            var contentText = document.getElementById('content').textContent;
-            var match = contentText.match(regex);
+            const regex = new RegExp(id);
+            const contentText = document.getElementById('content').textContent;
+            const match = contentText.match(regex);
             return match;
+        }
+
+        function appendHiddenDiv(tag, id) {
+            const hiddenDiv = document.createElement('div');
+            hiddenDiv.setAttribute("style", "display:none;");
+            hiddenDiv.textContent = id;
+            tag.appendChild(hiddenDiv);
+
+            return hiddenDiv;
+        }
+
+        function setTexts(match, content) {
+            const index = match.index;
+            const preText = index < 10 ? content.slice(0, index) : content.slice(index - 10, index);
+            const afterIndex = index + match[0].length;
+            const nextText = (afterIndex + 10) < content.length ? content.slice(afterIndex, afterIndex + 10) : content.slice(afterIndex, content.length);
+
+            return [preText, nextText];
         }
 
         function findImgPosition() {
             const images = document.querySelectorAll('img');
             let imgIndex = [];
+            if (images.length !== 0) {
+                images.forEach(img => {
+                    const dataName = img.getAttribute("data-name");
+                    var id = getRandomImgId();
+                    var match = matchContent(id);
 
-            images.forEach(img => {
-                const dataName = img.getAttribute("data-name");
-                var id = getRandomImgId();
-                var match = matchContent(id);
+                    var hiddenDiv = appendHiddenDiv(img, id);
 
-                var preText = "";
-                var nextText = "";
+                    var revisedText = document.getElementById('content').textContent;
+                    var revisedMatch = revisedText.match(id);
 
-                const hiddenDiv = document.createElement('div');
-                hiddenDiv.setAttribute("style", "display:none;");
-                hiddenDiv.innerText = id;
-                img.appendChild(hiddenDiv, img);
-
-                var revisedText = document.getElementById('content').textContent;
-                var revisedMatch = revisedText.match(id);
-
-                while (match !== null && revisedMatch.length === null) {
-                    if (match === null && revisedMatch.length === 1) {
-                        break;
+                    while (match != null && revisedMatch.length == null) {
+                        if (match == null && revisedMatch.length === 1) {
+                            break;
+                        }
+                        id = getRandomImgId();
+                        match = matchContent(id);
+                        hiddenDiv.innerText = id;
+                        revisedText = document.getElementById('content').textContent;
+                        revisedMatch = revisedText.match(id);
                     }
-                    id = getRandomImgId();
-                    match = matchContent(id);
-                    hiddenDiv.innerText = "";
-                    hiddenDiv.innerText = id;
-                    revisedText = document.getElementById('content').textContent;
-                    revisedMatch = revisedText.match(id);
-                }
+                    var texts = setTexts(revisedMatch, revisedText);
 
-                preText += revisedText.slice(revisedMatch.index - 10, revisedMatch.index);
-                nextText += revisedText.slice(revisedMatch.index + revisedMatch[0].length, revisedMatch.index + revisedMatch[0].length + 10);
-
-                imgIndex.push([dataName, id, preText, nextText]);
-
-            })
+                    imgIndex.push([dataName, id, texts[0], texts[1]]);
+                });
+            }
             return imgIndex;
         }
 
@@ -204,7 +224,6 @@
             var academy = Number($('#academy').val());
             var title = $('#title').val();
             const imgArray = findImgPosition();
-            const images = document.getElementById('content').querySelectorAll('img');
             const contentText = document.getElementById('content').textContent;
             const json = {
                     "academy": academy,
@@ -226,7 +245,7 @@
                 formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
             }
 
-            if (title && content) {
+            if (title && contentText) {
                 $.ajax({
                     url: '/notice/register',
                     type: "POST",
