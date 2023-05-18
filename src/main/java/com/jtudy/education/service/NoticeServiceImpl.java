@@ -4,7 +4,6 @@ import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
-import com.jtudy.education.config.exception.CustomException;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyRepository;
@@ -21,9 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -197,21 +193,22 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void updateFile(MultipartFile[] files, Long notNum, Member member) throws IOException {
+    public void updateFile(MultipartFile[] files, List<String> existFiles, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
-        if (fileUploadRepository.findByNotice(notice) != null && !fileUploadRepository.findByNotice(notice).isEmpty()) {
-            List<FileUpload> existFiles = fileUploadRepository.findByNotice(notice);
-            if (fileUploadService.needsUpdate(files, existFiles)) {
-                for (MultipartFile file : files) {
-                    FileUpload temp = fileUploadRepository.findByOriginalName(file.getOriginalFilename());
-                    if (temp == null) {
-                        fileUploadService.uploadFile(file, member);
-                    } else if (temp != null) {
-                        existFiles.remove(temp);
+        List<FileUpload> fileEntities = fileUploadRepository.findByNotice(notice);
+        if (files != null && files.length > 0) {
+            registerFile(files, notNum, member);
+        }
+        if (fileEntities != null && fileEntities.size() > 0) {
+            if (existFiles == null || existFiles.isEmpty()) {
+                deleteFiles(notNum);
+            } else {
+                if (fileEntities.size() > existFiles.size()) {
+                    for (FileUpload fileUpload : fileEntities) {
+                        if (!(existFiles.contains(fileUpload.getOriginalName()))) {
+                            deleteFile(notNum, fileUpload.getFileId());
+                        }
                     }
-                }
-                for (FileUpload leftFile : existFiles) {
-                    deleteFile(notNum, leftFile.getFileId());
                 }
             }
         }

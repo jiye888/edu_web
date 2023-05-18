@@ -21,7 +21,7 @@
                 <input type="file" id="imageFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="imageFile" id="imageLabel">이미지 추가</label>
                 <input type="file" id="inputFile" style="display:none;" multiple="multiple">
-                <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
+                <label class="custom-button-mint select-file" for="inputFile" id="fileLabel">첨부 파일 추가</label>
             </div>
         </div>
         <div class="button-distance">
@@ -42,6 +42,7 @@
         const imageFile = document.getElementById('imageFile');
         const imageLabel = document.getElementById('imageLabel');
         const inputFile = document.getElementById('inputFile');
+        const fileLabel = document.getElementById('fileLabel');
         const selectedFile = document.getElementById('selectedFile');
         let fileList = [];
         let imgList = [];
@@ -62,6 +63,7 @@
                 deleteButton.setAttribute("data-name", file.name);
                 fileDiv.appendChild(deleteButton);
                 fileList.push(file);
+                fileLabel.innerText = "파일 추가 ("+fileList.length+"/10)";
             }
 
             var deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
@@ -81,6 +83,9 @@
                 }
             }
 
+        });
+
+        selectedFile.addEventListener('change', function() {
         });
 
         imageFile.addEventListener('change', function() {
@@ -108,12 +113,20 @@
                 img.setAttribute("data-name", image.name);
                 imgDiv.appendChild(img);
                 imgList.push(image);
+                imageLabel.innerText = "이미지 추가 ("+imgList.length+"/10)";
             };
         });
 
         imageLabel.addEventListener('click', function() {
             if (imgList.length == 10) {
                 alert('업로드 가능한 이미지는 10장입니다.');
+                event.preventDefault();
+            }
+        });
+
+        fileLabel.addEventListener('click', function() {
+            if (fileList.length >= 10) {
+                alert('업로드 가능한 파일은 10개입니다.');
                 event.preventDefault();
             }
         });

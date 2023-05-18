@@ -132,7 +132,7 @@ public class FileUploadServiceImpl implements FileUploadService{
     public boolean needsUpdate(MultipartFile[] files, List<FileUpload> existFiles) throws IOException {
         if (existFiles == null || existFiles.isEmpty()) {
             return true;
-        }
+        } //files 존재 >> 추가 //existFiles >> 갯수 비교해서 적으면 삭제 많으면 추가
         List<String> existNames = existFiles.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
         if (isNullOrEmpty(files)) {
             for (MultipartFile file : files) {

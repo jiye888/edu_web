@@ -101,6 +101,8 @@
                 img.setAttribute("data-name", image.name);
                 imgDiv.appendChild(img);
                 imgList.push(image);
+                const imageLength = document.querySelectorAll('img').length;
+                imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
             };
         });
 

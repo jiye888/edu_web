@@ -33,10 +33,6 @@ public interface ImageService {
 
     boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException;
 
-    boolean needsUpdateFile(MultipartFile[] images, List<Image> existImages, List<List<String>> existImgArray) throws IOException;
-
-    boolean needsUpdateInfo(List<Image> existImages, List<List<String>> existImgArray) throws IOException;
-
     List<Image> getImagesToDelete(List<Image> existImages, List<List<String>> existImgArray);
 
     List<Image> modifyImages(List<Image> existImages, List<List<String>> existImgArray);

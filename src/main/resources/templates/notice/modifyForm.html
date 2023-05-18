@@ -22,7 +22,7 @@
                 <input type="file" id="imageFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="imageFile" id="imageLabel">이미지 추가</label>
                 <input type="file" id="inputFile" style="display:none;" multiple="multiple">
-                <label class="custom-button-mint select-file" for="inputFile">첨부 파일 추가</label>
+                <label class="custom-button-mint select-file" for="inputFile" id="fileLabel">첨부 파일 추가</label>
             </div>
         </div>
         <div class="button-distance">
@@ -44,13 +44,16 @@
         const imageFile = document.getElementById('imageFile');
         const imageLabel = document.getElementById('imageLabel');
         const inputFile = document.getElementById('inputFile');
+        const fileLabel = document.getElementById('fileLabel');
+        const selectedFile = document.getElementById('selectedFile');
         let fileList = [];
         let imgList = [];
         let fileNames = [];
         let existImages = /*[[${image}]]*/ [];
+        let existFiles = [[${files}]];
 
         function setFileNames() {
-            const existFiles = [[${files}]];
+            console.dir(existFiles);
             existFiles.forEach(existFile => {
                 fileNames.push(existFile.originalName);
                 const fileDiv = document.createElement("div");
@@ -68,7 +71,7 @@
                 fileDiv.appendChild(deleteExist);
 
                 deleteExist.addEventListener('click', function(event) {
-                    var selectedFile = document.getElementById('selectedFile');
+                    //var selectedFile = document.getElementById('selectedFile');
                     for (var i=0; i<fileNames.length; i++) {
                         const deleteName = deleteExist.getAttribute("data-name");
                         if (fileNames[i] == deleteName) {
@@ -133,6 +136,8 @@
                 deleteButton.setAttribute("data-name", file.name);
                 fileDiv.appendChild(deleteButton);
                 fileList.push(file);
+                const fileLength = fileList.length + fileNames.length;
+                fileLabel.innerText = "파일 추가 ("+fileLength+"/10)";
             }
 
             var deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
@@ -172,6 +177,8 @@
                 img.setAttribute("data-name", image.name);
                 imgDiv.appendChild(img);
                 imgList.push(image);
+                const imageLength = document.querySelectorAll('img').length;
+                imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
             };
         });
 
@@ -179,6 +186,13 @@
             const imageNumber = document.querySelectorAll('img');
             if (imageNumber == 10) {
                 alert('업로드 가능한 이미지는 10장입니다.');
+                event.preventDefault();
+            }
+        });
+
+        fileLabel.addEventListener('click',function() {
+            if (fileList.length + fileNames.length >= 10) {
+                alert('업로드 가능한 파일은 10개입니다.');
                 event.preventDefault();
             }
         });

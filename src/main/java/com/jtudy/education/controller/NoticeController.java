@@ -127,7 +127,7 @@ public class NoticeController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid NoticeFormDTO noticeFormDTO, BindingResult bindingResult, @RequestPart(value = "files", required = false) MultipartFile[] files, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existingFile", required = false) List<String> existFiles, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member) {
+                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existFiles", required = false) List<String> existFiles, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -139,9 +139,7 @@ public class NoticeController {
                 return ResponseEntity.badRequest().body(map);
             }
             Long notNum = noticeService.update(noticeFormDTO);
-            if (files != null && files.length > 0) {
-                noticeService.updateFile(files, notNum, member.getMember());
-            }
+            noticeService.updateFile(files, existFiles, notNum, member.getMember());
             noticeService.updateImg(images, imgArray, existImgArray, notNum, member.getMember());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
