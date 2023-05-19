@@ -194,7 +194,6 @@ public class NoticeServiceImpl implements NoticeService {
             fileUploadRepository.delete(file);
             if (Files.exists(Paths.get(file.getFilePath()))) {
                 Files.delete(Paths.get(file.getFilePath()));
-                System.out.println("@@@ delete"+file.getFileId());
             }
         }
     } // 필요없어보임(수정필요)
