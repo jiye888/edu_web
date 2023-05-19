@@ -174,23 +174,30 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void deleteFile(Long notNum, Long fileId) {
+    public void deleteFile(Long notNum, Long fileId) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         FileUpload fileUpload = fileUploadRepository.findByFileId(fileId);
         notice.removeFile(fileUpload);
         fileUploadRepository.delete(fileUpload);
+        if (Files.exists(Paths.get(fileUpload.getFilePath()))) {
+            Files.delete(Paths.get(fileUpload.getFilePath()));
+        }
     }
 
 
     @Override
-    public void deleteFiles(Long notNum) {
+    public void deleteFiles(Long notNum) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<FileUpload> fileList = fileUploadRepository.findByNotice(notice);
         for (FileUpload file : fileList) {
             notice.removeFile(file);
             fileUploadRepository.delete(file);
+            if (Files.exists(Paths.get(file.getFilePath()))) {
+                Files.delete(Paths.get(file.getFilePath()));
+                System.out.println("@@@ delete"+file.getFileId());
+            }
         }
-    }
+    } // 필요없어보임(수정필요)
 
     @Override
     public void updateFile(MultipartFile[] files, List<String> existFiles, Long notNum, Member member) throws IOException {

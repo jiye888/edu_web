@@ -40,9 +40,9 @@ public interface NoticeService {
 
     void registerImg(MultipartFile image, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
 
-    void deleteFile(Long notNum, Long fileId);
+    void deleteFile(Long notNum, Long fileId) throws IOException;
 
-    void deleteFiles(Long notNum);
+    void deleteFiles(Long notNum) throws IOException;
 
     void updateFile(MultipartFile[] files, List<String> existFiles, Long notNum, Member member) throws IOException;
 

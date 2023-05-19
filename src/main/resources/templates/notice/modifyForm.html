@@ -49,8 +49,8 @@
         let fileList = [];
         let imgList = [];
         let fileNames = [];
-        let existImages = /*[[${image}]]*/ [];
-        let existFiles = [[${files}]];
+        let existImages = [[${image}]];
+        let existFiles = [[${files}]] ? [[${files}]] : [];
 
         function setFileNames() {
             console.dir(existFiles);
@@ -71,10 +71,9 @@
                 fileDiv.appendChild(deleteExist);
 
                 deleteExist.addEventListener('click', function(event) {
-                    //var selectedFile = document.getElementById('selectedFile');
                     for (var i=0; i<fileNames.length; i++) {
                         const deleteName = deleteExist.getAttribute("data-name");
-                        if (fileNames[i] == deleteName) {
+                        if (fileNames[i] === deleteName) {
                             fileNames.splice(i, 1);
                             document.getElementById(deleteName).remove();
                             event.target.remove();
@@ -146,8 +145,10 @@
                     const deleteName = deleteFiles[i].getAttribute("data-name");
                     deleteFiles[i].addEventListener('click', function() {
                         for (var j=0; j<fileList.length; j++) {
-                            if (fileList[j].name == deleteName) {
+                            if (fileList[j].name === deleteName) {
                                 fileList.splice(j, 1);
+                            } else if (existFiles.length > 0 && existFiles[j].originalName === deleteName) {
+                                existFiles.splice(j, 1);
                             }
                         }
                         document.getElementById(deleteName).remove();
@@ -209,6 +210,8 @@
 
                     if (firstElementTag === "IMG" || lastElementTag === "IMG") {
                         if (confirm("사진을 삭제하시겠습니까?")) {
+                            const imageLength = document.querySelectorAll('img').length -1;
+                            imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
                             for (var i=0; i<imgList.length; i++) {
                                 if (imgList[i].name === event.target.getAttribute('data-name')) {
                                     imgList.splice(i, 1);

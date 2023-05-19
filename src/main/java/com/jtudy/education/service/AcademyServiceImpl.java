@@ -129,6 +129,7 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
     public Page<AcademyDTO> search(Map<String, Object> search, Pageable pageable) {
         Iterator<Map.Entry<String, Object>> iterator = search.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -155,7 +156,7 @@ public class AcademyServiceImpl implements AcademyService{
                 List<Subject> subjectList = (List<Subject>) search.get("subject");
                 EnumSet enumSet = EnumSet.noneOf(Subject.class);
                 for (Object s : subjectList) {
-                    Subject sub = (Subject) s;
+                    Subject sub = Subject.valueOf(s.toString());
                     enumSet.add(sub);
                 }
                 enumSet.stream().map(e-> e.getClass()).forEach(System.out::println);

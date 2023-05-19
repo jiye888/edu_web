@@ -124,8 +124,10 @@
                     const lastElementTag = lastElement == null ? "" : lastElement.tagName;
 
                     if (firstElementTag === "IMG" || lastElementTag === "IMG") {
-                        if (confirm("사진을 찍겠습니까?")) {
+                        if (confirm("사진을 삭제하시겠습니까?")) {
                             for (var i=0; i<imgList.length; i++) {
+                                const imageLength = document.querySelectorAll('img').length -1;
+                                imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
                                 if (imgList[i].name === event.target.getAttribute('data-name')) {
                                     imgList.splice(i, 1);
                                 }
