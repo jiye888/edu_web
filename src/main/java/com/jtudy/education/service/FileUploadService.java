@@ -54,7 +54,4 @@ public interface FileUploadService {
         return fileUploadDTO;
     }
 
-    boolean isNullOrEmpty(MultipartFile[] files);
-
-    boolean needsUpdate(MultipartFile[] files, List<FileUpload> fileUploadList) throws IOException;
 }

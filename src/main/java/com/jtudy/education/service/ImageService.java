@@ -27,17 +27,11 @@ public interface ImageService {
 
     Image uploadImage(MultipartFile img, Image image);
 
-    List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException;
-
     boolean isNotNullOrEmpty(MultipartFile[] images, List<List<String>> imgArray);
-
-    boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException;
 
     List<Image> getImagesToDelete(List<Image> existImages, List<List<String>> existImgArray);
 
     List<Image> modifyImages(List<Image> existImages, List<List<String>> existImgArray);
-
-    Image updateImage(Image image, List<String> imgArray);
 
     void deleteImage(Image image) throws IOException;
 

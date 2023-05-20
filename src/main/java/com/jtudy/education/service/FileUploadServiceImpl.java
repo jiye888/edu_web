@@ -123,34 +123,4 @@ public class FileUploadServiceImpl implements FileUploadService{
         return fileUpload;
     }
 
-    @Override
-    public boolean isNullOrEmpty(MultipartFile[] files) {
-        return files != null && files.length > 0;
-    }
-
-    @Override
-    public boolean needsUpdate(MultipartFile[] files, List<FileUpload> existFiles) throws IOException {
-        if (existFiles == null || existFiles.isEmpty()) {
-            return true;
-        } //files 존재 >> 추가 //existFiles >> 갯수 비교해서 적으면 삭제 많으면 추가
-        List<String> existNames = existFiles.stream().map(e -> e.getOriginalName()).collect(Collectors.toList());
-        if (isNullOrEmpty(files)) {
-            for (MultipartFile file : files) {
-                if (!(existNames.contains(file.getOriginalFilename()))) {
-                    return true;
-                } else {
-                    FileUpload existFile = fileUploadRepository.findByOriginalName(file.getOriginalFilename());
-                    Resource resource = new PathResource(existFile.getFilePath());
-                    Double existSize = (double) resource.contentLength();
-                    Double fileSize = (double) file.getSize();
-                    boolean isInRange = (existSize * 0.9 <= fileSize) && (existSize * 1.1 >= fileSize);
-                    if (!isInRange) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
 }

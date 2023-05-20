@@ -110,7 +110,6 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image uploadImage(MultipartFile img, Image image){
-
         try (InputStream inputStream = img.getInputStream()) {
             Files.copy(inputStream, Paths.get(image.getPath()), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
@@ -118,36 +117,6 @@ public class ImageServiceImpl implements ImageService {
         }
 
         return image;
-    }
-
-
-    @Override
-    public List<ImageDTO> getList(String entity, Long entityId) throws FileNotFoundException {
-        if (entity == "notice") {
-            List<Image> fileList = imageRepository.findByNotNum(entityId);
-            List<ImageDTO> dtoList = fileList.stream().map(e -> {
-                try {
-                    return entityToDTO(e);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            }).collect(Collectors.toList());
-            return dtoList;
-        } else if (entity == "review") {
-            List<Image> fileList = imageRepository.findByRevNum(entityId);
-            List<ImageDTO> dtoList = fileList.stream().map(e -> {
-                try {
-                    return entityToDTO(e);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            }).collect(Collectors.toList());
-            return dtoList;
-        } else {
-            throw new FileNotFoundException();
-        }
     }
 
     @Override
@@ -175,17 +144,6 @@ public class ImageServiceImpl implements ImageService {
         } else {
             return true;
         }
-    }
-
-    @Override
-    public boolean isInRangeSize(MultipartFile newImage, Image existImage) throws IOException {;
-        if (existImage != null) {
-            Resource resource = new PathResource(existImage.getPath());
-            Double existSize = (double) resource.contentLength();
-            Double imageSize = (double) newImage.getSize();
-            return (existSize * 0.9 <= imageSize) && (existSize * 1.1 >= imageSize);
-        }
-        return false;
     }
 
     @Override
@@ -227,13 +185,6 @@ public class ImageServiceImpl implements ImageService {
             }
         }
         return null;
-    }
-
-    @Override
-    public Image updateImage(Image image, List<String> imgArray) {
-        image.changeInfo(imgArray.get(1), imgArray.get(2), imgArray.get(3));
-        imageRepository.save(image);
-        return image;
     }
 
     @Override

@@ -42,8 +42,6 @@ public interface NoticeService {
 
     void deleteFile(Long notNum, Long fileId) throws IOException;
 
-    void deleteFiles(Long notNum) throws IOException;
-
     void updateFile(MultipartFile[] files, List<String> existFiles, Long notNum, Member member) throws IOException;
 
     void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long notNum, Member member) throws IOException;
