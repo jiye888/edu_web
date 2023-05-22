@@ -283,6 +283,7 @@ a:hover {
     height: 700px;
     margin-top: 10px;
     margin-bottom: 10px;
+    overflow: auto;
 }
 
 .input-group-append {
@@ -406,6 +407,18 @@ a:hover {
     font-size: medium;
 }
 
+.file-name {
+    padding-right: 20px;
+    display: flex;
+    width: -webkit-fill-available;
+    align-items: center;
+    color: #5eb9c9;
+}
+
+.file-name:hover {
+    color: #62e1a6;
+}
+
 .null-content {
     margin: 150px 0px 150px 0px;
     font-size: large;
@@ -442,8 +455,45 @@ a:hover {
     align-items: flex-start;
 }
 
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .button-collapse-margin {
     margin: 30px 30px 30px 0px;
+}
+
+.academy-img {
+    display: flex;
+    max-height: 250px;
+    max-width: 300px;
+    padding: 0px 10px 10px 0px;
+}
+
+.select-file {
+    display: flex;
+    align-items: center;
+    min-width: fit-content;
+    height: 40px;
+}
+
+.file-list {
+    display:block;
+    height:fit-content;
+    min-height:32px;
+}
+
+.file-info {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    margin: 50px 30px 20px 10px;
+}
+
+.file-size {
+    font-size: medium;
+    color: #adaaaa;
 }
 
 .w70 {
@@ -455,4 +505,11 @@ a:hover {
 }
 .f0 {
     flex: 0;
+}
+
+.scroll {
+    display: flex;
+    flex-direction: column;
+    white-space: pre-line;
+    overflow-wrap: break-word;
 }

@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 class="custom-text font-bold">수강 후기 수정</h3><br>
+    <h3 class="custom-text font-bold">수정 화면</h3><br>
     <form th:object="${review}" class="custom-form">
         <input type="hidden" th:value="${academy}" id="academy">
         <input type="hidden" th:value="*{revNum}" id="number">
@@ -58,43 +58,213 @@
         document.addEventListener('DOMContentLoaded', function() {
             const reviewContentText = [[${review.content}]];
             const reviewContent = document.getElementById('content');
-            reviewContent.textContent = reviewContentText;
-            setImgTag(existImages);
-            replaceN();
+            reviewContent.innerHTML = reviewContentText;
 
             const size = existImages.length;
-            if (size !== 0) {
-                imageLabel.innerText = "이미지 추가 ("+size+"/10)";
-            }
 
+            var contentText = document.getElementById('content').textContent;
+
+            if (size != 0) {
+                existImages.forEach(image => {
+                    const insertImg = '<img src="data:'+image.mimeType+';base64 ,'+image.base64+'" data-name='+image.originalName+' data-id='+image.index+' name=\"exist\">';
+                    const preText = image.preText;
+                    const postText = image.postText;
+
+                    const regex = new RegExp(image.index);
+                    const match = contentText.match(regex);
+                    if (match != null && match.length === 1) {
+                        var tempPre = preText !== undefined ? contentText.slice(match.index - preText.length, match.index) : "";
+                        var tempNext = postText !== undefined ? contentText.slice(match.index + image.index.length, match.index + image.index.length + postText.length) : "";
+                        if (tempPre === preText && tempNext === postText) {
+                            content.innerHTML = content.innerHTML.replace(regex, insertImg);
+                        }
+                    }
+                });
+            }
         });
 
         imageFile.addEventListener('change', function() {
             const image = event.target.files[0];
-            setDataURL(image, imgList);
+            const reader = new FileReader();
+            const content = document.getElementById('content');
+
+            reader.readAsDataURL(image);
+
+            reader.onload = () => {
+                const dataURL = reader.result;
+                const imgDiv = document.createElement('div');
+                content.appendChild(imgDiv);
+                const img = document.createElement('img');
+                img.setAttribute("src", dataURL);
+                img.setAttribute("name", "new");
+                img.setAttribute("style", "max-height:600px; max-width:600px;");
+                img.setAttribute("data-name", image.name);
+                imgDiv.appendChild(img);
+                imgList.push(image);
+                const imageLength = document.querySelectorAll('img').length;
+                imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
+            };
         });
 
         imageLabel.addEventListener('click', function() {
             const imageNumber = document.querySelectorAll('img').length;
             if (imageNumber === 10) {
-                alert('업로드 가능한 이미지는 최대 10장입니다.');
+                alert('업로드 가능한 이미지는 10장입니다.');
                 event.preventDefault();
             }
         });
 
         const contentDiv = document.getElementById('content');
-        contentDiv.addEventListener('keydown', deleteImage);
+        contentDiv.addEventListener('keydown', function() {
+            if (event.key === 'Backspace' || event.keyCode === 8 || event.key === 'Delete' || event.keyCode === 46) {
+                if (window.getSelection().getRangeAt(0).endContainer != null) {
+                    const firstElement = window.getSelection().getRangeAt(0).endContainer.firstElementChild;
+                    const firstElementTag = firstElement == null ? "" : firstElement.tagName;
+                    const lastElement = window.getSelection().getRangeAt(0).endContainer.lastElementChild;
+                    const lastElementTag = lastElement == null ? "" : lastElement.tagName;
+
+                    if (firstElementTag === "IMG" || lastElementTag === "IMG") {
+                        if (confirm("사진을 삭제하시겠습니까?")) {
+                            for (var i=0; i<imgList.length; i++) {
+                                const imageLength = document.querySelectorAll('img').length -1;
+                                imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
+                                if (imgList[i].name === event.target.getAttribute('data-name')) {
+                                    imgList.splice(i, 1);
+                                }
+                            }
+                        } else {
+                            event.preventDefault();
+                        }
+                    }
+                }
+            }
+        });
+
+        function getRandomImgId() {
+            var imgId = '';
+            const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            for (var i=0; i<12; i++) {
+                imgId += characters.charAt(Match.floor(Math.random()*characters.length));
+            }
+            return imgId;
+        }
+
+        function matchContent(id) {
+            const regex = new RegExp(id);
+            const contentText = document.getElementById('content').textContent;
+            const match = contentText.match(regex);
+            return match;
+        }
+
+        function appendHiddenDiv(tag, id) {
+            const hiddenDiv = document.createElement('div');
+            hiddenDiv.setAttribute("style", "display:none;");
+            hiddenDiv.textContent = id;
+            tag.appendChild(hiddenDiv);
+
+            return hiddenDiv;
+        }
+
+        function setTexts(match, content) {
+            const index = match.index;
+            const preText = index < 10 ? content.slice(0, index) : content.slice(index - 10, index);
+            const afterIndex = index + match[0].length;
+            const nextText = (afterIndex + 10) < content.length ? content.slice(afterIndex, afterIndex + 10) : content.slice(afterIndex, content.length);
+
+            return [preText, nextText];
+        }
+
+        function findNewImgPosition() {
+            const images = document.querySelectorAll('img[name="new"]');
+            let imgIndex = [];
+            if (images.length !== 0) {
+                images.forEach(img => {
+                    const dataName = img.getAttribute("data-name");
+                    var id = getRandomImgId();
+                    var match = matchContent(id);
+                    var hiddenDiv = appendHiddenDiv(img, id);
+
+                    var revisedText = document.getElementById('content').textContent;
+                    var revisedMatch = revisedText.match(id);
+                    if (existImages != null) {
+                        existImages.forEach(exist => {
+                            if (id === exist.index) {
+                                id = getRandomImgId();
+                                match = matchContent(id);
+                                appendHiddenDiv(img, id);
+                            }
+                        });
+                    }
+
+                    while (match != null && revisedMatch == null) {
+                        if (match == null && revisedMatch.length === 1) {
+                            break;
+                        }
+                        id = getRandomImgId();
+                        match = matchContent(id);
+                        hiddenDiv.innerText = id;
+                        revisedText = document.getElementById('content').textContent;
+                        revisedMatch = revisedText.match(id);
+                    }
+                    var texts = setTexts(revisedMatch, revisedText);
+                    imgIndex.push([dataName, id, texts[0], texts[1]]);
+                });
+            }
+            return imgIndex;
+        }
+
+        function findExistImgPosition() {
+            const images = document.querySelectorAll('img[name="exist"]');
+            let existIndex = [];
+            if (images.length !== 0) {
+                images.forEach(img => {
+                    const dataName = img.getAttribute('data-name');
+                    var id = img.getAttribute('data-id');
+
+                    appendHiddenDiv(img, id);
+
+                    var contentText = document.getElementById('content').textContent;
+
+                    var match = matchContent(id);
+                    if (match != null && match.length === 1) {
+                        var texts = setTexts(match, contentText);
+                    } else {
+                        var newId = getRandomImgId();
+                        var newMatch = matchContent(newId);
+                        while (newMatch != null && newMatch.length === 1) {
+                            newId = getRandomImgId();
+                            newMatch = matchContent(newId);
+                        }
+                        img.setAttribute('data-id', newId);
+                        contentText = document.getElementById('content').textContent;
+                        var texts = setTexts(newMatch, contentText);
+                    }
+                    existIndex.push([dataName, id, texts[0], texts[1]]);
+                })
+            }
+            return existIndex;
+        }
+
+        function clearText() {
+            var pTag = ["titleError", "gradeError", "contentError"];
+            for (var tag in pTag) {
+                var pElement = document.getElementById(tag);
+                if (pElement != null) {
+                    pElement.textContent = "";
+                }
+            }
+        }
 
         function modify() {
-            clearText(["titleError", "gradeError", "contentError"]);
+            clearText();
             var number = $('#number').val();
             var academy = $('#academy').val();
             var title = $('#title').val();
             var grade = $('input[type=radio][name=grade]:checked').val();
 
-            const imgArray = findImgPosition("new");
-            const existImgArray = findImgPosition("exist");
-            const contentText = getContentText();
+            const imgArray = findNewImgPosition();
+            const existImgArray = findExistImgPosition();
+            const contentText = document.getElementById('content').textContent;
             const json = {
                 "number":number,
                 "academy":academy,
@@ -124,12 +294,19 @@
                     success: function() {
                         location.href="/review/read?number="+number;
                     },
-                    error: function(xhr) {
+                    error: function(xhr, response) {
                         jwtFilter();
                         try {
                             var errorMessage = JSON.parse(xhr.responseText);
-                            checkBindingResult(errorMessage);
-                            console.log(xhr.responseText);
+                            if (errorMessage.BindingResultError) {
+                                for (var err in errorMessage) {
+                                    if (document.getElementById(err)) {
+                                        var errElement = document.getElementById(err);
+                                        errElement.textContent = errorMessage[err];
+                                        errElement.classList.add("alert", "alert-warning");
+                                    }
+                                }
+                            }
                         } catch (e) {
                             console.log(xhr.responseText);
                         }

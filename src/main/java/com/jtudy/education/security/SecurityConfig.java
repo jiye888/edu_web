@@ -1,12 +1,15 @@
 package com.jtudy.education.security;
 
+import com.jtudy.education.constant.Roles;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,41 +34,38 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, TokenService tokenService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtTokenProvider jwtTokenProvider) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                .antMatchers().authenticated()
-                .antMatchers("/academy/register").access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/academy/register").access("hasRole('ROLE_MANAGER')")
-                .antMatchers("/review/**").access("hasRole('ROLE_STUDENT')")
-                .antMatchers("/member/update").access("hasRole('ROLE_USER')")
+                .antMatchers("/academy/register").hasRole("USER")
+                .antMatchers("/member/update").hasRole("USER")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()
-                .loginPage("/login") // 사용자 정의 로그인 페이지
+                .loginPage("/member/login") // 사용자 정의 로그인 페이지
                 .defaultSuccessUrl("/main") // 로그인 성공 후 이동 페이지
-                .loginProcessingUrl("/member/login")
-                .failureUrl("login") // 로그인 실패 후 이동 페이지
-                .disable()
+                .permitAll()
+                .failureUrl("/member/login") // 로그인 실패 후 이동 페이지
+                .and()
                 .rememberMe()
                 .disable()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
                 .logoutSuccessUrl("/")
                 .and()
-                //.exceptionHandling()
-                //.accessDeniedHandler(accessDeniedHandler())
-                //.authenticationEntryPoint(authenticationEntryPoint())
-                //.and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .exceptionHandling().accessDeniedPage("/member/denied")
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(authenticationEntryPoint())
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
