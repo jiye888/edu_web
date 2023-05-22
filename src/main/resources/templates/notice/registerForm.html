@@ -55,6 +55,7 @@
                 const fileName = document.createElement("p");
                 fileName.innerHTML = file.name;
                 fileName.setAttribute("id", file.name);
+                fileName.setAttribute("class", "file-name");
                 fileDiv.appendChild(fileName);
                 var deleteButton = document.createElement("button");
                 deleteButton.textContent = "X";

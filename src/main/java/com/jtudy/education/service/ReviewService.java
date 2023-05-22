@@ -29,13 +29,9 @@ public interface ReviewService {
 
     ReviewDTO getByAcademy(Long acaNum, String email);
 
-    //Long register(ReviewFormDTO reviewFormDTO, Member member);
-
     Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException;
 
     void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException;
-
-    //void registerImg(Image image, Review review) throws IOException;
 
     Long update(ReviewFormDTO reviewFormDTO);
 

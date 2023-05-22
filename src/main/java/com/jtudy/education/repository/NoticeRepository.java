@@ -17,7 +17,6 @@ import java.util.List;
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long>, JpaSpecificationExecutor<Notice> {
 
-    //@Query("select n from Notice n left outer join n.academy a where a.acaNum = :acaNum")
     @Query("select n from Notice n left outer join Academy a on n.academy = a where a.acaNum = :acaNum")
     Page<Notice> findByAcaNum(Pageable pageable, Long acaNum);
 

@@ -170,8 +170,6 @@ public class ReviewController {
         try {
             Page<ReviewDTO> review = reviewService.getReviews(member.getMember(), pageable);
             model.addAttribute("review", review);
-
-            //model.addAttribute("number", member.getMember().getMemNum());
             WebContext context = new WebContext(request, response, request.getServletContext());
             context.setVariables(model.asMap());
             String template = templateEngine.process("review/by", context);

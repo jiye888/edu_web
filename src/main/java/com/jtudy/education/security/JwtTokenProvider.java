@@ -74,11 +74,10 @@ public class JwtTokenProvider {
     public String getEmail(String token) {
         try {
             Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-            return (String) claims.get("sub");
+            return claims.get("sub").toString();
         } catch (ExpiredJwtException e) {
             Claims expired = e.getClaims();
-            System.out.println("get email" + expired);
-            return (String) expired.get("sub");
+            return expired.get("sub").toString();
         }
     }
 

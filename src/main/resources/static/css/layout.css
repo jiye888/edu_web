@@ -408,10 +408,15 @@ a:hover {
 }
 
 .file-name {
-    padding: 0px 20px 0px 20px;
+    padding-right: 20px;
     display: flex;
     width: -webkit-fill-available;
     align-items: center;
+    color: #5eb9c9;
+}
+
+.file-name:hover {
+    color: #62e1a6;
 }
 
 .null-content {
@@ -484,13 +489,6 @@ a:hover {
     justify-content: space-evenly;
     align-items: flex-start;
     margin: 50px 30px 20px 10px;
-}
-
-.file-name {
-    color: #5eb9c9;
-}
-.file-name:hover {
-    color: #62e1a6;
 }
 
 .file-size {
