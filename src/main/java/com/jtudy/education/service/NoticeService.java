@@ -30,6 +30,8 @@ public interface NoticeService {
 
     List<ImageDTO> getAllImages(Long notNum);
 
+    void checkImageName(Long notNum, Image image);
+
     Image setNotice(Image image, Long notNum, List<String> imgArray);
 
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
