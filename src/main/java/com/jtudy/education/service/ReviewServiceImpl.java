@@ -104,15 +104,20 @@ public class ReviewServiceImpl implements ReviewService {
         return review.getRevNum();
     }
 
+    @Override
+    public void checkImageName(Long revNum, Image image) {
+        if (imageRepository.existsByOriginalNameAndRevNum(image.getOriginalName(), revNum)) {
+            String newName = imageService.getNewName(image);
+            image.changeOriginalName(newName);
+        }
+    }
+
+    @Override
     public Image setReview(Image image, Long revNum, List<String> imgArray) {
         if (image != null && revNum != null && imgArray != null && !(imgArray.isEmpty())) {
             Review review = reviewRepository.findByRevNum(revNum);
             image.setReview(review, imgArray.get(1), imgArray.get(2), imgArray.get(3));
-            String name = image.getOriginalName();
-            if (imageRepository.existsByOriginalNameAndRevNum(name, revNum)) {
-                String newName = name.substring(0, name.indexOf("."))+"(2)"+name.substring(name.indexOf("."));
-                image.changeOriginalName(newName);
-            }
+            checkImageName(revNum, image);
             return image;
         }
         return null;

@@ -17,6 +17,8 @@ public interface ImageService {
 
     boolean isImage(MultipartFile file);
 
+    String getNewName(Image image);
+
     Image fileToEntity(MultipartFile file, Member member) throws IOException;
 
     ImageDTO entityToDTO(Image image) throws IOException;

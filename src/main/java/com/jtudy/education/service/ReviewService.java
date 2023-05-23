@@ -31,6 +31,10 @@ public interface ReviewService {
 
     Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException;
 
+    void checkImageName(Long revNum, Image image);
+
+    Image setReview(Image image, Long revNum, List<String> imgArray);
+
     void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException;
 
     Long update(ReviewFormDTO reviewFormDTO);

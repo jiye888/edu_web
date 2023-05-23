@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -108,20 +106,17 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void checkImageName(Long notNum, Image image) {
-        if(imageRepository.existsByOriginalNameAndNotNum(image.getOriginalName(), notNum)) {
-            String name = image.getOriginalName();
-            Pattern pattern = Pattern.compile("\\(\\d+\\)\\.[a-z]+$");
-            Matcher matcher = pattern.matcher(name);
-            String newName;
-            if (matcher.find()) {
-                String numbers = matcher.group();
-                String number = numbers.replaceAll("\\D+", "");
-                int nextNumber = Integer.parseInt(number) + 1;
-                newName = name.substring(0, name.lastIndexOf("(")+1) + nextNumber + name.substring(name.lastIndexOf(")"));
-            } else {
-                newName = name.substring(0, name.indexOf(".")) + "(2)" + name.substring(name.indexOf("."));
-            }
+        if (imageRepository.existsByOriginalNameAndNotNum(image.getOriginalName(), notNum)) {
+            String newName = imageService.getNewName(image);
             image.changeOriginalName(newName);
+        }
+    }
+
+    @Override
+    public void checkFileName(Long notNum, FileUpload fileUpload) {
+        if (fileUploadRepository.existsByOriginalNameAndNotNum(fileUpload.getOriginalName(), notNum)) {
+            String newName = fileUploadService.getNewName(fileUpload);
+            fileUpload.changeOriginalName(newName);
         }
     }
 
@@ -149,12 +144,12 @@ public class NoticeServiceImpl implements NoticeService {
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
                 FileUpload fileUpload = fileUploadService.uploadFile(file, member);
+                checkFileName(notNum, fileUpload);
                 fileUpload.setNotice(notice);
                 notice.addFile(fileUpload);
                 fileUploadRepository.save(fileUpload);
             }
         }
-
         noticeRepository.save(notice);
     }
 

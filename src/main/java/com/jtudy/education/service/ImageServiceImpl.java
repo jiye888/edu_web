@@ -10,14 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -26,7 +24,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -53,6 +52,23 @@ public class ImageServiceImpl implements ImageService {
     public boolean isImage(MultipartFile file) {
         String fileType = file.getContentType();
         return fileType.contains("image");
+    }
+
+    @Override
+    public String getNewName(Image image) {
+        String name = image.getOriginalName();
+        Pattern pattern = Pattern.compile("\\(\\d+\\)\\.[a-z]+$");
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.find()) {
+            String numbers = matcher.group();
+            String number = numbers.replaceAll("\\D+", "");
+            int nextNumber = Integer.parseInt(number) + 1;
+            String newName = name.substring(0, name.lastIndexOf("(")+1) + nextNumber + name.substring(name.lastIndexOf(")"));
+            return newName;
+        } else {
+            String newName = name.substring(0, name.lastIndexOf(".")) + "(2)" + name.substring(name.lastIndexOf("."));
+            return newName;
+        }
     }
 
     @Override

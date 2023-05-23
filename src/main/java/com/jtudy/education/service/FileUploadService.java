@@ -17,6 +17,8 @@ public interface FileUploadService {
 
     void isValidName(String name) throws InvalidFileNameException;
 
+    String getNewName(FileUpload fileUpload);
+
     boolean isValidExtension(String extension) throws IOException;
 
     FileUpload fileToEntity(MultipartFile file, Member member) throws IOException;

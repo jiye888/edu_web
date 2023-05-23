@@ -41,4 +41,8 @@ public class FileUpload extends BaseEntity{
         this.notice = notice;
     }
 
+    public void changeOriginalName(String name) {
+        this.originalName = name;
+    }
+
 }

@@ -52,14 +52,7 @@ a:hover {
     color: #f58b0a;
     text-align: center;
 }
-/*
-.custom-button-yellow {
-    border-radius: 12px;
-    border: 1px double;
-    border-color: #FDCE5E;
-    color: #FAC431;
-    background: white;
-}*/
+
 .custom-form-control {
     height: 38px;
     padding: 0.375rem 0.75rem;
@@ -314,7 +307,7 @@ a:hover {
 .border-tb{
     padding: 10px 20px 10px 20px;
     border-top: 2px solid #4bd9c761;
-    border-bottom: 2px solid #1f7c707a;
+    border-bottom: 2px solid #6cbbb17a;
     margin-bottom: 30px;
 }
 
@@ -365,7 +358,7 @@ a:hover {
 }
 
 .read-box-white {
-     margin: 5% 10% 5% 10%;
+     margin: 2% 10% 5% 10%;
      padding: 5px 20px 5px 20px;
      font-size: large;
 }
@@ -484,11 +477,19 @@ a:hover {
     min-height:32px;
 }
 
+.file-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: stretch;
+    margin: 50px 10px 20px 10px;
+    padding: 10px 10px 10px 10px;
+    border: solid 1px #bad7d3bd;
+}
+
 .file-info {
     display: flex;
-    justify-content: space-evenly;
     align-items: flex-start;
-    margin: 50px 30px 20px 10px;
 }
 
 .file-size {

@@ -4,10 +4,7 @@ import com.jtudy.education.DTO.FileUploadDTO;
 import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.NoticeDTO;
 import com.jtudy.education.DTO.NoticeFormDTO;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.Image;
-import com.jtudy.education.entity.Member;
-import com.jtudy.education.entity.Notice;
+import com.jtudy.education.entity.*;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +28,8 @@ public interface NoticeService {
     List<ImageDTO> getAllImages(Long notNum);
 
     void checkImageName(Long notNum, Image image);
+
+    void checkFileName(Long notNum, FileUpload fileUpload);
 
     Image setNotice(Image image, Long notNum, List<String> imgArray);
 

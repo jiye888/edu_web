@@ -53,7 +53,7 @@ public class MemberController {
         try {
             memberService.validateEmail(memberFormDTO.getEmail());
             if (bindingResult.hasErrors()) {
-                Map<String, String> map = new HashMap();
+                Map<String, String> map = new HashMap<>();
                 map.put("BindingResultError", "true");
                 List<FieldError> fieldErrors = bindingResult.getFieldErrors();
                 for (FieldError fieldError : fieldErrors) {
@@ -136,7 +136,7 @@ public class MemberController {
     public ResponseEntity modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
         try {
             if (bindingResult.hasErrors()) {
-                Map<String, String> map = new HashMap();
+                Map<String, String> map = new HashMap<>();
                 map.put("BindingResultError", "true");
                 List<FieldError> fieldErrors = bindingResult.getFieldErrors();
                 for (FieldError fieldError : fieldErrors) {

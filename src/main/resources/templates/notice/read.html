@@ -14,9 +14,11 @@
             </div>
             <div class="content-box">
                 <div th:utext="${notice.content}" class="scroll" id="content"></div><br>
-                <div th:each="file : ${files}" class="file-info">
-                    <a href="${file.filePath}" class="file-name" download>[[${file.originalName}]]</a>
-                    <p th:text="${file.fileSize}" class="file-size"></p>
+                <div class="file-box">
+                    <div th:each="file : ${files}" class="file-info">
+                        <a href="${file.filePath}" class="file-name" download>[[${file.originalName}]]</a>
+                        <p th:text="${file.fileSize}" class="file-size"></p>
+                    </div>
                 </div>
             </div>
 
