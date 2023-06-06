@@ -51,6 +51,9 @@ public class Image extends BaseEntity{
     @ManyToOne
     private Review review;
 
+    @ManyToOne
+    private InfoGuide infoGuide;
+
     public void setAcademy(Academy academy) {
         this.academy = academy;
     }
@@ -64,6 +67,13 @@ public class Image extends BaseEntity{
 
     public void setReview(Review review, String index, String preText, String postText) {
         this.review = review;
+        this.index = index;
+        this.preText = preText;
+        this.postText = postText;
+    }
+
+    public void setInfoGuide(InfoGuide infoGuide, String index, String preText, String postText) {
+        this.infoGuide = infoGuide;
         this.index = index;
         this.preText = preText;
         this.postText = postText;

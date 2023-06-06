@@ -231,7 +231,7 @@ public class NoticeServiceImpl implements NoticeService {
             }
             noticeRepository.save(notice);
         }
-        List<Image> deleteList = imageService.getImagesToDelete(existImages, existImgArray);
+        List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {
                 notice.removeImage(deleteEntity);

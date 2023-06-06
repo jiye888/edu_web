@@ -163,7 +163,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> getImagesToDelete(List<Image> existImages, List<List<String>> existImgArray) {
+    public List<Image> deleteImages(List<Image> existImages, List<List<String>> existImgArray) {
         List<Image> deleteList = new ArrayList<>();
         if (existImages != null && !(existImages.isEmpty())) {
             if (existImgArray == null || existImgArray.isEmpty()) {

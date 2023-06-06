@@ -28,8 +28,8 @@
             </thead>
             <tbody align="center">
             <tr th:each="notice1 : ${notice}">
-                <td><a th:text="${notice1.title}" th:href="@{/notice/search?number={number}(number=${notice1.notNum})}">학원 이름</a></td>
-                <td><a th:text="${notice1.createdAt}"></a></td>
+                <td><a th:text="${notice1.title}" th:href="@{/notice/read?number={number}(number=${notice1.notNum})}">학원 이름</a></td>
+                <td><a th:text="${#temporals.format(notice1.createdAt, 'yyyy-MM-dd HH:mm')}"></a></td>
             </tr>
             </tbody>
         </table>

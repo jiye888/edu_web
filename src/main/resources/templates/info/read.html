@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    <h3 class="custom-text font-bold">안내 사항</h3>
+    <div class="read-box-white">
+        <div class="read-box2">
+            <div class="border-tb">
+                <span th:text="${info.title}" class="font-bold flex-center">제목</span>
+                <span th:text="${#temporals.format(info.createdAt, 'yyyy-MM-dd HH:mm')}" class="title-date">작성일자</span>
+            </div>
+            <div class="content-box">
+                <span th:utext="${info.content}" style="white-space:pre-line;">내용</span>
+            </div>
+            <input type="hidden" th:field="${info.infoNum}" id="number">
+            <div class="button-distance" style="padding: 0px 50px 0px 50px;">
+                <button type="button" id="modifyBtn" class="custom-button-yellow">수정하기</button>
+                <button type="button" id="deleteBtn" class="custom-button-yellow">삭제하기</button>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        $(function() {
+            $('#modifyBtn').on("click", function() {
+                modify();
+            });
+            $('#deleteBtn').on("click", function() {
+                delete_info();
+            });
+        });
+
+        function modify() {
+            const number = $('#number').val();
+            $.ajax({
+                url: '/info/modify',
+                type: 'GET',
+                contentType: 'application/json',
+                data: {"number":number},
+                success: function() {
+                    location.href="/info/modify?number="+number;
+                },
+            });
+        }
+
+        function delete_info() {
+            const number = $('#number').val();
+            $.ajax({
+                url: '/info/delete',
+                type: 'GET',
+                contentType: 'application/json',
+                data: {"number":number},
+                success: function() {
+                    location.href="/info/list";
+                },
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

@@ -10,12 +10,11 @@
         <div class="read-box2">
             <div class="border-tb">
                 <div class="flex-center" style="padding-top:10px;">
-                <span th:text="${review.title}" class="font-bold">제목</span>
-                <p th:text="${#strings.repeat('★', review.grade)}" class="title-stars"></p>
+                    <span th:text="${review.title}" class="font-bold">제목</span>
+                    <p th:text="${#strings.repeat('★', review.grade)}" class="title-stars"></p>
                 </div>
                 <span th:text="${review.writerName}" class="title-writer"></span>
-                <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}" class="title-date">작성일자</span><br>
-
+                <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}" class="title-date">작성일자</span>
             </div>
             <div class="content-box">
                 <span th:utext="${review.content}" style="white-space:pre-line;">내용</span><br>
@@ -41,8 +40,8 @@
         });
 
         function modify() {
-            var academy = $('#academy').val();
-            var number = $('#number').val();
+            const academy = $('#academy').val();
+            const number = $('#number').val();
 
             $.ajax({
                 url: '/review/modify',
@@ -59,8 +58,8 @@
         }
 
         function delete_review() {
-            var academy = $('#academy').val();
-            var number = $('#number').val();
+            const academy = $('#academy').val();
+            const number = $('#number').val();
 
             $.ajax({
                 url: '/review/delete',

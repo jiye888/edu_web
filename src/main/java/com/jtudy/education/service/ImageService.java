@@ -5,10 +5,7 @@ import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 
 public interface ImageService {
@@ -31,7 +28,7 @@ public interface ImageService {
 
     boolean isNotNullOrEmpty(MultipartFile[] images, List<List<String>> imgArray);
 
-    List<Image> getImagesToDelete(List<Image> existImages, List<List<String>> existImgArray);
+    List<Image> deleteImages(List<Image> existImages, List<List<String>> existImgArray);
 
     List<Image> modifyImages(List<Image> existImages, List<List<String>> existImgArray);
 

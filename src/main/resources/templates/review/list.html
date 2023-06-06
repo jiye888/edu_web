@@ -7,71 +7,71 @@
 <div layout:fragment="content">
     <h3 class="custom-text font-bold">Review</h3>
     <button type="button" id="registerBtn" class="custom-button-yellow float-r">수강 후기 작성</button>
-        <input type="hidden" th:value="${academy}" id="academy">
-        <div th:if="${review.isEmpty()}">
-            <h3 class="flex-center null-content">현재 작성된 수강 후기가 없습니다.</h3>
-        </div>
-        <div th:if = "${!review.isEmpty()}">
-            <table class="table table-borderless table-hover">
-                <thead align="center">
-                <tr class="custom-text font-bold">
-                    <th scope="col">제목</th>
-                    <th scope="col">작성자</th>
-                    <th scope="col">평점</th>
-                    <th scope="col">작성일자</th>
-                </tr>
-                </thead>
-                <tbody align="center">
-                <tr th:each="rev : ${review}">
-                    <td><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
-                    <td><span th:text="${rev.writerName}">작성자</span></td>
-                    <td><span th:text="${rev.grade}">평점</span></td>
-                    <td><span th:text="${#temporals.format(rev.createdAt, 'yyyy-MM-dd HH:mm')}">작성 일자</span></td>
-                </tr>
-                </tbody>
-            </table>
+    <input type="hidden" th:value="${academy}" id="academy">
+    <div th:if="${review.isEmpty()}">
+        <h3 class="flex-center null-content">현재 작성된 수강 후기가 없습니다.</h3>
+    </div>
+    <div th:if = "${!review.isEmpty()}">
+        <table class="table table-borderless table-hover">
+            <thead align="center">
+            <tr class="custom-text font-bold">
+                <th scope="col">제목</th>
+                <th scope="col">작성자</th>
+                <th scope="col">평점</th>
+                <th scope="col">작성일자</th>
+            </tr>
+            </thead>
+            <tbody align="center">
+            <tr th:each="rev : ${review}">
+                <td><a th:text="${rev.title}" th:href="@{/review/read?number={number}(number=${rev.revNum})}">제목</a></td>
+                <td><span th:text="${rev.writerName}">작성자</span></td>
+                <td><span th:text="${rev.grade}">평점</span></td>
+                <td><span th:text="${#temporals.format(rev.createdAt, 'yyyy-MM-dd HH:mm')}">작성 일자</span></td>
+            </tr>
+            </tbody>
+        </table>
 
-            <nav th:with = "pageNumber=${review.pageable.pageNumber}, pageSize=${review.pageable.pageSize},
-                            totalPages=${review.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
-                            tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
-                 aria-label="Page-navigation">
-                <ul class="pagination">
-                    <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{/review/list(academy=${academy}, page=1)}">
-                            <span>&laquo;</span>
-                            <span class="sr-only">첫페이지로</span>
-                        </a>
-                    </li>
+        <nav th:with = "pageNumber=${review.pageable.pageNumber}, pageSize=${review.pageable.pageSize},
+                        totalPages=${review.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+                        tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
+                         aria-label="Page-navigation">
+            <ul class="pagination">
+                <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/review/list(academy=${academy}, page=1)}">
+                        <span>&laquo;</span>
+                        <span class="sr-only">첫페이지로</span>
+                    </a>
+                </li>
 
-                    <li th:classappend="${review.first}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/list(academy=${academy}, page=1)}:@{/review/list(academy=${academy}, page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})})"
-                           aria-label="Previous">
-                            <span aria-hidden="true">&lt;</span>
-                            <span class="sr-only">이전 페이지</span>
-                        </a>
-                    </li>
+                <li th:classappend="${review.first}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${review.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/review/list(academy=${academy}, page=1)}:@{/review/list(academy=${academy}, page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})})"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                        <span class="sr-only">이전 페이지</span>
+                    </a>
+                </li>
 
-                    <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
-                        <a th:text="${page}" class="page-link" th:href="@{/review/list(academy=${academy}, page=${page})}"></a>
-                    </li>
+                <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
+                    <a th:text="${page}" class="page-link" th:href="@{/review/list(academy=${academy}, page=${page})}"></a>
+                </li>
 
-                    <li th:classappend="${review.last}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="${review.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/review/list(academy=${academy}, page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/review/list(academy=${academy}, page=${endPage})})"
-                           aria-label="Next">
-                            <span aria-hidden="true">&gt;</span>
-                            <span class="sr-only">다음 페이지</span>
-                        </a>
-                    </li>
+                <li th:classappend="${review.last}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${review.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/review/list(academy=${academy}, page=${#numbers.formatDecimal(startPage+pageSize,0,-1)})}:@{/review/list(academy=${academy}, page=${endPage})})"
+                       aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                        <span class="sr-only">다음 페이지</span>
+                    </a>
+                </li>
 
-                    <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
-                        <a class="page-link" th:href="@{/review/list(academy=${academy}, page=${totalPages})}">
-                            <span>&raquo;</span>
-                            <span class="sr-only">마지막으로</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+                <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/review/list(academy=${academy}, page=${totalPages})}">
+                        <span>&raquo;</span>
+                        <span class="sr-only">마지막으로</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
     <script th:inline="javascript">
         $(function() {
             $('#registerBtn').click(function() {
@@ -86,7 +86,7 @@
                 type: 'GET',
                 contentType: "application/json",
                 data: {academy:academy},
-                success: function(response) {
+                success: function() {
                     location.href = "/review/register?academy="+academy;
                 },
                 error: function(xhr, response) {

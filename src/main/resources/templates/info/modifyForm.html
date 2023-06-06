@@ -5,31 +5,16 @@
 <meta charset="UTF-8">
 <body>
 <div layout:fragment="content">
-    <h3 class="custom-text font-bold">수강 후기 수정</h3><br>
-    <form th:object="${review}" class="custom-form">
-        <input type="hidden" th:value="${academy}" id="academy">
-        <input type="hidden" th:value="*{revNum}" id="number">
+    <h3 class="custom-text font-bold">안내 사항 수정</h3>
+    <form th:object="${info}" class="custom-form">
+        <input type="hidden" th:value="*{infoNum}" id="number">
         <span class="custom-span span-center">제목</span>
         <input type="text" class="custom-form-control margin-top10" th:field="*{title}">
-        <p id="titleError"></p><br>
-        <span class="custom-span span-center">평점</span>
-        <div th:field="*{grade}" class="reversed-stars span-center">
-            <input type="radio" id="5points" name="grade" value="5" class="stars-input" th:checked="${review.grade == 5}">
-            <label for="5points" class="stars">★</label>
-            <input type="radio" id="4points" name="grade" value="4" class="stars-input" th:checked="${review.grade == 4}">
-            <label for="4points" class="stars">★</label>
-            <input type="radio" id="3points" name="grade" value="3" class="stars-input" th:checked="${review.grade == 3}">
-            <label for="3points" class="stars">★</label>
-            <input type="radio" id="2points" name="grade" value="2" class="stars-input" th:checked="${review.grade == 2}">
-            <label for="2points" class="stars">★</label>
-            <input type="radio" id="1point" name="grade" value="1" class="stars-input" th:checked="${review.grade == 1}">
-            <label for="1point" class="stars">★</label>
-        </div>
-        <p id="gradeError"></p><br>
+        <p id="titleError"></p><br/>
         <span class="custom-span span-center">내용</span>
         <div>
             <div class="custom-form-control input-content scroll" id="content" contenteditable="true"></div>
-            <p id="contentError"></p><br>
+            <p id="contentError"></p>
             <div class="button-distance" style="margin-top:20px;">
                 <input type="file" id="imageFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="imageFile" id="imageLabel">이미지 추가</label>
@@ -56,17 +41,17 @@
         let existImages = [[${image}]];
 
         document.addEventListener('DOMContentLoaded', function() {
-            const reviewContentText = [[${review.content}]];
-            const reviewContent = document.getElementById('content');
-            reviewContent.innerHTML = reviewContentText;
+            const infoContentText = [[${info.content}]];
+            const infoContent = document.getElementById('content');
+            infoContent.innerHTML = infoContentText;
 
             const size = existImages.length;
 
-            var contentText = reviewContent.textContent;
+            var contentText = infoContent.textContent;
 
             if (size != 0) {
                 existImages.forEach(image => {
-                    const insertImg = '<img src="data:'+image.mimeType+';base64 ,'+image.base64+'" data-name='+image.originalName+' data-id='+image.index+' name=\"exist\">';
+                    const insertImg = '<img src="data:'+image.mimeType+';base64, '+image.base64+'" data-name='+image.originalName+' data-id='+image.index+' name=\"exist\">';
                     const preText = image.preText;
                     const postText = image.postText;
 
@@ -117,43 +102,37 @@
         contentDiv.addEventListener('keydown', deleteImage);
 
         function modify() {
-            clearText(["titleError", "gradeError", "contentError"]);
-            var number = $('#number').val();
-            var academy = $('#academy').val();
-            var title = $('#title').val();
-            var grade = $('input[type=radio][name=grade]:checked').val();
-
+            clearText(["titleError", "contentError"]);
+            const number = $('#number').val();
+            const title = $('#title').val();
             const imgArray = findNewImgPosition();
             const existImgArray = findExistImgPosition();
             const contentText = document.getElementById('content').textContent;
             const json = {
                 "number":number,
-                "academy":academy,
                 "title":title,
-                "content":contentText,
-                "grade":grade
+                "content":contentText
             };
 
             var formData = new FormData();
-            formData.append("reviewFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
+            formData.append("infoGuideFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
             if (imgList.length > 0) {
                 imgList.forEach(function(img){
                     formData.append("images", img);
                 });
             }
-            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
-            formData.append("existImgArray", new Blob([JSON.stringify(existImgArray)], {type:"application/json"}));
+            formData.append("imgArray", new Blob([JSON.stringify(json)], {type:"application/json}));
+            formData.append("existImgArray", new Blob([JSON.stringify(json)], {type:"application/json"}));
 
-            if (title && contentText && grade) {
+            if (title && contentText) {
                 $.ajax({
-                    url: '/review/modify',
-                    type: "POST",
+                    url: '/info/modify',
+                    type: 'POST',
                     contentType: false,
                     processData: false,
-                    headers: {"X-AUTH-TOKEN": localStorage.getItem("jwt")},
                     data: formData,
                     success: function() {
-                        location.href="/review/read?number="+number;
+                        location.href = "/info/read?number="+number;
                     },
                     error: function(xhr) {
                         jwtFilter();
@@ -168,15 +147,14 @@
                             }
                         }
                         console.log(xhr.responseText);
-                    },
+                    }
                 });
             } else {
                 alert('모든 항목을 입력해주세요.');
             }
-
         }
+
     </script>
 </div>
-
 </body>
 </html>

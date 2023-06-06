@@ -10,7 +10,7 @@
         <div class="read-box2">
             <div class="border-tb">
                 <span th:text="${notice.title}" id="title" class="font-bold flex-center">제목</span><br>
-                <span th:text="${#temporals.format(notice.createdAt, 'yyyy년 MM월 dd일')}" id="createdAt" class="title-date"></span><br>
+                <span th:text="${#temporals.format(notice.createdAt, 'yyyy년 MM월 dd일')}" id="createdAt" class="title-date"></span>
             </div>
             <div class="content-box">
                 <div th:utext="${notice.content}" class="scroll" id="content"></div><br>

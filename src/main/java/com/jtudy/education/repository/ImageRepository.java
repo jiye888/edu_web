@@ -19,6 +19,9 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query("select i from Image i where i.review.revNum = :revNum")
     List<Image> findByRevNum(Long revNum);
 
+    @Query("select i from Image i where i.infoGuide.infoNum = :infoNum")
+    List<Image> findByInfoNum(Long infoNum);
+
     Image findByImageId(Long imageId);
 
     List<Image> findByOriginalName(String originalName);
@@ -28,4 +31,8 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     @Query("select case when count(i) > 0 then true else false end from Image i where i.originalName = :originalName and i.review.revNum = :revNum")
     boolean existsByOriginalNameAndRevNum(String originalName, Long revNum);
+
+    @Query("select case when count(i) > 0 then true else false end from Image i where i.originalName = :originalName and i.infoGuide.infoNum = :infoNum")
+    boolean existsByOriginalNameAndInfoNum(String originalName, Long infoNum);
+
 }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    <h3 class="custom-text font-bold">안내 사항</h3>
+    <div th:if="${info.isEmpty()}">
+        <h3 class="flex-center null-content">검색 결과가 존재하지 않습니다.</h3>
+        <div th:insert="fragments/searchBtn::infoSearchBtn"></div>
+    </div>
+
+    <div th:if="${!info.isEmpty()}">
+        <table class="table table-borderless table-hover">
+            <thead align="center">
+            <tr>
+                <th scope="col">제목</th>
+                <th scope="col">작성일자</th>
+            </tr>
+            </thead>
+            <tbody align="center">
+            <tr th:each="inf : ${info}">
+                <td><a th:text="${inf.title}" th:href="@{/info/read?number={number}(number=${inf.infoNum})}">제목</a></td>
+                <td><span th:text="${#temporals.format(inf.createdAt, 'yyyy-MM-dd HH:mm')}">작성일자</span></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:insert="fragments/searchBtn::infoSearchBtn"></div>
+
+        <nav th:with = "pageNumber=${info.pageable.pageNumber}, pageSize=${info.pageable.pageSize},
+                        totalPages=${info.totalPages}, startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+                        tempEndPage=${startPage+pageSize-1}, endPage=(${tempEndPage>totalPages?totalPages:tempEndPage})"
+             aria-label="Page=navigation">
+            <ul class="pagination">
+                <li th:classappend="${pageNumber+1<=pageSize}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/info/list(page=1)}">
+                        <span>&laquo;</span>
+                        <span class="sr-only">첫 페이지로</span>
+                    </a>
+                </li>
+
+                <li th:classappend="${info.first}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${info.first}?'#':(${#numbers.formatDecimal(startPage-pageSize, 0, -1)}<pageSize?@{/info/list(page=1)}:@{/info/list(page=${#numbers.formatDecimal(startPage-pageSize, 0, -1)})})"
+                       aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                        <span class="sr-only">이전 페이지</span>
+                    </a>
+                </li>
+
+                <li th:each="page:${#numbers.sequence(startPage, endPage)}" th:classappend="${page==pageNumber+1}?'active'" class="page-item">
+                    <a th:text="${page}" class="page-link" th:href="@{/info/list(page=${page})}"></a>
+                </li>
+
+                <li th:classappend="${info.last}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="${info.last}?'#':(${tempEndPage<=endPage-pageSize}?@{/info/list(page=${#numbers.formatDecimal(startPage+pageSize, 0, -1)})}:@{/info/list(page=${endPage})})"
+                       aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                        <span class="sr-only">다음 페이지</span>
+                    </a>
+                </li>
+
+                <li th:classappend="${T(java.lang.Math).floor(totalPages/10)*10<=startPage}?'disabled'" class="page-item">
+                    <a class="page-link" th:href="@{/info/list(page=${totalPages})}">
+                        <span>&raquo;</span>
+                        <span class="sr-only">마지막으로</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

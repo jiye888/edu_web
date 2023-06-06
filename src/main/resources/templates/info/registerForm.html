@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<meta charset="UTF-8">
+<body>
+<div layout:fragment="content">
+    <h3 class="custom-text font-bold">안내 사항 작성</h3>
+    <form class="custom-form">
+        <span class="custom-span span-center">제목</span>
+        <input type="text" class="custom-form-control margin-top10 w-auto" id="title">
+        <p id="titleError"></p><br/>
+        <span class="custom-span span-center">내용</span>
+        <div>
+            <div class="custom-form-control input-content scroll" id="content" contenteditable="true"></div>
+            <p id="contentError"></p>
+            <div class="button-distance" style="margin-top:20px;">
+                <input type="file" id="imageFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="imageFile" id="imageLabel">이미지 추가</label>
+            </div>
+        </div>
+        <div class="button-distance">
+            <button type="button" id="registerBtn" class="custom-button-yellow">등록</button>
+            <button type="button" id="cancelBtn" class="custom-button-yellow">취소</button>
+        </div>
+    </form>
+    <script th:inlne="javascript">
+        $(function() {
+            $('#registerBtn').on("click", function() {
+                register();
+            });
+            $('#cancelBtn').on("click", function() {
+                history.back();
+            });
+        });
+
+        const imageFile = document.getElementById('imageFile');
+        const imageLabel = document.getElementById('imageLabel');
+        let imgList = [];
+
+        imageFile.addEventListener('change', function() {
+            const image = event.target.files[0];
+            const reader = new FileReader();
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                if (event.target.files[0].name == img.getAttribute("data-name")) {
+                    alert("동일한 이름의 이미지가 추가되어있습니다.");
+                    event.target.value = null;
+                }
+            })
+
+            reader.readAsDataURL(image);
+
+            reader.onload = () => {
+                const dataURL = reader.result;
+                const img = setImgElement(image, dataURL);
+                imgList.push(image);
+                imageLabel.innerText = "이미지 추가 ("+imgList.length+"/10)";
+            };
+        });
+
+        imageLabel.addEventListener('click', function() {
+            if (imgList.length == 10) {
+                alert('업로드 가능한 이미지는 최대 10장입니다.');
+                event.preventDefault();
+            }
+        });
+
+        const contentDiv = document.getElementById('content');
+        contentDiv.addEventListener('keydown', deleteImage);
+
+        function register() {
+            clearText(["titleError", "contentError"]);
+            const title = $('#title').val();
+            const imgArray = findNewImgPosition();
+            const contentText = document.getElementById('content').textContent;
+            const json = {
+                "title":title,
+                "content":contentText,
+            };
+
+            var formData = new FormData();
+            formData.append("infoGuideFormDTO", new Blob([JSON.stringify(json)], {type:"application/json"}));
+            if (imgList.length > 0) {
+                imgList.forEach(function(img) {
+                    formData.append("images", img);
+                });
+            }
+            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
+
+            if (title && contentText) {
+                $.ajax({
+                    url: '/info/register',
+                    type: 'POST',
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function() {
+                        history.back();
+                    },
+                    error: function(xhr) {
+                        jwtFilter();
+                        var errorMessage = JSON.parse(xhr.responseText);
+                        if (errorMessage.BindingResultError) {
+                            for (var err in errorMessage) {
+                                if (document.getElementById(err)) {
+                                    var errElement = document.getElementById(err);
+                                    errElement.textContent = errorMessage[err];
+                                    errElement.classList.add("alert", "alert-warning");
+                                }
+                            }
+                        } else {
+                            console.log(xhr.responseText);
+                        }
+                    }
+                });
+            } else {
+                alert('모든 항목을 입력해주세요.');
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

@@ -55,18 +55,8 @@
 
     });
 
-    function clearText() {
-        var pTag = ["emailError", "passwordError", "nameError", "addressError"];
-        for (var tag in pTag) {
-            var pElement = document.getElementById(tag);
-            if (pElement != null) {
-                pElement.textContent="";
-            }
-        }
-    }
-
     function register() {
-        clearText();
+        clearText(["emailError", "passwordError", "nameError", "addressError"]);
         var email = $('#email').val();
         var password = $('#password').val();
         var password2 = $('#password2').val();

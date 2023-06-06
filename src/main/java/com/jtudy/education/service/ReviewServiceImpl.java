@@ -160,7 +160,7 @@ public class ReviewServiceImpl implements ReviewService {
             }
             reviewRepository.save(review);
         }
-        List<Image> deleteList = imageService.getImagesToDelete(existImages, existImgArray);
+        List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {
                 review.removeImage(deleteEntity);
@@ -188,13 +188,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-        public void removeAllImg(Long revNum) throws IOException {
+    public void removeAllImg(Long revNum) throws IOException {
         List<Image> images = imageRepository.findByRevNum(revNum);
         for (Image image : images) {
             removeImg(image.getImageId(), revNum);
         }
     }
 
+    @Override
     public void removeImg(Long imageId, Long revNum) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         Image image = imageRepository.findByImageId(imageId);
@@ -202,8 +203,6 @@ public class ReviewServiceImpl implements ReviewService {
             review.removeImage(image);
             imageService.deleteImage(image);
             reviewRepository.save(review);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             throw new IOException();
         }

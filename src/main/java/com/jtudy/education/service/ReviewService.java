@@ -24,7 +24,6 @@ public interface ReviewService {
 
     ReviewDTO getOne(Long revNum);
 
-    @Transactional(readOnly = true)
     List<ImageDTO> getAllImages(Long revNum);
 
     ReviewDTO getByAcademy(Long acaNum, String email);
@@ -73,6 +72,7 @@ public interface ReviewService {
         return reviewDTO;
     }
 
-
     void removeAllImg(Long revNum) throws IOException;
+
+    void removeImg(Long imageId, Long revNum) throws IOException;
 }

@@ -100,16 +100,6 @@
             }
         }
 
-        function clearText() {
-            var pTag = ["acaNameError", "locationError", "subjectError"];
-            for (var tag in pTag) {
-                var pElement = document.getElementById(tag);
-                if (pElement != null) {
-                    pElement.textContent = "";
-                }
-            }
-        }
-
         function getSubject() {
             var subject = [];
             var subjects = $("input[name=subject]:checkbox");
@@ -122,7 +112,7 @@
         }
 
         function modify() {
-            clearText();
+            clearText(["acaNameError", "locationError", "subjectError"]);
             var number = $('#number').val();
             var acaName = $('#acaName').val();
             var subject = getSubject();

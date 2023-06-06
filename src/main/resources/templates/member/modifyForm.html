@@ -57,18 +57,8 @@
 
     });
 
-    function clearText() {
-        var pTag = ["passwordError", "nameError", "addressError"];
-        for (var tag in pTag) {
-            var pElement = document.getElementById(tag);
-            if (pElement != null) {
-                pElement.textContent="";
-            }
-        }
-    }
-
     function modify() {
-        clearText();
+        clearText(["passwordError", "nameError", "addressError"]);
         var token = localStorage.getItem("jwt");
         var email = $('#email').val();
         var password = $('#password').val();

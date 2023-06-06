@@ -11,23 +11,20 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-wrap: wrap;">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active custom-a-orange font-bold" aria-current="page" href="/academy/main">Home</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link custom-a-orange font-bold" href="/academy/list">학원 목록</a>
                         </li>
-                        <li class="nav-item dropdown" id="nav-dropdown">
-                            <a class="nav-link dropdown-toggle custom-a-orange font-bold" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item custom-a-orange font-bold" href="#">Action</a></li>
-                                <li><a class="dropdown-item custom-a-orange font-bold" href="#">Another action</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item custom-a-orange font-bold" href="#">Something else here</a></li>
+                        <li class="nav-item" id="infoGuideNav">
+                            <a class="nav-link custom-a-orange font-bold" href="/info/list" id="infoGuide">안내 사항</a>
+                        </li>
+                        <li class="dropdown" id="dropdownNav" style="display:none;">
+                            <a class="nav-link font-bold" href="#" id="academyDropdown" data-toggle="dropdown" aria-haspopup="true">학원 관리</a>
+                            <ul class="dropdown-menu" aria-labelledby="academyDropdown">
+                                <li></li><a class="dropdown-item" id="student">가입한 학원</a>
+                                <li></li><a class="dropdown-item" id="manager">관리중인 학원</a>
                             </ul>
                         </li>
                     </ul>
+
                     <div class="input-group w-auto">
                         <div class="input-group-prepend">
                             <select name="category" class="custom-select select-prepend">
@@ -53,13 +50,20 @@
                 $('#searchBtn').on("click", function() {
                     searchAcademy();
                 });
+                $('#manager').on("click", function() {
+                    manager();
+                });
+                $('#student').on("click", function() {
+                    student();
+                });
             });
 
 
             function member() {
-                var token = localStorage.getItem("jwt");
+                const token = localStorage.getItem("jwt");
 
                 if(token) {
+                    $('#dropdownNav').css("display", "list-item");
                     $('#loginBtn_nav').replaceWith("<button align='right' class='custom-button-yellow' type='button' id='logoutBtn' href='/member/logout'>Logout</button>");
 
                     $('#logoutBtn').click(function() {
@@ -67,10 +71,7 @@
                         $.ajax({
                             url: '/member/logout',
                             type: 'POST',
-                            contentType: "application/json",/*
-                            error: function(xhr) {
-                                console.log(xhr.responseText);
-                            },*/
+                            contentType: "application/json",
                         }).always(function() {
                             localStorage.removeItem("jwt");
                             alert("로그아웃이 완료되었습니다.");
@@ -80,6 +81,16 @@
                     });
 
                     $('#logoutBtn').before("<button type='button' class='custom-button-yellow' id='memberBtn' href='/member/read'>회원 정보</button>");
+
+                    const myAcademies = document.createElement('li');
+                    myAcademies.setAttribute('class', 'nav-item');
+                    const aTag = document.createElement('a');
+                    aTag.setAttribute('class', 'nav-link custom-a-orange font-bold');
+                    aTag.setAttribute('href', '#');
+                    aTag.innerText = '나의 학원';
+                    myAcademies.appendChild(aTag);
+                    const $myAcademies = $(myAcademies);
+                    $('#infoGuideNav').after($myAcademies);
 
                     $('#memberBtn').on("click", function() {
                         $.ajax({
@@ -91,6 +102,7 @@
                             location.href="/member/read?number="+number;
                         });
                     });
+
                 }
             }
 
@@ -139,6 +151,27 @@
 
             }
 
+            function manager() {
+                $.ajax({
+                    url: '/academy/manage',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function() {
+                        window.location.href = "/academy/manage";
+                    },
+                });
+            }
+
+            function student() {
+                $.ajax({
+                    url: '/academy/joined',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function() {
+                        window.location.href = "/academy/joined";
+                    },
+                });
+            }
 
         </script>
     </div>

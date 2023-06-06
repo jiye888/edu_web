@@ -59,8 +59,7 @@ public class ReviewController {
     public ResponseEntity register(@RequestParam("academy") Long acaNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (!academyMemberService.isPresent(member.getMember().getMemNum(), acaNum)) {
-                String msg = "not_member";
-                return ResponseEntity.badRequest().body(msg);
+                return ResponseEntity.badRequest().body("not_member");
             }
             if (reviewService.getByAcademy(acaNum, member.getUsername()) == null) {
                 model.addAttribute("academy", acaNum);
@@ -85,7 +84,7 @@ public class ReviewController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] images, @RequestPart List<List<String>> imgArray,
-                                   @AuthenticationPrincipal SecurityMember member, Model model) {
+                                   @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
@@ -96,7 +95,7 @@ public class ReviewController {
                 }
                 return ResponseEntity.badRequest().body(map);
             }
-            Long revNum = reviewService.register(reviewFormDTO, member.getMember()); //files
+            Long revNum = reviewService.register(reviewFormDTO, member.getMember());
             reviewService.registerImg(images, imgArray, revNum, member.getMember());
             return ResponseEntity.ok().body(revNum);
         } catch (Exception e) {
@@ -127,14 +126,14 @@ public class ReviewController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member, Model model) {
+                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();
                 map.put("BindingResultError", "true");
                 List<FieldError> fieldErrors = bindingResult.getFieldErrors();
                 for (FieldError fieldError : fieldErrors) {
-                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
+                    map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
                 }
                 return ResponseEntity.badRequest().body(map);
             }
@@ -147,7 +146,6 @@ public class ReviewController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
     public ResponseEntity delete(@RequestParam("number") Long revNum, Model model, @AuthenticationPrincipal SecurityMember member) {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
         if (reviewService.validateMember(revNum, member)) {

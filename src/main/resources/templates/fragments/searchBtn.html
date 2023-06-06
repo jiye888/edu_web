@@ -183,7 +183,7 @@
         });
 
         function noticeSearch() {
-            var category = $("option[name=notice_category]:selected").val();
+            var category = $('option[name="notice_category"]:selected').val();
             var academy = $('#academy').val();
             var keyword = $('#notice_keyword').val();
             var searchData = {};
@@ -193,11 +193,11 @@
                 alert("검색어를 입력해주세요.");
             }
 
-            if (category == "title") {
+            if (category === "title") {
                 searchData.title = keyword;
-            } else if (category == "content") {
+            } else if (category === "content") {
                 searchData.content = keyword;
-            } else if (category == "title&content") {
+            } else if (category === "title&content") {
                 searchData.title = keyword;
                 searchData.content = keyword;
             }
@@ -219,10 +219,74 @@
                 data: {
                     "title":searchData.title,
                     "content":searchData.content,
-                    "academy":academy,
+                    "academy":academy
                 },
                 success: function() {
                     window.location.href="/notice/search?academy="+academy+"&"+urlString;
+                },
+            });
+        }
+    </script>
+</div>
+
+<div th:fragment="infoSearchBtn">
+    <div class="input-group justify-content-center">
+        <div class="input-group-prepend">
+            <select name="info_category" class="custom-select select-prepend">
+                <option name="info_category" value="title">제목</option>
+                <option name="info_category" value="content">내용</option>
+                <option name="info_category" value="title&content">제목+내용</option>
+            </select>
+            <input type="search" class="custom-form-control" id="info_keyword">
+            <button class="custom-button-yellow" type="button" id="infoSearchBtn">Search</button>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        $(function() {
+            $('#infoSearchBtn').click(function() {
+                infoSearch();
+            });
+        });
+
+        function infoSearch() {
+            var category = $('option[name="info_category"]:selected').val();
+            var keyword = $('#info_keyword').val();
+            var searchData = {};
+            var urlString = "";
+
+            if (keyword === "") {
+                alert("검색어를 입력해주세요.");
+            }
+
+            if (category === "title") {
+                searchData.title = keyword;
+            } else if (category === "content") {
+                searchData.content = keyword;
+            } else if (category === "title&content") {
+                searchData.title = keyword;
+                searchData.content = keyword;
+            }
+
+            for (var prop in searchData) {
+                if (searchData[prop] !== undefined && searchData[prop] !== "") {
+                    urlString += prop + "=" + searchData[prop] + "&";
+                }
+            }
+
+            if (urlString !== "") {
+                urlString = urlString.slice(0, -1);
+            }
+
+            $.ajax({
+                url: '/info/search',
+                type: 'GET',
+                contentType: 'application/json',
+                data: {
+                    "title": searchData.title,
+                    "content": searchData.content
+                },
+                success: function() {
+                    window.location.href = "/info/search?"+urlString;
                 },
             });
         }

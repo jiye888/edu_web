@@ -73,16 +73,6 @@
             selectedFile.textContent = inputFile.files[0].name;
         });
 
-        function clearText() {
-            var pTag = ["acaNameError", "locationError", "subjectError"];
-            for (var tag in pTag) {
-                var pElement = document.getElementById(tag);
-                if (pElement != null) {
-                    pElement.textContent="";
-                }
-            }
-        }
-
         function getSubject() {
             var subject = [];
             var subjects = $("input[name=subject]:checkbox");
@@ -95,7 +85,7 @@
         }
 
         function register() {
-            clearText();
+            clearText(["acaNameError", "locationError", "subjectError"]);
             var acaName = $('#acaName').val();
             var location = '';
             $('input[name=location]:lt(3)').map(function(){
