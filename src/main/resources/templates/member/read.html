@@ -106,15 +106,12 @@
         }
 
         function academyList() {
-            var number = $('#number').val();
-
             $.ajax({
-                url: '/academy/joined?number='+number,
+                url: '/academy/joined',
                 type: 'GET',
                 contentType: "application/json",
-                data: {"number":number},
                 success: function() {
-                    location.href="/academy/joined?number="+number;
+                    location.href="/academy/joined";
                 },
             });
         }

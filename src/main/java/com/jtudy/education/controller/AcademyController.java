@@ -26,7 +26,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
@@ -75,11 +77,22 @@ public class AcademyController {
     }
 
     @GetMapping("/manage")
-    public void manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
+    public ResponseEntity manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<AcademyDTO> academyDTO = academyService.manageAcademies(member.getMember(), pageable);
         model.addAttribute("academy", academyDTO);
-        model.addAttribute("name", member.getMember().getName());
+        try {
+            model.addAttribute("name", member.getMember().getName());
+            Context context = new Context();
+            context.setVariables(model.asMap());
+            String template = templateEngine.process("/academy/manage", context);
+            return ResponseEntity.ok().body(template);
+        } catch (NullPointerException e) {
+            String msg = "로그인이 필요한 서비스입니다.";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.LOCATION, "/member/login");
+            return ResponseEntity.status(302).headers(headers).body(msg);
+        }
     }
 
     @GetMapping("/register")
@@ -208,13 +221,24 @@ public class AcademyController {
     }
 
     @GetMapping("/joined")
-    public void getAcademies(@RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public ResponseEntity getAcademies(@RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
-        String name = member.getMember().getName();
-        model.addAttribute("name", name);
+        try {
+            String name = member.getMember().getName();
+            model.addAttribute("name", name);
+        } catch (NullPointerException e) {
+            String msg = "로그인이 필요한 서비스입니다.";
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.LOCATION, "/member/login");
+            return ResponseEntity.status(302).headers(headers).body(msg);
+        }
         Long memNum = member.getMember().getMemNum();
         Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
         model.addAttribute("academy", academyDTO);
+        Context context = new Context();
+        context.setVariables(model.asMap());
+        String template = templateEngine.process("/academy/joined", context);
+        return ResponseEntity.ok().body(template);
     }
 
     @GetMapping("/search")
