@@ -22,7 +22,7 @@
             </thead>
             <tbody align="center">
             <tr th:each="aca : ${academy}">
-                <td><a th:text="${aca.acaName}" th:href="@{/academy/read?number={number}(number=${aca.acaNum})}">학원 이름</a></td>
+                <td><a th:text="${aca.acaName}" th:href="@{/academy/read(number=${aca.acaNum})}">학원 이름</a></td>
                 <td>
                     <div>
                         <span th:if="${aca.grade == null}"></span>

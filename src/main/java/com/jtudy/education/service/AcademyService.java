@@ -49,6 +49,7 @@ public interface AcademyService {
                 .manager(member)
                 .subject(academyFormDTO.getSubject())
                 .location(academyFormDTO.getLocation())
+                .introduction(academyFormDTO.getIntro())
                 .build();
 
         return academy;
@@ -62,6 +63,7 @@ public interface AcademyService {
                 .managerEmail(academy.getManager().getEmail())
                 .subject(academy.getSubject())
                 .location(academy.getLocation())
+                .intro(academy.getIntroduction())
                 .managerEmail(academy.getCreatedBy())
                 .build();
 

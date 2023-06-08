@@ -77,21 +77,23 @@ public class AcademyController {
     }
 
     @GetMapping("/manage")
-    public ResponseEntity manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
+    public String manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<AcademyDTO> academyDTO = academyService.manageAcademies(member.getMember(), pageable);
         model.addAttribute("academy", academyDTO);
         try {
             model.addAttribute("name", member.getMember().getName());
-            Context context = new Context();
-            context.setVariables(model.asMap());
-            String template = templateEngine.process("/academy/manage", context);
-            return ResponseEntity.ok().body(template);
+            //Context context = new Context();
+            //context.setVariables(model.asMap());
+            //String template = templateEngine.process("/academy/manage", context);
+            //return ResponseEntity.ok().body(template);
+            return "/academy/manage";
         } catch (NullPointerException e) {
             String msg = "로그인이 필요한 서비스입니다.";
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.LOCATION, "/member/login");
-            return ResponseEntity.status(302).headers(headers).body(msg);
+            //HttpHeaders headers = new HttpHeaders();
+            //headers.set(HttpHeaders.LOCATION, "/member/login");
+            //return ResponseEntity.status(302).headers(headers).body(msg);
+            return msg;
         }
     }
 
@@ -137,8 +139,9 @@ public class AcademyController {
         AcademyDTO academyDTO = academyService.getOne(acaNum);
         model.addAttribute("academy", academyDTO);
         try {
-            ImageDTO fileDTO = imageService.getAcademyMain(acaNum);
-            model.addAttribute("path", fileDTO.getPath());
+            ImageDTO image = imageService.getAcademyMain(acaNum);
+            String imageSrc = "data: "+image.getMimeType()+";base64, "+image.getBase64();
+            model.addAttribute("imageSrc", imageSrc);
         } catch (NullPointerException e) {
             model.addAttribute("path", null);
         } catch (IOException e) {
@@ -221,24 +224,26 @@ public class AcademyController {
     }
 
     @GetMapping("/joined")
-    public ResponseEntity getAcademies(@RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public String getAcademies(@RequestParam(value = "page", defaultValue = "1") int page, @AuthenticationPrincipal SecurityMember member, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
         try {
             String name = member.getMember().getName();
             model.addAttribute("name", name);
         } catch (NullPointerException e) {
             String msg = "로그인이 필요한 서비스입니다.";
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.LOCATION, "/member/login");
-            return ResponseEntity.status(302).headers(headers).body(msg);
+            //HttpHeaders headers = new HttpHeaders();
+            //headers.set(HttpHeaders.LOCATION, "/member/login");
+            //return ResponseEntity.status(302).headers(headers).body(msg);
+            return msg;
         }
         Long memNum = member.getMember().getMemNum();
         Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
         model.addAttribute("academy", academyDTO);
-        Context context = new Context();
-        context.setVariables(model.asMap());
-        String template = templateEngine.process("/academy/joined", context);
-        return ResponseEntity.ok().body(template);
+        //Context context = new Context();
+        //context.setVariables(model.asMap());
+        //String template = templateEngine.process("/academy/joined", context);
+        //return ResponseEntity.ok().body(template);
+        return "/academy/joined";
     }
 
     @GetMapping("/search")

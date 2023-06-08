@@ -93,6 +93,7 @@ public class AcademyServiceImpl implements AcademyService{
     public void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException {
         Academy academy = academyRepository.findByAcaNum(acaNum);
         Image image = imageService.fileToEntity(file, member);
+        imageService.uploadImage(file, image);
         image.setAcademy(academy);
         academy.setImage(image);
         imageRepository.save(image);

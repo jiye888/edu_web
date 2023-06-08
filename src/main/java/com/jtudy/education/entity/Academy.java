@@ -33,8 +33,9 @@ public class Academy extends BaseEntity {
     @ManyToOne
     private Member manager;
 
-    @Column
     private String location;
+
+    private String introduction;
 
     @OneToMany(mappedBy = "academy", orphanRemoval = true)
     @Builder.Default

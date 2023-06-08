@@ -39,6 +39,14 @@
                             <span class="custom-span">학원 위치</span>
                             <span th:text="${academy.location}">학원 위치</span><br>
                         </div>
+                        <div class="flex">
+                            <span class="custom-span">대표 이미지</span>
+                            <img th:src="${imageSrc}">
+                        </div>
+                        <div class="flex">
+                            <span class="custom-span">학원 소개</span>
+                            <span th:text="${academy.intro}">학원 소개</span>
+                        </div>
                         <input type="hidden" th:field="${academy.acaNum}" id="number">
                     </th>
                 </tr>

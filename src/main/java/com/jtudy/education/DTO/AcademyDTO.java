@@ -24,6 +24,8 @@ public class AcademyDTO {
 
     private String location;
 
+    private String intro;
+
     private String shortLocation;
 
     private String managerEmail;

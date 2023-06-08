@@ -13,6 +13,7 @@ import javassist.bytecode.DuplicateMemberException;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -118,6 +119,7 @@ public class MemberServiceImpl implements MemberService{
         if (token.isPresent()) {
             refreshTokenRepository.delete(token.get());
         }
+        SecurityContextHolder.clearContext();
     }
 
     @Override

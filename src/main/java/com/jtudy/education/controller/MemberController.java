@@ -173,10 +173,15 @@ public class MemberController {
         }
     }
 
-    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
-    @ResponseBody
-    public void logout(@AuthenticationPrincipal SecurityMember member) {
+    @PostMapping(value = "/logout")
+    public ResponseEntity logout(@AuthenticationPrincipal SecurityMember member) {
+        try {
             memberService.logout(member.getUsername());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/joined")

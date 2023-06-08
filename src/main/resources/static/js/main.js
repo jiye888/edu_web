@@ -37,7 +37,7 @@
             const images = document.querySelectorAll('img[name="new"]');
             let imgIndex = [];
             if (images.length !== 0) {
-                image.forEach(img => {
+                images.forEach(img => {
                     const dataName = img.getAttribute('data-name');
                     var id = getRandomImgId();
                     var match = matchContent(id);

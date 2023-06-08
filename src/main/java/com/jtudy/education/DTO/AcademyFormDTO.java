@@ -35,4 +35,6 @@ public class AcademyFormDTO {
     @NotBlank(message = "학원의 위치를 입력해주세요.")
     private String location;
 
+    private String intro;
+
 }
