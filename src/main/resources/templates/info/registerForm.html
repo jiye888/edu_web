@@ -101,17 +101,8 @@
                     error: function(xhr) {
                         jwtFilter();
                         var errorMessage = JSON.parse(xhr.responseText);
-                        if (errorMessage.BindingResultError) {
-                            for (var err in errorMessage) {
-                                if (document.getElementById(err)) {
-                                    var errElement = document.getElementById(err);
-                                    errElement.textContent = errorMessage[err];
-                                    errElement.classList.add("alert", "alert-warning");
-                                }
-                            }
-                        } else {
-                            console.log(xhr.responseText);
-                        }
+                        checkBindingResult(errorMessage);
+                        console.log(xhr.responseText);
                     }
                 });
             } else {

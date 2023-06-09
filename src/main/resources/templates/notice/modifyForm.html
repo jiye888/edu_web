@@ -243,12 +243,9 @@
                     },
                     error: function(xhr, response) {
                         jwtFilter();
-                        try {
-                            var errorMessage = JSON.parse(xhr.responseText);
-                            checkBindingResult(errorMessage);
-                        } catch (e) {
-                            console.error(xhr.responseText);
-                        }
+                        var errorMessage = JSON.parse(xhr.responseText);
+                        checkBindingResult(errorMessage);
+                        console.error(xhr.responseText);
                     },
                 });
             } else {

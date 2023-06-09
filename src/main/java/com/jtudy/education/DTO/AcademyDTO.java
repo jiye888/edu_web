@@ -45,6 +45,7 @@ public class AcademyDTO {
         if(locationSplit.length > 2) {
             this.shortLocation = locationSplit[1]+" "+locationSplit[2];
         }
+        this.intro = academy.getIntroduction();
         this.managerEmail = academy.getManager().getEmail();
         this.managerName = academy.getManager().getName();
         this.grade = grade;

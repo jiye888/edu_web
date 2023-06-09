@@ -107,6 +107,8 @@ public class ReviewController {
     public void read(@RequestParam("number") Long revNum, Model model) {
         ReviewDTO reviewDTO = reviewService.getOne(revNum);
         model.addAttribute("review", reviewDTO);
+        List<ImageDTO> imageDTO = reviewService.getAllImages(revNum);
+        model.addAttribute("image", imageDTO);
     }
 
     @GetMapping("/modify")

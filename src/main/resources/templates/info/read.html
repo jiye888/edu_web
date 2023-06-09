@@ -13,7 +13,7 @@
                 <span th:text="${#temporals.format(info.createdAt, 'yyyy-MM-dd HH:mm')}" class="title-date">작성일자</span>
             </div>
             <div class="content-box">
-                <span th:utext="${info.content}" style="white-space:pre-line;">내용</span>
+                <span th:text="${info.content}" class="scroll" style="white-space:pre-line;" id="content">내용</span>
             </div>
             <input type="hidden" th:field="${info.infoNum}" id="number">
             <div class="button-distance" style="padding: 0px 50px 0px 50px;">
@@ -31,6 +31,9 @@
                 delete_info();
             });
         });
+
+        const images = [[${image}]];
+        document.addEventListener('DOMContentLoaded', showImages(images));
 
         function modify() {
             const number = $('#number').val();

@@ -168,3 +168,30 @@
                 }
             }
         }
+
+        function showImages(images) {
+            if (images === null) {
+                return;
+            }
+            const size = images.length;
+            var contentText = document.getElementById('content').textContent;
+
+            if (size != 0) {
+                images.forEach(image => {
+                    const insertImg = '<img src="data:'+image.mimeType+';base64 ,'+image.base64+'" data-name='+image.originalName+'>';
+                    const preText = image.preText;
+                    const postText = image.postText;
+
+                    const regex = new RegExp(image.index);
+                    const content = document.getElementById('content')
+                    const match = content.textContent.match(regex);
+                    if (match !== null && match.length === 1) {
+                        var tempPre = preText !== undefined ? content.textContent.slice(match.index < 10 ? 0 : match.index - preText.length, match.index) : "";
+                        var tempNext = postText !== undefined ? content.textContent.slice(match.index + image.index.length, (match.index + image.index.length) > content.textContent.length ? content.textContent.length : match.index + image.index.length + postText.length) : "";
+                        if(tempPre === preText && tempNext === postText) {
+                            content.innerHTML = content.innerHTML.replace(regex, insertImg);
+                        }
+                    }
+                })
+            }
+        }

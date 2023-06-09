@@ -85,6 +85,8 @@ public class infoGuideController {
     public void read(@RequestParam("number") Long infoNum, Model model) {
         InfoGuideDTO infoGuideDTO = infoGuideService.getOne(infoNum);
         model.addAttribute("info", infoGuideDTO);
+        List<ImageDTO> imageDTO = infoGuideService.getAllImages(infoNum);
+        model.addAttribute("image", imageDTO);
     }
 
     @GetMapping("/modify")

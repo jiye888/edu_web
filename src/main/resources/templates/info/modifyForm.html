@@ -121,8 +121,8 @@
                     formData.append("images", img);
                 });
             }
-            formData.append("imgArray", new Blob([JSON.stringify(json)], {type:"application/json}));
-            formData.append("existImgArray", new Blob([JSON.stringify(json)], {type:"application/json"}));
+            formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
+            formData.append("existImgArray", new Blob([JSON.stringify(existImgArray)], {type:"application/json"}));
 
             if (title && contentText) {
                 $.ajax({
@@ -137,15 +137,7 @@
                     error: function(xhr) {
                         jwtFilter();
                         var errorMessage = JSON.parse(xhr.responseText);
-                        if (errorMessage.BindingResultError) {
-                            for (var err in errorMessage) {
-                                if (document.getElementById(err)) {
-                                    var errElement = document.getElementById(err);
-                                    errElement.textContent = errorMessage[err];
-                                    errElement.classList.add("alert", "alert-warning");
-                                }
-                            }
-                        }
+                        checkBindingResult(errorMessage);
                         console.log(xhr.responseText);
                     }
                 });

@@ -10,9 +10,9 @@
             <table>
                 <tr style="display:flex;">
                     <th>
-                        <img th:if="${path}" id="imgByte" src="${path}" class="academy-img">
+                        <img th:if="${imageSrc}" id="imgByte" th:src="${imageSrc}" class="academy-img">
                     </th>
-                    <th>
+                    <th style="font-weight:400;">
                         <div style="display:flex;justify-content:space-between;">
                             <div>
                                 <span class="custom-span">학원명</span>
@@ -38,10 +38,6 @@
                         <div class="flex">
                             <span class="custom-span">학원 위치</span>
                             <span th:text="${academy.location}">학원 위치</span><br>
-                        </div>
-                        <div class="flex">
-                            <span class="custom-span">대표 이미지</span>
-                            <img th:src="${imageSrc}">
                         </div>
                         <div class="flex">
                             <span class="custom-span">학원 소개</span>

@@ -163,20 +163,9 @@
                     },
                     error: function(xhr, response) {
                         jwtFilter();
-                        try {
-                            var errorMessage = JSON.parse(xhr.responseText);
-                            if (errorMessage.BindingResultError) {
-                                for (var err in errorMessage) {
-                                    if (document.getElementById(err)) {
-                                        var errElement = document.getElementById(err);
-                                        errElement.textContent = errorMessage[err];
-                                        errElement.classList.add("alert", "alert-warning");
-                                    }
-                                }
-                            }
-                        } catch (e) {
-                            console.log(xhr.responseText);
-                        }
+                        var errorMessage = JSON.parse(xhr.responseText);
+                        checkBindingResult(errorMessage);
+                        console.log(xhr.responseText);
                     },
                 });
             } else {
