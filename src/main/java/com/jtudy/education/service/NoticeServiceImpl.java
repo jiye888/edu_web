@@ -1,9 +1,6 @@
 package com.jtudy.education.service;
 
-import com.jtudy.education.DTO.FileUploadDTO;
-import com.jtudy.education.DTO.ImageDTO;
-import com.jtudy.education.DTO.NoticeDTO;
-import com.jtudy.education.DTO.NoticeFormDTO;
+import com.jtudy.education.DTO.*;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyRepository;
@@ -121,10 +118,11 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Image setNotice(Image image, Long notNum, List<String> imgArray) {
-        if (image != null && notNum != null && imgArray != null && !(imgArray.isEmpty())) {
+    public Image setNotice(Image image, Long notNum, ImgArrayDTO imgArray) {
+        if (image != null && notNum != null && imgArray != null) {
             Notice notice = noticeRepository.findByNotNum(notNum);
-            image.setNotice(notice, imgArray.get(1), imgArray.get(2), imgArray.get(3));
+            imageService.setInfo(image, imgArray);
+            image.setNotice(notice);
             checkImageName(notNum, image);
             return image;
         }
@@ -154,13 +152,14 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
+    public void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         if (images != null && images.length > 0) {
             for (MultipartFile image : images) {
-                List<String> imgArr = imageService.matchArray(image.getOriginalFilename(), imgArray);
+                ImgArrayDTO imgArr = imageService.matchDTO(image.getOriginalFilename(), imgArray);
                 if (imgArr != null) {
                     Image img = imageService.fileToEntity(image, member);
+                    img = imageService.setNewName(img, imgArr);
                     img = setNotice(img, notNum, imgArr);
                     imageService.uploadImage(image, img);
                     notice.addImage(img);
@@ -172,10 +171,11 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void registerImg(MultipartFile image, List<List<String>> imgArray, Long notNum, Member member) throws IOException {
+    public void registerImg(MultipartFile image, List<ImgArrayDTO> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         Image img = imageService.fileToEntity(image, member);
-        List<String> imgArr = imageService.matchArray(img.getOriginalName(), imgArray);
+        ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
+        img = imageService.setNewName(img, imgArr);
         if (imgArr != null) {
             img = setNotice(img, notNum, imgArr);
             imageService.uploadImage(image, img);
@@ -221,16 +221,17 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long notNum, Member member) throws IOException {
+    public void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<Image> existImages = imageRepository.findByNotNum(notNum);
         List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
-        if (modifyList != null && modifyList.size() > 0) {
+        /*if (modifyList != null && modifyList.size() > 0) {
             for (Image modify : modifyList) {
                 notice.addImage(modify);
             }
             noticeRepository.save(notice);
-        }
+            imageService.modifyImages(existImages, existImgArray);
+        }*/
         List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {

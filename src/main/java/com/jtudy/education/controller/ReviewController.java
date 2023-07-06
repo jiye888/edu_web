@@ -1,6 +1,7 @@
 package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.security.SecurityMember;
@@ -83,7 +84,7 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] images, @RequestPart List<List<String>> imgArray,
+    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] images, @RequestPart List<ImgArrayDTO> imgArray,
                                    @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
@@ -128,7 +129,7 @@ public class ReviewController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member) {
+                                 @RequestPart(value = "imgArray", required = false) List<ImgArrayDTO> imgArray, @RequestPart(value = "existImgArray", required = false) List<ImgArrayDTO> existImgArray, @AuthenticationPrincipal SecurityMember member) {
         try {
             if (bindingResult.hasErrors()) {
                 Map<String, String> map = new HashMap<>();

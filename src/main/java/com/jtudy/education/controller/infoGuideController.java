@@ -1,6 +1,7 @@
 package com.jtudy.education.controller;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.InfoGuideDTO;
 import com.jtudy.education.DTO.InfoGuideFormDTO;
 import com.jtudy.education.constant.Roles;
@@ -61,7 +62,7 @@ public class infoGuideController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestPart @Valid InfoGuideFormDTO infoGuideFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images, @RequestPart(required = false) List<List<String>> imgArray,
+    public ResponseEntity register(@RequestPart @Valid InfoGuideFormDTO infoGuideFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images, @RequestPart(required = false) List<ImgArrayDTO> imgArray,
                                    @AuthenticationPrincipal SecurityMember member) {
         if (bindingResult.hasErrors()) {
             Map<String, String> map = new HashMap<>();
@@ -105,7 +106,7 @@ public class infoGuideController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid InfoGuideFormDTO infoGuideFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images,
-                                 @RequestPart(value = "imgArray", required = false) List<List<String>> imgArray, @RequestPart(value = "existImgArray", required = false) List<List<String>> existImgArray, @AuthenticationPrincipal SecurityMember member) {
+                                 @RequestPart(required = false) List<ImgArrayDTO> imgArray, @RequestPart(required = false) List<ImgArrayDTO> existImgArray, @AuthenticationPrincipal SecurityMember member) {
         if (bindingResult.hasErrors()) {
             Map<String, String> map = new HashMap<>();
             map.put("BindingResultError", "true");
@@ -115,11 +116,12 @@ public class infoGuideController {
             }
             return ResponseEntity.badRequest().body(map);
         }
+        Long infoNum = infoGuideService.update(infoGuideFormDTO);
         try {
-            Long infoNum = infoGuideService.update(infoGuideFormDTO);
             infoGuideService.updateImg(images, imgArray, existImgArray, infoNum, member.getMember());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

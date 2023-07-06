@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.InfoGuideDTO;
 import com.jtudy.education.DTO.InfoGuideFormDTO;
 import com.jtudy.education.constant.Roles;
@@ -94,10 +95,11 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     }
 
     @Override
-    public Image setInfoGuide(Image image, Long infoNum, List<String> imgArray) {
-        if (image != null && infoNum != null && imgArray != null && !(imgArray.isEmpty())) {
+    public Image setInfoGuide(Image image, Long infoNum, ImgArrayDTO imgArray) {
+        if (image != null && infoNum != null && imgArray != null) {
             InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
-            image.setInfoGuide(infoGuide, imgArray.get(1), imgArray.get(2), imgArray.get(3));
+            imageService.setInfo(image, imgArray);
+            image.setInfoGuide(infoGuide);
             checkImageName(infoNum, image);
             return image;
         }
@@ -105,17 +107,19 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     }
 
     @Override
-    public void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long infoNum, Member member) throws IOException {
+    public void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long infoNum, Member member) throws IOException {
         InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
         if (images != null && images.length > 0) {
             for (MultipartFile image : images) {
-                List<String> imgArr = imageService.matchArray(image.getOriginalFilename(), imgArray);
+                ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
                 if (imgArr != null) {
                     Image img = imageService.fileToEntity(image, member);
+                    img = imageService.setNewName(img, imgArr);
                     img = setInfoGuide(img, infoNum, imgArr);
                     imageService.uploadImage(image, img);
                     infoGuide.addImage(img);
                     imageRepository.save(img);
+                    imgArray.remove(imgArr);
                 }
             }
             infoGuideRepository.save(infoGuide);
@@ -131,16 +135,17 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     }
 
     @Override
-    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long infoNum, Member member) throws IOException {
+    public void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long infoNum, Member member) throws IOException {
         InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
         List<Image> existImages = imageRepository.findByInfoNum(infoNum);
         List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
-        if (modifyList != null && modifyList.size() > 0) {
+        /*if (modifyList != null && modifyList.size() > 0) {
             for (Image modify : modifyList) {
                 infoGuide.addImage(modify);
             }
             infoGuideRepository.save(infoGuide);
-        }
+            imageService.modifyImages(existImages, existImgArray);
+        }*/
         List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {

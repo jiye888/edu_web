@@ -44,11 +44,13 @@
             const infoContentText = [[${info.content}]];
             const infoContent = document.getElementById('content');
             infoContent.innerHTML = infoContentText;
+            console.log(existImages);
+            setImgTag(existImages);
 
             const size = existImages.length;
 
             var contentText = infoContent.textContent;
-
+            /*
             if (size != 0) {
                 existImages.forEach(image => {
                     const insertImg = '<img src="data:'+image.mimeType+';base64, '+image.base64+'" data-name='+image.originalName+' data-id='+image.index+' name=\"exist\">';
@@ -65,29 +67,14 @@
                         }
                     }
                 });
+                imageLabel.innerText = "이미지 추가 ("+size+"/10)";
             }
+            */
         });
 
         imageFile.addEventListener('change', function() {
             const image = event.target.files[0];
-            const reader = new FileReader();
-            const images = document.querySelectorAll('img');
-            images.forEach(img => {
-                if (event.target.files[0].name == img.getAttribute("data-name")) {
-                    alert("동일한 이름의 이미지가 추가되어있습니다.");
-                    event.target.value = null;
-                }
-            })
-
-            reader.readAsDataURL(image);
-
-            reader.onload = () => {
-                const dataURL = reader.result;
-                const img = setImgElement(image, dataURL);
-                imgList.push(image);
-                const imageLength = document.querySelectorAll('img').length;
-                imageLabel.innerText = "이미지 추가 ("+imageLength+"/10)";
-            };
+            setDataURL(image, imgList);
         });
 
         imageLabel.addEventListener('click', function() {
@@ -105,8 +92,8 @@
             clearText(["titleError", "contentError"]);
             const number = $('#number').val();
             const title = $('#title').val();
-            const imgArray = findNewImgPosition();
-            const existImgArray = findExistImgPosition();
+            const imgArray = findImgPosition("new");
+            const existImgArray = findImgPosition("exist");
             const contentText = document.getElementById('content').textContent;
             const json = {
                 "number":number,
@@ -136,9 +123,13 @@
                     },
                     error: function(xhr) {
                         jwtFilter();
-                        var errorMessage = JSON.parse(xhr.responseText);
-                        checkBindingResult(errorMessage);
-                        console.log(xhr.responseText);
+                        try {
+                            var errorMessage = JSON.parse(xhr.responseText);
+                            checkBindingResult(errorMessage);
+                            console.log(xhr.responseText);
+                        } catch (e) {
+                            console.log(xhr.responseText);
+                        }
                     }
                 });
             } else {

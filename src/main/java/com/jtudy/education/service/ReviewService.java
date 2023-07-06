@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Academy;
@@ -32,13 +33,13 @@ public interface ReviewService {
 
     void checkImageName(Long revNum, Image image);
 
-    Image setReview(Image image, Long revNum, List<String> imgArray);
+    Image setReview(Image image, Long revNum, ImgArrayDTO imgArray);
 
-    void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException;
+    void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long revNum, Member member) throws IOException;
 
     Long update(ReviewFormDTO reviewFormDTO);
 
-    void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long revNum, Member member) throws IOException;
+    void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long revNum, Member member) throws IOException;
 
     void delete(Long revNum) throws IOException;
 

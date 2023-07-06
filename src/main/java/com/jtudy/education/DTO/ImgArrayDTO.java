@@ -5,34 +5,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.nio.file.Path;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImageDTO {
-
-    private Long imageId;
-
-    private String originalName;
+public class ImgArrayDTO {
 
     private String name;
-
-    private String path;
-
-    private String mimeType;
 
     private String base64;
 
     private String preText;
 
+    private String postText;
+
     private Integer textIndex;
 
     private Integer arrayIndex;
 
-    private String postText;
-
-    private String uploader;
+    private String duplicate;
 
 }

@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.InfoGuideDTO;
 import com.jtudy.education.DTO.InfoGuideFormDTO;
 import com.jtudy.education.entity.Image;
@@ -55,13 +56,13 @@ public interface InfoGuideService {
 
     void checkImageName(Long infoNum, Image image);
 
-    Image setInfoGuide(Image image, Long infoNum, List<String> imgArray);
+    Image setInfoGuide(Image image, Long infoNum, ImgArrayDTO imgArray);
 
-    void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long infoNum, Member member) throws IOException;
+    void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long infoNum, Member member) throws IOException;
 
     Long update(InfoGuideFormDTO infoGuideFormDTO);
 
-    void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long infoNum, Member member) throws IOException;
+    void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long infoNum, Member member) throws IOException;
 
     void delete(Long infoNum) throws IOException;
 

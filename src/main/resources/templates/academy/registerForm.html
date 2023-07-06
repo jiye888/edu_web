@@ -125,7 +125,7 @@
                     },
                     error: function(xhr, response) {
                         jwtFilter();
-                        if (xhr.status == 422) {
+                        if (xhr.status === 422) {
                             var errorMessage = JSON.parse(xhr.responseText);
                             checkBindingResult(errorMessage);
                         } else {

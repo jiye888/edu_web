@@ -88,23 +88,7 @@
 
         imageFile.addEventListener('change', function() {
             const image = event.target.files[0];
-            const reader = new FileReader();
-            const images = document.querySelectorAll('img');
-            images.forEach(img => {
-                if (event.target.files[0].name == img.getAttribute("data-name")) {
-                    alert("동일한 이름의 이미지가 추가되어있습니다.");
-                    event.target.value = null;
-                }
-            })
-
-            reader.readAsDataURL(image);
-
-            reader.onload = () => {
-                const dataURL = reader.result;
-                const img = setImgElement(image, dataURL);
-                imgList.push(image);
-                imageLabel.innerText = "이미지 추가 ("+imgList.length+"/10)";
-            };
+            setDataURL(image, imgList);
         });
 
         imageLabel.addEventListener('click', function() {
@@ -128,7 +112,7 @@
             clearText(["title", "content"]);
             var academy = Number($('#academy').val());
             var title = $('#title').val();
-            const imgArray = findNewImgPosition();
+            const imgArray = findImgPosition("new");
             const contentText = document.getElementById('content').textContent;
             const json = {
                     "academy": academy,
@@ -163,9 +147,13 @@
                     },
                     error: function(xhr, response) {
                         jwtFilter();
-                        var errorMessage = JSON.parse(xhr.responseText);
-                        checkBindingResult(errorMessage);
-                        console.log(xhr.responseText);
+                        try {
+                            var errorMessage = JSON.parse(xhr.responseText);
+                            checkBindingResult(errorMessage);
+                            console.log(xhr.responseText);
+                        } catch (e) {
+                            console.log(xhr.responseText);
+                        }
                     },
                 });
             } else {

@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.constant.Roles;
@@ -113,10 +114,11 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Image setReview(Image image, Long revNum, List<String> imgArray) {
-        if (image != null && revNum != null && imgArray != null && !(imgArray.isEmpty())) {
+    public Image setReview(Image image, Long revNum, ImgArrayDTO imgArray) {
+        if (image != null && revNum != null && imgArray != null) {
             Review review = reviewRepository.findByRevNum(revNum);
-            image.setReview(review, imgArray.get(1), imgArray.get(2), imgArray.get(3));
+            imageService.setInfo(image, imgArray); //*
+            image.setReview(review);
             checkImageName(revNum, image);
             return image;
         }
@@ -124,13 +126,14 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException {
+    public void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long revNum, Member member) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         if (images != null && images.length > 0) {
             for (MultipartFile image : images) {
-                List<String> imgArr = imageService.matchArray(image.getOriginalFilename(), imgArray);
+                ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
                 if (imgArr != null) {
                     Image img = imageService.fileToEntity(image, member);
+                    img = imageService.setNewName(img, imgArr);
                     img = setReview(img, revNum, imgArr);
                     imageService.uploadImage(image, img);
                     review.addImage(img);
@@ -150,16 +153,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long revNum, Member member) throws IOException {
+    public void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long revNum, Member member) throws IOException {
         Review review = reviewRepository.findByRevNum(revNum);
         List<Image> existImages = imageRepository.findByRevNum(revNum);
         List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
-        if (modifyList != null && modifyList.size() > 0) {
+        /*if (modifyList != null && modifyList.size() > 0) {
             for (Image modify : modifyList) {
+                imageService.modifyImages(existImages, existImgArray);
                 review.addImage(modify);
             }
             reviewRepository.save(review);
-        }
+            imageService.modifyImages(existImages, existImgArray);
+        }*/
         List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {

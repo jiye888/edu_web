@@ -33,14 +33,14 @@ public class Image extends BaseEntity{
     @ManyToOne
     private Member uploader;
 
-    @Column(name = "image_index")
-    private String index;
-
     @Column(name = "pre_text")
     private String preText;
 
     @Column(name = "post_text")
     private String postText;
+
+    @Column(name = "image_index")
+    private String index;
 
     @OneToOne
     private Academy academy;
@@ -58,31 +58,22 @@ public class Image extends BaseEntity{
         this.academy = academy;
     }
 
-    public void setNotice(Notice notice, String index, String preText, String postText) {
+    public void setNotice(Notice notice) {
         this.notice = notice;
-        this.index = index;
-        this.preText = preText;
-        this.postText = postText;
     }
 
-    public void setReview(Review review, String index, String preText, String postText) {
+    public void setReview(Review review) {
         this.review = review;
-        this.index = index;
-        this.preText = preText;
-        this.postText = postText;
     }
 
-    public void setInfoGuide(InfoGuide infoGuide, String index, String preText, String postText) {
+    public void setInfoGuide(InfoGuide infoGuide) {
         this.infoGuide = infoGuide;
-        this.index = index;
-        this.preText = preText;
-        this.postText = postText;
     }
 
-    public void changeInfo(String index, String preText, String postText) {
-        this.index = index;
+    public void changeInfo(String preText, String postText, String index) {
         this.preText = preText;
         this.postText = postText;
+        this.index = index;
     }
 
     public void changeOriginalName(String name) {

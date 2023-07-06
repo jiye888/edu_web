@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
@@ -15,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,6 +71,15 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public Image setNewName(Image image, ImgArrayDTO imgArrayDTO) {
+        if (imgArrayDTO.getBase64() != null) {
+            String newName = getNewName(image);
+            image.changeOriginalName(newName);
+        }
+        return image;
+    }
+
+    @Override
     public Image fileToEntity(MultipartFile file, Member member) throws IOException {
         if (!isImage(file)) {
             throw new IOException("유효한 파일 형식이 아닙니다.");
@@ -107,6 +115,17 @@ public class ImageServiceImpl implements ImageService {
         String mimeType = Files.probeContentType(file.toPath());
         byte[] bytes = Files.readAllBytes(file.toPath());
         String base64 = Base64Utils.encodeToString(bytes);
+        String textIndex;
+        Integer arrayIndex = -1;
+
+        if (image.getIndex() != null && image.getIndex().indexOf(",") != -1) {
+            textIndex = image.getIndex().substring(0, image.getIndex().indexOf(","));
+            arrayIndex = Integer.valueOf(image.getIndex().substring(image.getIndex().indexOf(",")+1));
+        } else {
+            textIndex = image.getIndex();
+        }
+        textIndex = (textIndex == null) || (textIndex.equals("")) ? null : textIndex;
+        //원래는 index가 null이면 안되긴 하는데..........
 
         ImageDTO imageDTO = ImageDTO.builder()
                 .imageId(image.getImageId())
@@ -115,13 +134,21 @@ public class ImageServiceImpl implements ImageService {
                 .path(image.getPath())
                 .mimeType(mimeType)
                 .base64(base64)
-                .index(image.getIndex())
                 .preText(image.getPreText())
+                .textIndex(textIndex == null ? null: Integer.valueOf(textIndex))
+                .arrayIndex(arrayIndex)
                 .postText(image.getPostText())
                 .uploader(image.getUploader().getEmail())
                 .build();
 
         return imageDTO;
+    }
+
+    @Override
+    public Image setInfo(Image image, ImgArrayDTO imgArrayDTO) {
+        String index = imgArrayDTO.getTextIndex() + "," + imgArrayDTO.getArrayIndex();
+        image.changeInfo(imgArrayDTO.getPreText(), imgArrayDTO.getPostText(), index);
+        return image;
     }
 
     @Override
@@ -131,8 +158,35 @@ public class ImageServiceImpl implements ImageService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return image;
+    }
+
+    @Override
+    public ImgArrayDTO matchDTO(MultipartFile image, List<ImgArrayDTO> arrayList) throws IOException {
+        for (ImgArrayDTO imgArrayDTO : arrayList) {
+            if (image.getOriginalFilename().equals(imgArrayDTO.getName())) {
+                if (imgArrayDTO.getBase64() != null) {
+                    byte[] imageByte = image.getBytes();
+                    byte[] base64Byte = Base64.getDecoder().decode(imgArrayDTO.getBase64());
+                    if (Arrays.equals(imageByte, base64Byte)) {
+                        return imgArrayDTO;
+                    }
+                } else {
+                    return imgArrayDTO;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ImgArrayDTO matchDTO(String name, List<ImgArrayDTO> imgArray) {
+        for (ImgArrayDTO imgArrayDTO : imgArray) {
+            if (name.equals(imgArrayDTO.getName())) {
+                return imgArrayDTO;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -152,7 +206,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public boolean isNotNullOrEmpty(MultipartFile[] images, List<List<String>> imgArray) {
+    public boolean isNotNullOrEmpty(MultipartFile[] images, List<ImgArrayDTO> imgArray) {
         if (images == null || !(images.length > 0)) {
             return false;
         } else if (imgArray == null || imgArray.isEmpty()) {
@@ -163,7 +217,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> deleteImages(List<Image> existImages, List<List<String>> existImgArray) {
+    public List<Image> deleteImages(List<Image> existImages, List<ImgArrayDTO> existImgArray) {
         List<Image> deleteList = new ArrayList<>();
         if (existImages != null && !(existImages.isEmpty())) {
             if (existImgArray == null || existImgArray.isEmpty()) {
@@ -171,7 +225,7 @@ public class ImageServiceImpl implements ImageService {
                 return deleteList;
             } else {
                 for (Image existImage : existImages) {
-                    List<String> existImgArr = matchArray(existImage.getOriginalName(), existImgArray);
+                    ImgArrayDTO existImgArr = matchDTO(existImage.getOriginalName(), existImgArray);
                     if (existImgArr == null) {
                         deleteList.add(existImage);
                     }
@@ -183,19 +237,14 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> modifyImages(List<Image> existImages, List<List<String>> existImgArray) {
+    public List<Image> modifyImages(List<Image> existImages, List<ImgArrayDTO> existImgArray) {
         if (existImages != null && !(existImages.isEmpty())) {
             if (existImgArray != null && !(existImgArray.isEmpty())) {
                 for (Image existImage : existImages) {
-                    List<String> existImgArr = matchArray(existImage.getOriginalName(), existImgArray);
-                    if (existImgArr != null && !(existImgArr.isEmpty())) {
-                        boolean index = existImage.getIndex().equals(existImgArr.get(1));
-                        boolean preText = existImage.getPreText().equals(existImgArr.get(2));
-                        boolean postText = existImage.getPostText().equals(existImgArr.get(3));
-                        if (!index || !preText || !postText) {
-                            existImage.changeInfo(existImgArr.get(1), existImgArr.get(2), existImgArr.get(3));
-                            imageRepository.save(existImage);
-                        }
+                    ImgArrayDTO existImgArr = matchDTO(existImage.getOriginalName(), existImgArray);
+                    if (existImgArr != null) {
+                        setInfo(existImage, existImgArr);
+                        imageRepository.save(existImage);
                     }
                 }
             }
@@ -219,14 +268,5 @@ public class ImageServiceImpl implements ImageService {
         imageRepository.delete(image);
     }
 
-    @Override
-    public List<String> matchArray(String name, List<List<String>> imgArray) {
-        for (List<String> imgArr : imgArray) {
-            if (name.equals(imgArr.get(0))) {
-                return imgArr;
-            }
-        }
-        return null;
-    }
 
 }

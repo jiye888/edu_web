@@ -1,9 +1,6 @@
 package com.jtudy.education.service;
 
-import com.jtudy.education.DTO.FileUploadDTO;
-import com.jtudy.education.DTO.ImageDTO;
-import com.jtudy.education.DTO.NoticeDTO;
-import com.jtudy.education.DTO.NoticeFormDTO;
+import com.jtudy.education.DTO.*;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.security.SecurityMember;
 import org.springframework.data.domain.Page;
@@ -31,21 +28,21 @@ public interface NoticeService {
 
     void checkFileName(Long notNum, FileUpload fileUpload);
 
-    Image setNotice(Image image, Long notNum, List<String> imgArray);
+    Image setNotice(Image image, Long notNum, ImgArrayDTO imgArray);
 
     Long register(NoticeFormDTO noticeFormDTO, Long acaNum);
 
     void registerFile(MultipartFile[] files, Long notNum, Member member) throws IOException;
 
-    void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
+    void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long notNum, Member member) throws IOException;
 
-    void registerImg(MultipartFile image, List<List<String>> imgArray, Long notNum, Member member) throws IOException;
+    void registerImg(MultipartFile image, List<ImgArrayDTO> imgArray, Long notNum, Member member) throws IOException;
 
     void deleteFile(Long notNum, Long fileId) throws IOException;
 
     void updateFile(MultipartFile[] files, List<String> existFiles, Long notNum, Member member) throws IOException;
 
-    void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long notNum, Member member) throws IOException;
+    void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long notNum, Member member) throws IOException;
 
     Long update(NoticeFormDTO noticeFormDTO);
 

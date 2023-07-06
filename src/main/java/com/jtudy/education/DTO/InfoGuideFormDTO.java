@@ -1,5 +1,6 @@
 package com.jtudy.education.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class InfoGuideFormDTO {
 
+    @JsonProperty("number")
     private Long infoNum;
 
     @NotBlank(message = "제목을 입력해주세요.")
