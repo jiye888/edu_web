@@ -1,6 +1,6 @@
     function matchContent(id) {
         const regex = new RegExp(id, "g");
-        const contentText = document.getElementById('content').innerText;
+        const contentText = document.getElementById('content').textContent;
         const match = contentText.match(regex);
 
         return match;
@@ -65,42 +65,44 @@
         const singleObjects = imgObjects.filter(img => img.arrayIndex == null);
         const seqImg = [];
 
-            while (seqObjects.length > 0) {
-                const seqObj = seqObjects.shift();
-                const seqArr = [];
-                const seqObjFilter = seqObjects.filter(element => element.preText === seqObj.preText && element.postText === seqObj.postText);
-                seqObjFilter.forEach(el => {
-                    seqArr.push(el);
-                    seqObjects.splice(seqObjects.indexOf(el), 1);
-                });
-                seqArr.push(seqObj);
-                seqImg.push(seqArr);
-
-            }
-            seqImg.forEach(img => {
-                if (img[0].arrayIndex >= 0) {
-                    img.sort((a, b) => {
-                        return parseInt(a.arrayIndex, 10) - parseInt(b.arrayIndex, 10);
-                    });
-                }
-                var imgTag = img[0].preText;
-                img.forEach(tag => {
-                    var insertImg = '<img src="data:'+tag.mimeType+';base64 ,'+tag.base64+'" data-name='+tag.originalName+' name="exist">';
-                    imgTag += insertImg;
-                });
-                var contentText = document.getElementById('content').innerHTML;
-                let count = 0;
-                const regex = new RegExp(img[0].preText, 'g');
-                var imageContent = contentText.replace(regex, function() {
-                    count++;
-                    if (img[0].textIndex === count) {
-                        return imgTag;
-                    }
-                    return img[0].preText;
-                });
-                const content = document.getElementById('content');
-                content.innerHTML = imageContent;
+        while (seqObjects.length > 0) {
+            const seqObj = seqObjects.shift();
+            const seqArr = [];
+            const seqObjFilter = seqObjects.filter(element => element.preText === seqObj.preText && element.postText === seqObj.postText);
+            seqObjFilter.forEach(el => {
+                seqArr.push(el);
+                seqObjects.splice(seqObjects.indexOf(el), 1);
             });
+            seqArr.push(seqObj);
+            seqImg.push(seqArr);
+        }
+        seqImg.forEach(img => {
+            if (img[0].arrayIndex >= 0) {
+                img.sort((a, b) => {
+                    return parseInt(a.arrayIndex, 10) - parseInt(b.arrayIndex, 10);
+                });
+            }
+            var imgTag = img[0].preText;
+            img.forEach(tag => {
+                var insertImg = '<img src="data:'+tag.mimeType+';base64 ,'+tag.base64+'" data-name='+tag.originalName+' name="exist">';
+                imgTag += insertImg;
+            });
+            var contentText = document.getElementById('content').innerHTML;
+            let count = 0;
+            var regex = new RegExp(img[0].preText, 'g');
+            if (img[0].preText.indexOf("\n") > 0) {
+                regex = new RegExp(img[0].preText.replace("\n", "\\n"), 'g');
+            }
+            var imageContent = contentText.replace(regex, function(index) {
+                count++;
+                if (img[0].textIndex === count) {
+                    return imgTag;
+                }
+                return img[0].preText;
+            });
+            const content = document.getElementById('content');
+            content.innerHTML = imageContent;
+        });
 
     }
 
