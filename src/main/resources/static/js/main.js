@@ -48,8 +48,12 @@
                 const preText = preTexts.length < 10 ? preTexts.slice(0, preTexts.length) : preTexts.slice(preTexts.length -10, preTexts.length);
                 const postText = postTexts.length < 10 ? postTexts.slice(0, postTexts.length) : postTexts.slice(0, 10);
 
-                const preMatch = matchContent(preText);
-                const index = preMatch.length;
+                var reg = escapeRegExp(img[0].preText) + "[\\s\\n]*" + escapeRegExp(img[0].postText);
+                reg = reg + "|" + escapeN(reg);
+                const regex = new RegExp(reg, 'g');
+                const prePost = preTexts + postText;
+                const match = prePost.match(regex);
+                const index = match.length;
                 var base64 = img.getAttribute("data-base64");
                 if (base64 != null) {
                     base64 = base64.substring(base64.indexOf("base64,")+7);
@@ -87,23 +91,32 @@
                 var insertImg = '<img src="data:'+tag.mimeType+';base64 ,'+tag.base64+'" data-name='+tag.originalName+' name="exist">';
                 imgTag += insertImg;
             });
+            imgTag += img[0].postText;
             var contentText = document.getElementById('content').innerHTML;
             let count = 0;
-            var regex = new RegExp(img[0].preText, 'g');
-            if (img[0].preText.indexOf("\n") > 0) {
-                regex = new RegExp(img[0].preText.replace("\n", "\\n"), 'g');
-            }
-            var imageContent = contentText.replace(regex, function(index) {
+            var reg = escapeRegExp(img[0].preText) + "[\\s\\n]*" + escapeRegExp(img[0].postText);
+            reg = reg + "|" + escapeN(reg);
+            const regex = new RegExp(reg, 'g');
+            var imageContent = contentText.replace(regex, function(match) {
                 count++;
                 if (img[0].textIndex === count) {
                     return imgTag;
                 }
-                return img[0].preText;
+                return match;
             });
+            if (imageContent != false) {
             const content = document.getElementById('content');
             content.innerHTML = imageContent;
+            }
         });
+    }
 
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function escapeN(string) {
+        return string.replace(/\n/g, "");
     }
 
     function setDataURL(image, imgList) {
