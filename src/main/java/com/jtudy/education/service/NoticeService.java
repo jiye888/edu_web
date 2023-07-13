@@ -98,4 +98,6 @@ public interface NoticeService {
     List<byte[]> getFilesByte(Long notNum) throws IOException;
 
     List<byte[]> getImagesByte(Long notNum) throws IOException;
+
+    void duplicateImage(Long notNum, ImgArrayDTO imgArrayDTO);
 }

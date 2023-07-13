@@ -268,5 +268,19 @@ public class ImageServiceImpl implements ImageService {
         imageRepository.delete(image);
     }
 
+    @Override
+    public Image duplicateImage(Image duplicate, ImgArrayDTO imgArrayDTO) {
+        String index = imgArrayDTO.getTextIndex()+","+imgArrayDTO.getArrayIndex();
+        Image image = Image.builder()
+                .originalName(duplicate.getOriginalName()) //이 부분 다르게 처리해야 할 것 같은데
+                .name(duplicate.getName())
+                .path(duplicate.getPath())
+                .uploader(duplicate.getUploader())
+                .preText(imgArrayDTO.getPreText())
+                .postText(imgArrayDTO.getPostText())
+                .index(index)
+                .build();
+        return image;
+    }
 
 }

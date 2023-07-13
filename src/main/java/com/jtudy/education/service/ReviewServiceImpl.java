@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -211,6 +210,15 @@ public class ReviewServiceImpl implements ReviewService {
         } catch (IOException e) {
             throw new IOException();
         }
+    }
+
+    @Override
+    public void duplicateImage(Long revNum, ImgArrayDTO imgArrayDTO) {
+        Review review = reviewRepository.findByRevNum(revNum);
+        Image duplicate = imageRepository.findByRevNumAndOriginalName(revNum, imgArrayDTO.getDuplicate());
+        Image image = imageService.duplicateImage(duplicate, imgArrayDTO);
+        image.setReview(review);
+        imageRepository.save(image);
     }
 
 }

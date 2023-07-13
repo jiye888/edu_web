@@ -76,4 +76,6 @@ public interface ReviewService {
     void removeAllImg(Long revNum) throws IOException;
 
     void removeImg(Long imageId, Long revNum) throws IOException;
+
+    void duplicateImage(Long revNum, ImgArrayDTO imgArrayDTO);
 }

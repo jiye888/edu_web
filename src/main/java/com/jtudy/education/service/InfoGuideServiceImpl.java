@@ -216,4 +216,13 @@ public class InfoGuideServiceImpl implements InfoGuideService{
         return infoDTO;
     }
 
+    @Override
+    public void duplicateImage(Long infoNum, ImgArrayDTO imgArrayDTO) {
+        InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
+        Image duplicate = imageRepository.findByInfoNumAndOriginalName(infoNum, imgArrayDTO.getDuplicate());
+        Image image = imageService.duplicateImage(duplicate, imgArrayDTO);
+        image.setInfoGuide(infoGuide);
+        imageRepository.save(image);
+    }
+
 }

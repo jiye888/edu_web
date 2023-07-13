@@ -48,7 +48,7 @@
                 const preText = preTexts.length < 10 ? preTexts.slice(0, preTexts.length) : preTexts.slice(preTexts.length -10, preTexts.length);
                 const postText = postTexts.length < 10 ? postTexts.slice(0, postTexts.length) : postTexts.slice(0, 10);
 
-                var reg = escapeRegExp(img[0].preText) + "[\\s\\n]*" + escapeRegExp(img[0].postText);
+                var reg = escapeRegExp(preText) + "[\\s\\n]*" + escapeRegExp(postText);
                 reg = reg + "|" + escapeN(reg);
                 const regex = new RegExp(reg, 'g');
                 const prePost = preTexts + postText;
@@ -66,7 +66,6 @@
 
     function setImgTag(imgObjects) {
         const seqObjects = imgObjects.filter(img => img.arrayIndex != null);
-        const singleObjects = imgObjects.filter(img => img.arrayIndex == null);
         const seqImg = [];
 
         while (seqObjects.length > 0) {
@@ -133,25 +132,21 @@
             } else {
                 images.forEach(img => {
                     if (image.name === img.getAttribute("data-name")) {
-                        if (dataURL !== img.src) {
+                        const imgSrc = img.src.slice(img.src.indexOf(",")+1);
+                        const dataSrc = dataURL.slice(dataURL.indexOf(",")+1);
+                        if (dataSrc !== imgSrc) {
                             checkList.push("base64");
-                            //const newImg = setImgElement(image, dataURL);
-                            //newImg.setAttribute("data-base64", dataURL);
                             img.setAttribute("data-base64", img.src);
-                            //imgList.push(image);
                         } else {
-                            //const newImg = setImgElement(image, dataURL);
-                            //newImg.setAttribute("data-duplicate", "true");
-                            //imgList.push(image);
-                            checkList.push("duplicate");
+                            checkList.push({"duplicate":img.name});
                         }
                     }
                 })
                 const newImg = setImgElement(image, dataURL);
                 if (checkList.includes("base64")) {
                     newImg.setAttribute("data-base64", dataURL);
-                } else if (checkList.includes("duplicate")) {
-                    newImg.setAttribute("data-duplicate", "true");
+                } else if ("duplicate" in checkList) {
+                    newImg.setAttribute("data-duplicate", checkList[duplicate]);
                 }
             }
             imgList.push(image);

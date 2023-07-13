@@ -343,4 +343,13 @@ public class NoticeServiceImpl implements NoticeService {
         return imagesData;
     }
 
+    @Override
+    public void duplicateImage(Long notNum, ImgArrayDTO imgArrayDTO) {
+        Notice notice = noticeRepository.findByNotNum(notNum);
+        Image duplicate = imageRepository.findByNotNumAndOriginalName(notNum, imgArrayDTO.getDuplicate());
+        Image image = imageService.duplicateImage(duplicate, imgArrayDTO);
+        image.setNotice(notice);
+        imageRepository.save(image);
+    }
+
 }

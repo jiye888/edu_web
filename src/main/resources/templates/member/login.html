@@ -44,19 +44,27 @@
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(json),
-                    beforeSend: function(xhr) {
-                    },
                     success: function(response) {
                         var token = response;
                         if (token != null) {
                             localStorage.setItem("jwt", token);
-                            history.back();
+                            $.ajax({
+                                url: "/academy/main",
+                                type: "GET",
+                                success: function() {
+                                    history.back();
+                                },
+                                error: function(xhr) {
+                                    jwtFilter();
+                                    console.log(xhr.responseText);
+                                }
+                            });
                         }
                     },
-                    error: function(response) {
+                    error: function(xhr) {
                         jwtFilter();
                         alert("아이디나 비밀번호를 다시 확인해주세요.");
-                        console.log(response);
+                        console.log(xhr.responseText);
                     },
                 });
             }

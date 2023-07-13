@@ -35,4 +35,13 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query("select case when count(i) > 0 then true else false end from Image i where i.originalName = :originalName and i.infoGuide.infoNum = :infoNum")
     boolean existsByOriginalNameAndInfoNum(String originalName, Long infoNum);
 
+    @Query("select i from Image i where i.infoGuide.infoNum = :infoNum and i.originalName = :originalName")
+    Image findByInfoNumAndOriginalName(Long infoNum, String originalName);
+
+    @Query("select i from Image i where i.review.revNum = :revNum and i.originalName = :originalName")
+    Image findByRevNumAndOriginalName(Long revNum, String originalName);
+
+    @Query("select i from Image i where i.notice.notNum = :notNum and i.originalName = :originalName")
+    Image findByNotNumAndOriginalName(Long notNum, String originalName);
+
 }

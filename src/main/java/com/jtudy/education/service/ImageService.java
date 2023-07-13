@@ -42,4 +42,6 @@ public interface ImageService {
     List<Image> modifyImages(List<Image> existImages, List<ImgArrayDTO> existImgArray);
 
     void deleteImage(Image image) throws IOException;
+
+    Image duplicateImage(Image duplicate, ImgArrayDTO imgArrayDTO);
 }

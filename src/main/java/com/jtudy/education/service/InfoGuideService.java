@@ -72,4 +72,6 @@ public interface InfoGuideService {
 
     @Transactional(readOnly = true)
     Page<InfoGuideDTO> search(Map<String, String> map, Pageable pageable);
+
+    void duplicateImage(Long infoNum, ImgArrayDTO imgArrayDTO);
 }
