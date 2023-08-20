@@ -44,7 +44,6 @@
             const infoContentText = [[${info.content}]];
             const infoContent = document.getElementById('content');
             infoContent.innerHTML = infoContentText;
-            console.log(existImages);
             setImgTag(existImages);
 
             const size = existImages.length;
@@ -111,7 +110,7 @@
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
             formData.append("existImgArray", new Blob([JSON.stringify(existImgArray)], {type:"application/json"}));
 
-            if (title && contentText) {
+            if (title && (contentText || imgArray.length > 0 || existImgArray.length > 0)) {
                 $.ajax({
                     url: '/info/modify',
                     type: 'POST',

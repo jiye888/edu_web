@@ -17,7 +17,7 @@
                 <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd HH:mm')}" class="title-date">작성일자</span>
             </div>
             <div class="content-box">
-                <span th:text="${review.content}" class="scroll" style="white-space:pre-line;">내용</span><br>
+                <span th:text="${review.content}" class="scroll" style="white-space:pre-line;" id="content">내용</span><br>
             </div>
             <input type="hidden" th:field="${review.acaNum}" id="academy">
             <input type="hidden" th:field="${review.revNum}" id="number">
@@ -64,18 +64,21 @@
             const academy = $('#academy').val();
             const number = $('#number').val();
 
-            $.ajax({
-                url: '/review/delete',
-                type: 'GET',
-                contentType: "application/json",
-                data: {
-                    "number":number,
-                    "academy":academy
-                },
-                success: function() {
-                    location.href="/review/list?academy="+academy;
-                },
-            });
+            if ('해당 게시글을 삭제하시겠습니까?') {
+                $.ajax({
+                    url: '/review/delete',
+                    type: 'GET',
+                    contentType: "application/json",
+                    data: {
+                        "number":number,
+                        "academy":academy
+                    },
+                    success: function() {
+                        alert("삭제가 완료되었습니다.");
+                        location.href="/review/list?academy="+academy;
+                    },
+                });
+            }
         }
 
     </script>

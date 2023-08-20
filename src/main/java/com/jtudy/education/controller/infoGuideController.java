@@ -4,10 +4,13 @@ import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.InfoGuideDTO;
 import com.jtudy.education.DTO.InfoGuideFormDTO;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.InfoGuideService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +39,8 @@ public class infoGuideController {
 
     private final InfoGuideService infoGuideService;
     private final TemplateEngine templateEngine;
+
+    private static final Logger logger = LoggerFactory.getLogger(infoGuideController.class);
 
     @GetMapping("/list")
     public void list(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
@@ -73,12 +78,14 @@ public class infoGuideController {
             }
             return ResponseEntity.badRequest().body(map);
         }
+        Long infoNum = infoGuideService.register(infoGuideFormDTO, member.getMember());
         try {
-            Long infoNum = infoGuideService.register(infoGuideFormDTO, member.getMember());
             infoGuideService.registerImg(images, imgArray, infoNum, member.getMember());
             return ResponseEntity.ok().body(infoNum);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+            String msg = "알림글 이미지 등록에 실패했습니다.";
+            return ResponseEntity.internalServerError().body(msg);
         }
     }
 
@@ -120,9 +127,10 @@ public class infoGuideController {
         try {
             infoGuideService.updateImg(images, imgArray, existImgArray, infoNum, member.getMember());
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+            String msg = "알림글 이미지 수정에 실패했습니다.";
+            return ResponseEntity.internalServerError().body(msg);
         }
     }
 
@@ -133,7 +141,9 @@ public class infoGuideController {
             try {
                 infoGuideService.delete(infoNum);
             } catch (IOException e) {
-                return ResponseEntity.badRequest().body("IOException");
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+                String msg = "알림글 삭제에 실패했습니다.";
+                return ResponseEntity.internalServerError().body(msg);
             }
             return ResponseEntity.ok().build();
         } else {

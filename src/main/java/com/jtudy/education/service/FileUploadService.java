@@ -5,6 +5,7 @@ import com.jtudy.education.entity.FileUpload;
 import com.jtudy.education.entity.Member;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
 import org.springframework.security.core.parameters.P;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public interface FileUploadService {
 
+    @Transactional(readOnly = true)
     void isValidName(String name) throws InvalidFileNameException;
 
     String getNewName(FileUpload fileUpload);
@@ -23,8 +25,10 @@ public interface FileUploadService {
 
     FileUpload fileToEntity(MultipartFile file, Member member) throws IOException;
 
+    @Transactional(readOnly = true)
     File getFile(FileUpload fileUpload) throws FileNotFoundException;
 
+    @Transactional(readOnly = true)
     Double getFileSize(FileUpload fileUpload) throws IOException;
 
     FileUpload uploadFile(MultipartFile file, Member member) throws IOException;

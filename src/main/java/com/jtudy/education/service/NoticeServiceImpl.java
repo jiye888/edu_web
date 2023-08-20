@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.*;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyRepository;
@@ -10,6 +11,8 @@ import com.jtudy.education.repository.NoticeRepository;
 import com.jtudy.education.repository.specification.NoticeSpecification;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,6 +42,8 @@ public class NoticeServiceImpl implements NoticeService {
     private final FileUploadService fileUploadService;
     private final FileUploadRepository fileUploadRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(NoticeServiceImpl.class);
+
     @Override
     @Transactional(readOnly = true)
     public boolean validateMember(Long acaNum, SecurityMember member) {
@@ -48,7 +53,7 @@ public class NoticeServiceImpl implements NoticeService {
         } catch (NullPointerException e) {
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
             return false;
         }
     }
@@ -57,7 +62,14 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional(readOnly = true)
     public Page<NoticeDTO> getAll(Long acaNum, Pageable pageable) {
         Page<Notice> notice = noticeRepository.findByAcaNum(pageable, acaNum);
-        Page<NoticeDTO> noticeDTO = notice.map(e -> entityToDTO(e));
+        Page<NoticeDTO> noticeDTO = notice.map(e -> {
+            try {
+                return entityToDTO(e);
+            } catch (Exception exc) {
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(exc));
+                return null;
+            }
+        });
         return noticeDTO;
     }
 
@@ -81,6 +93,7 @@ public class NoticeServiceImpl implements NoticeService {
                 fileList.add(fileUploadDTO);
             } catch (IOException e) {
                 fileList.add(null);
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
             }
         }
         return fileList;
@@ -94,7 +107,7 @@ public class NoticeServiceImpl implements NoticeService {
             try {
                 return imageService.entityToDTO(e);
             } catch (IOException ex) {
-                ex.printStackTrace();
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(ex));
                 return null;
             }
         }).collect(Collectors.toList());
@@ -158,12 +171,16 @@ public class NoticeServiceImpl implements NoticeService {
             for (MultipartFile image : images) {
                 ImgArrayDTO imgArr = imageService.matchDTO(image.getOriginalFilename(), imgArray);
                 if (imgArr != null) {
-                    Image img = imageService.fileToEntity(image, member);
-                    img = imageService.setNewName(img, imgArr);
-                    img = setNotice(img, notNum, imgArr);
-                    imageService.uploadImage(image, img);
-                    notice.addImage(img);
-                    imageRepository.save(img);
+                    if (imgArr.getDuplicate() != null) {
+                        duplicateImage(notNum, imgArr);
+                    } else {
+                        Image img = imageService.fileToEntity(image, member);
+                        img = imageService.setNewName(img, imgArr);
+                        img = setNotice(img, notNum, imgArr);
+                        imageService.uploadImage(image, img);
+                        notice.addImage(img);
+                        imageRepository.save(img);
+                    }
                 }
             }
             noticeRepository.save(notice);
@@ -177,11 +194,15 @@ public class NoticeServiceImpl implements NoticeService {
         ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
         img = imageService.setNewName(img, imgArr);
         if (imgArr != null) {
-            img = setNotice(img, notNum, imgArr);
-            imageService.uploadImage(image, img);
-            imageRepository.save(img);
-            notice.addImage(img);
-            noticeRepository.save(notice);
+            if (imgArr.getDuplicate() != null) {
+                duplicateImage(notNum, imgArr);
+            } else {
+                img = setNotice(img, notNum, imgArr);
+                imageService.uploadImage(image, img);
+                imageRepository.save(img);
+                notice.addImage(img);
+                noticeRepository.save(notice);
+            }
         }
     }
 
@@ -225,13 +246,6 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<Image> existImages = imageRepository.findByNotNum(notNum);
         List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
-        /*if (modifyList != null && modifyList.size() > 0) {
-            for (Image modify : modifyList) {
-                notice.addImage(modify);
-            }
-            noticeRepository.save(notice);
-            imageService.modifyImages(existImages, existImgArray);
-        }*/
         List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {
@@ -254,25 +268,29 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void delete(Long notNum) throws IOException {
+    public void delete(Long notNum) {
         Notice notice = noticeRepository.findByNotNum(notNum);
         List<FileUpload> fileList = fileUploadRepository.findByNotice(notice);
         for (FileUpload file : fileList) {
-            deleteFile(notNum, file.getFileId());
+            try {
+                notice.removeFile(file);
+                deleteFile(notNum, file.getFileId());
+            } catch (IOException e) {
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+                notice.removeFile(file);
+            }
         }
         List<Image> imageList = imageRepository.findByNotNum(notNum);
         for (Image image : imageList) {
             try {
                 notice.removeImage(image);
                 imageService.deleteImage(image);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                notice.removeImage(image);
-                noticeRepository.save(notice);
             } catch (IOException e) {
-                throw new IOException();
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+                notice.removeImage(image);
             }
         }
+        noticeRepository.save(notice);
         noticeRepository.deleteById(notNum);
     }
 

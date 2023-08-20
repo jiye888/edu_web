@@ -19,17 +19,22 @@ import java.util.List;
 
 public interface ReviewService {
 
+    @Transactional(readOnly = true)
     boolean validateMember(Long revNum, SecurityMember member);
 
+    @Transactional(readOnly = true)
     Page<ReviewDTO> getAll(Long acaNum, Pageable pageable);
 
+    @Transactional(readOnly = true)
     ReviewDTO getOne(Long revNum);
 
+    @Transactional(readOnly = true)
     List<ImageDTO> getAllImages(Long revNum);
 
+    @Transactional(readOnly = true)
     ReviewDTO getByAcademy(Long acaNum, String email);
 
-    Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException;
+    Long register(ReviewFormDTO reviewFormDTO, Member member);
 
     void checkImageName(Long revNum, Image image);
 
@@ -41,9 +46,16 @@ public interface ReviewService {
 
     void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long revNum, Member member) throws IOException;
 
-    void delete(Long revNum) throws IOException;
+    void delete(Long revNum);
 
+    @Transactional(readOnly = true)
     Page<ReviewDTO> getReviews(Member member, Pageable pageable);
+
+    void removeAllImg(Long revNum) throws IOException;
+
+    void removeImg(Long imageId, Long revNum) throws IOException;
+
+    void duplicateImage(Long revNum, ImgArrayDTO imgArrayDTO);
 
     default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy, Member member) {
         Review review = Review.builder()
@@ -72,10 +84,4 @@ public interface ReviewService {
                 .build();
         return reviewDTO;
     }
-
-    void removeAllImg(Long revNum) throws IOException;
-
-    void removeImg(Long imageId, Long revNum) throws IOException;
-
-    void duplicateImage(Long revNum, ImgArrayDTO imgArrayDTO);
 }

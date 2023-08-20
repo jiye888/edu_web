@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <File name="FILE_LOG" fileName="/log/application.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t, %p] %logger : %msg%n" />
+        </File>
+        <Console name="CONSOLE_LOG" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t, %p] %logger : %msg%n" charset="UTF-8"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="WARN">
+            <AppenderRef ref="FILE_LOG"/>
+            <AppenderRef ref="CONSOLE_LOG"/>
+        </Root>
+    </Loggers>
+</Configuration>

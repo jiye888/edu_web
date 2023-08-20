@@ -4,7 +4,7 @@
     <div th:fragment="header">
         <nav class="navbar navbar-expand-lg custom-background">
             <div class="container-fluid">
-                <a class="navbar-brand custom-a-orange font-bold" href="/academy/main">Education</a>
+                <a class="navbar-brand custom-a-orange font-bold" href="/academy/main">EduWeb 에듀웹</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -19,8 +19,9 @@
                         <li class="dropdown" id="dropdownNav" style="display:none;">
                             <a class="nav-link font-bold" href="#" id="academyDropdown" data-toggle="dropdown" aria-haspopup="true">나의 학원</a>
                             <ul class="dropdown-menu" aria-labelledby="academyDropdown">
-                                <li></li><a class="dropdown-item" id="student">가입한 학원</a>
-                                <li></li><a class="dropdown-item" id="manager">관리중인 학원</a>
+                                <li><a class="dropdown-item" id="student">가입한 학원</a></li>
+                                <li><a class="dropdown-item" id="manager">관리중인 학원</a></li>
+                                <li><a class="dropdown-item" id="reviews">작성한 수강 후기</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -42,7 +43,6 @@
         </nav>
         <script th:inline="javascript">
             $(function() {
-
                 member();
                 $('#loginBtn_nav').on("click", function() {
                     location.href = '/member/login';
@@ -56,6 +56,10 @@
                 $('#student').on("click", function() {
                     student();
                 });
+                $('#reviews').on("click", function() {
+                    reviews();
+                });
+
             });
 
 
@@ -164,6 +168,18 @@
                     success: function() {
                         window.location.href = "/academy/joined";
                     },
+                });
+            }
+
+            function reviews() {
+                $.ajax({
+                    url: '/review/by',
+                    type: 'GET',
+                    contentType: "application/json",
+                    success: function() {
+                        location.href='/review/by';
+                    },
+
                 });
             }
 

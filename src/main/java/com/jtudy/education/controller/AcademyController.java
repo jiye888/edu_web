@@ -3,6 +3,7 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
 import com.jtudy.education.security.SecurityMember;
@@ -10,13 +11,12 @@ import com.jtudy.education.service.AcademyMemberService;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.ImageService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -26,9 +26,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
@@ -45,6 +43,7 @@ public class AcademyController {
     private final ImageService imageService;
 
     private final TemplateEngine templateEngine;
+    private static final Logger logger = LoggerFactory.getLogger(AcademyController.class);
 
     @ModelAttribute("subject")
     public Subject[] subject() {
@@ -53,20 +52,10 @@ public class AcademyController {
 
     @GetMapping("/main")
     public void main(@AuthenticationPrincipal SecurityMember member, Model model) {
-        try {
-            if (member != null) {
-                boolean isAdmin = member.getMember().getRolesList().contains(Roles.ADMIN);
-                model.addAttribute("isAdmin", isAdmin);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        if (member != null) {
+            boolean isAdmin = member.getMember().getRolesList().contains(Roles.ADMIN);
+            model.addAttribute("isAdmin", isAdmin);
         }
-    }
-
-    @GetMapping("/exception")
-    public String exceptionalPage(Model model) {
-        model.addAttribute("msg", "");
-        return "/academy/exception";
     }
 
     @GetMapping("/list")
@@ -79,21 +68,20 @@ public class AcademyController {
     @GetMapping("/manage")
     public String manage(@RequestParam(value = "page", defaultValue = "1") int page, Model model, @AuthenticationPrincipal SecurityMember member) {
         Pageable pageable = PageRequest.of(page-1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+        if (member.getMember().getManagedAcademy() == null) {
+            String msg = "관리중인 학원이 없습니다.";
+            model.addAttribute("msg", msg);
+            return "/academy/exception";
+        }
         Page<AcademyDTO> academyDTO = academyService.manageAcademies(member.getMember(), pageable);
         model.addAttribute("academy", academyDTO);
         try {
             model.addAttribute("name", member.getMember().getName());
-            //Context context = new Context();
-            //context.setVariables(model.asMap());
-            //String template = templateEngine.process("/academy/manage", context);
-            //return ResponseEntity.ok().body(template);
             return "/academy/manage";
         } catch (NullPointerException e) {
             String msg = "로그인이 필요한 서비스입니다.";
-            //HttpHeaders headers = new HttpHeaders();
-            //headers.set(HttpHeaders.LOCATION, "/member/login");
-            //return ResponseEntity.status(302).headers(headers).body(msg);
-            return msg;
+            model.addAttribute("msg", msg);
+            return "/academy/exception";
         }
     }
 
@@ -110,28 +98,31 @@ public class AcademyController {
     @PostMapping("/register")
     public ResponseEntity register(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart(required = false) MultipartFile file,
                                    @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
-        try {
-            if (bindingResult.hasErrors()) {
-                Map<String, String> map = new HashMap<>();
-                map.put("BindingResultError", "true");
-                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-                for (FieldError fieldError : fieldErrors) {
-                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
-                }
-                return ResponseEntity.status(422).body(map);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("BindingResultError", "true");
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
             }
-            model.addAttribute("academy", new AcademyFormDTO());
-            Long number = academyService.register(academyFormDTO, member.getMember());
-            model.addAttribute("number", number);
+            return ResponseEntity.status(422).body(map);
+        }
+        model.addAttribute("academy", new AcademyFormDTO());
+        Long number = academyService.register(academyFormDTO, member.getMember());
+        model.addAttribute("number", number);
+        try {
             if (file != null && !file.isEmpty()) {
                 academyService.registerImg(file, number, member.getMember());
             }
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(number);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+            String msg = "학원의 대표 이미지 등록에 실패했습니다.";
+            return ResponseEntity.internalServerError().body(msg);
         }
+        //HttpHeaders headers = new HttpHeaders();
+        //headers.setContentType(MediaType.APPLICATION_JSON);
+        //return ResponseEntity.status(HttpStatus.OK).headers(headers).body(number);
+        return ResponseEntity.ok().body(number);
     }
 
     @GetMapping("/read")
@@ -140,12 +131,13 @@ public class AcademyController {
         model.addAttribute("academy", academyDTO);
         try {
             ImageDTO image = imageService.getAcademyMain(acaNum);
-            String imageSrc = "data: "+image.getMimeType()+";base64, "+image.getBase64();
-            model.addAttribute("imageSrc", imageSrc);
-        } catch (NullPointerException e) {
-            model.addAttribute("path", null);
-        } catch (IOException e) {
-            e.printStackTrace();
+            if (image != null) {
+                String imageSrc = "data: " + image.getMimeType() + ";base64, " + image.getBase64();
+                model.addAttribute("imageSrc", imageSrc);
+            }
+        } catch (NullPointerException | IOException e) {
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+            model.addAttribute("imageSrc", null);
         }
     }
 
@@ -164,26 +156,28 @@ public class AcademyController {
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart(required = false) MultipartFile file,
                                  Model model, @AuthenticationPrincipal SecurityMember member) {
-        try {
-            if (bindingResult.hasErrors()) {
-                Map<String, String> map = new HashMap<>();
-                map.put("BindingResultError", "true");
-                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-                for (FieldError fieldError : fieldErrors) {
-                    map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
-                }
-                return ResponseEntity.status(422).body(map);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("BindingResultError", "true");
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                map.put(fieldError.getField()+"Error", fieldError.getDefaultMessage());
             }
-            model.addAttribute("number", academyFormDTO.getAcaNum());
-            model.addAttribute("academy", academyFormDTO);
-            academyService.update(academyFormDTO);
-            if (file != null && !file.isEmpty()) {
-                academyService.changeImg(file, academyFormDTO.getAcaNum(), member.getMember());
-            }
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(422).body(map);
         }
+        model.addAttribute("number", academyFormDTO.getAcaNum());
+        model.addAttribute("academy", academyFormDTO);
+        academyService.update(academyFormDTO);
+        try {
+            if (file != null && !file.isEmpty()) {
+                academyService.registerImg(file, academyFormDTO.getAcaNum(), member.getMember());
+            }
+        } catch (IOException e) {
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+            String msg = "학원의 대표 이미지 변경에 실패했습니다.";
+            return ResponseEntity.status(500).body(msg);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})

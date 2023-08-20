@@ -4,6 +4,7 @@ import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.InfoGuideDTO;
 import com.jtudy.education.DTO.InfoGuideFormDTO;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.InfoGuide;
@@ -13,6 +14,8 @@ import com.jtudy.education.repository.InfoGuideRepository;
 import com.jtudy.education.repository.specification.InfoGuideSpecification;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -36,14 +39,18 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     private final ImageService imageService;
     private final ImageRepository imageRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(InfoGuideServiceImpl.class);
+
     @Override
     @Transactional(readOnly = true)
     public boolean validateMember(SecurityMember member) {
         try {
             boolean isAdmin = member.getMember().getRolesList().contains(Roles.ADMIN);
             return isAdmin;
+        } catch (NullPointerException e) {
+            return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
             return false;
         }
     }
@@ -52,7 +59,13 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     @Transactional(readOnly = true)
     public Page<InfoGuideDTO> getAll(Pageable pageable) {
         Page<InfoGuide> infoGuide = infoGuideRepository.findAll(pageable);
-        Page<InfoGuideDTO> infoGuideDTO = infoGuide.map(e -> entityToDTO(e));
+        Page<InfoGuideDTO> infoGuideDTO = infoGuide.map(e -> {
+            try {
+                return entityToDTO(e);
+            } catch (Exception ex) {
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(ex));
+                return null;
+            }});
         return infoGuideDTO;
     }
 
@@ -71,8 +84,8 @@ public class InfoGuideServiceImpl implements InfoGuideService{
         List<ImageDTO> images = image.stream().map(e -> {
             try {
                 return imageService.entityToDTO(e);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            } catch (Exception ex) {
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(ex));
                 return null;
             }
         }).collect(Collectors.toList());
@@ -113,13 +126,17 @@ public class InfoGuideServiceImpl implements InfoGuideService{
             for (MultipartFile image : images) {
                 ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
                 if (imgArr != null) {
-                    Image img = imageService.fileToEntity(image, member);
-                    img = imageService.setNewName(img, imgArr);
-                    img = setInfoGuide(img, infoNum, imgArr);
-                    imageService.uploadImage(image, img);
-                    infoGuide.addImage(img);
-                    imageRepository.save(img);
-                    imgArray.remove(imgArr);
+                    if (imgArr.getDuplicate() != null) {
+                        duplicateImage(infoNum, imgArr);
+                    } else {
+                        Image img = imageService.fileToEntity(image, member);
+                        img = imageService.setNewName(img, imgArr);
+                        img = setInfoGuide(img, infoNum, imgArr);
+                        imageService.uploadImage(image, img);
+                        infoGuide.addImage(img);
+                        imageRepository.save(img);
+                        imgArray.remove(imgArr);
+                    }
                 }
             }
             infoGuideRepository.save(infoGuide);
@@ -138,14 +155,7 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     public void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long infoNum, Member member) throws IOException {
         InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
         List<Image> existImages = imageRepository.findByInfoNum(infoNum);
-        List<Image> modifyList = imageService.modifyImages(existImages, existImgArray);
-        /*if (modifyList != null && modifyList.size() > 0) {
-            for (Image modify : modifyList) {
-                infoGuide.addImage(modify);
-            }
-            infoGuideRepository.save(infoGuide);
-            imageService.modifyImages(existImages, existImgArray);
-        }*/
+        imageService.modifyImages(existImages, existImgArray);
         List<Image> deleteList = imageService.deleteImages(existImages, existImgArray);
         if (deleteList != null && deleteList.size() > 0) {
             for (Image deleteEntity : deleteList) {
@@ -177,13 +187,9 @@ public class InfoGuideServiceImpl implements InfoGuideService{
     public void removeImg(Long imageId, Long infoNum) throws IOException {
         InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
         Image image = imageRepository.findByImageId(imageId);
-        try {
-            infoGuide.removeImage(image);
-            imageService.deleteImage(image);
-            infoGuideRepository.save(infoGuide);
-        } catch (IOException e) {
-            throw new IOException();
-        }
+        infoGuide.removeImage(image);
+        imageService.deleteImage(image);
+        infoGuideRepository.save(infoGuide);
     }
 
     @Override

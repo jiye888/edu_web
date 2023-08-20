@@ -8,6 +8,8 @@ import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -36,6 +38,8 @@ public class AuthController {
     private final MemberService memberService;
     private final TemplateEngine templateEngine;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     @ModelAttribute("roles")
     public Map<Roles, String> roles() {
         Map<Roles, String> map = new HashMap<>();
@@ -51,6 +55,7 @@ public class AuthController {
         model.addAttribute("auth", authDTO);
         return "auth/requested";
     }
+
     @GetMapping("/requestedAuth")
     public ResponseEntity requestedAuthData(@RequestParam(defaultValue = "1") int page, Model model) {
         Pageable pageable = PageRequest.of(page-1, 10);
@@ -60,33 +65,24 @@ public class AuthController {
 
     @GetMapping("/get")
     public String getRequestedOne(@RequestParam(value="number") Long authId, @AuthenticationPrincipal SecurityMember member, Model model) {
-        try {
-            if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
-                model.addAttribute("isAdmin", true);
-            }
-            if (authService.validateMember(authId, member)) {
-                AuthDTO authDTO = authService.getOneByAuthId(authId);
-                model.addAttribute("auth", authDTO);
-                return "auth/get";
-            } else {
-                model.addAttribute("msg", "접근 권한이 없습니다."); //*exception
-                return "/academy/exception";
-            }
-        } catch (Exception e) {
-            return e.getMessage();
+        if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+            model.addAttribute("isAdmin", true);
+        }
+        if (authService.validateMember(authId, member)) {
+            AuthDTO authDTO = authService.getOneByAuthId(authId);
+            model.addAttribute("auth", authDTO);
+            return "auth/get";
+        } else {
+            model.addAttribute("msg", "접근 권한이 없습니다.");
+            return "/academy/exception";
         }
     }
 
     @GetMapping("/modify")
     public String modifyRequest(@AuthenticationPrincipal SecurityMember member, Model model) {
-        try {
-            AuthDTO authDTO = authService.getOne(member.getMember());
-            if(authDTO != null) {
-                model.addAttribute("auth", authDTO);
-            }
-        } catch (Exception e) {
-            model.addAttribute("msg", e.getMessage());
-            return "/academy/exception";
+        AuthDTO authDTO = authService.getOne(member.getMember());
+        if(authDTO != null) {
+            model.addAttribute("auth", authDTO);
         }
         return "auth/modifyForm";
     }
@@ -95,34 +91,26 @@ public class AuthController {
     @ResponseBody
     public void modifyRequest(@RequestBody Map<String, String> map, @AuthenticationPrincipal SecurityMember member) {
         Roles roles = Roles.valueOf(map.get("roles"));
-        String content = map.get("content").toString();
+        String content = map.get("content");
         authService.modifyRequest(member.getMember(), roles, content);
     }
 
     @GetMapping("/request")
     public ResponseEntity requestAuth(@AuthenticationPrincipal SecurityMember member, Model model) {
         model.addAttribute("member", memberService.getOne(member.getMember().getMemNum()));
-        try {
-            if (authService.getOne(member.getMember()) == null) {
-                AuthDTO authDTO = new AuthDTO();
-                model.addAttribute("auth", authDTO);
-                Context context = new Context();
-                context.setVariables(model.asMap());
-                String template = templateEngine.process("auth/requestForm", context);
-                return ResponseEntity.ok().body(template);
-            } else {
-                Long authId = authService.getOne(member.getMember()).getAuthId();
-                Map<String, String> map = new HashMap<>();
-                map.put("number", authId.toString());
-                return ResponseEntity.ok().body(map);
-            }
-        }catch(Exception e) {
-            model.addAttribute("msg", e.getMessage());
+        if (authService.getOne(member.getMember()) == null) {
+            AuthDTO authDTO = new AuthDTO();
+            model.addAttribute("auth", authDTO);
             Context context = new Context();
             context.setVariables(model.asMap());
-            String template = templateEngine.process("/academy/exception", context);
-            return ResponseEntity.badRequest().body(template);
-        }
+            String template = templateEngine.process("auth/requestForm", context);
+            return ResponseEntity.ok().body(template);
+        } else {
+            Long authId = authService.getOne(member.getMember()).getAuthId();
+            Map<String, String> map = new HashMap<>();
+            map.put("number", authId.toString());
+            return ResponseEntity.ok().body(map);
+            }
     }
 
     @PostMapping("/request")

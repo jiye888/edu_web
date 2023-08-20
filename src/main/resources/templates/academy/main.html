@@ -4,28 +4,21 @@
       layout:decorate="~{layout/main}">
 <meta charset="UTF-8">
 <div layout:fragment="content">
-
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="margin-top:-20px;height:300px;" data-interval="5000" data-pause="hover">
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="margin-top:-20px;height:265px;" data-interval="5000" data-pause="hover">
         <ol class="carousel-indicators">
             <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
             <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
         </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <div class="custom-carousel-background1">
-                    <span>blue</span>
-                </div>
+                <a href="/info/read?number=18">
+                    <div class="custom-carousel-background1"></div>
+                </a>
             </div>
             <div class="carousel-item">
-                <div class="custom-carousel-background2">
-                    <span>boat</span>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="custom-carousel-background3">
-                    <span>gift box</span>
-                </div>
+                <a href="/info/read?number=17">
+                    <div class="custom-carousel-background2"></div>
+                </a>
             </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -37,12 +30,11 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
-
     <div class="card" style="height:700px;border:none;">
         <div class="custom-card-background" style="border:0;">
             <div class="card-body">
                 <h3 align="center" class="card-title font-bold" style="color:white;">WELCOME!</h3>
-                <p class="card-text" align="center" style="color:white;">Education에 오신 것을 환영합니다.</p>
+                <p class="card-text" align="center" style="color:white;">에듀웹에 오신 것을 환영합니다.</p>
             </div>
             <div class="justify-content-center" style="display:flex;">
                 <button type="button" class="custom-button-yellow" th:onclick="'location.href=\''+@{/academy/list}+'\';'">학원 보러가기</button>
@@ -58,15 +50,6 @@
             });
         });
 
-        function requestedAuth() {
-            $.ajax({
-                url: "/auth/requested",
-                type: "GET",
-                success: function() {
-                    location.href = "/auth/requested";
-                },
-            });
-        }
     </script>
 </div>
 </html>

@@ -14,14 +14,19 @@ import java.util.Map;
 
 public interface NoticeService {
 
+    @Transactional(readOnly = true)
     boolean validateMember(Long acaNum, SecurityMember member);
 
+    @Transactional(readOnly = true)
     Page<NoticeDTO> getAll(Long acaNum, Pageable pageable);
 
+    @Transactional(readOnly = true)
     NoticeDTO getOne(Long notNum);
 
+    @Transactional(readOnly = true)
     List<FileUploadDTO> getAllFiles(Long notNum);
 
+    @Transactional(readOnly = true)
     List<ImageDTO> getAllImages(Long notNum);
 
     void checkImageName(Long notNum, Image image);
@@ -46,9 +51,18 @@ public interface NoticeService {
 
     Long update(NoticeFormDTO noticeFormDTO);
 
-    void delete(Long notNum) throws IOException;
+    void delete(Long notNum);
 
+    @Transactional(readOnly = true)
     Page<NoticeDTO> search(Long acaNum, Map<String, String> map, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    List<byte[]> getFilesByte(Long notNum) throws IOException;
+
+    @Transactional(readOnly = true)
+    List<byte[]> getImagesByte(Long notNum) throws IOException;
+
+    void duplicateImage(Long notNum, ImgArrayDTO imgArrayDTO);
 
     default Notice dtoToEntity(NoticeDTO noticeDTO) {
         Academy academy = Academy.builder()
@@ -94,10 +108,4 @@ public interface NoticeService {
 
         return noticeDTO;
     }
-
-    List<byte[]> getFilesByte(Long notNum) throws IOException;
-
-    List<byte[]> getImagesByte(Long notNum) throws IOException;
-
-    void duplicateImage(Long notNum, ImgArrayDTO imgArrayDTO);
 }

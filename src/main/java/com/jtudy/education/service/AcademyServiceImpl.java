@@ -2,16 +2,16 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.AcademyFormDTO;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.constant.Subject;
-import com.jtudy.education.entity.Academy;
-import com.jtudy.education.entity.AcademyMember;
-import com.jtudy.education.entity.Image;
-import com.jtudy.education.entity.Member;
+import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.repository.specification.AcademySpecification;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,10 @@ public class AcademyServiceImpl implements AcademyService{
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final ImageService imageService;
+    private final NoticeService noticeService;
+    private final ReviewService reviewService;
+
+    private static final Logger logger = LoggerFactory.getLogger(AcademyServiceImpl.class);
 
     @Override
     @Transactional(readOnly = true)
@@ -45,7 +51,7 @@ public class AcademyServiceImpl implements AcademyService{
         } catch (NullPointerException e) {
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
             return false;
         }
     }
@@ -92,18 +98,15 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     public void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException {
         Academy academy = academyRepository.findByAcaNum(acaNum);
+        if (academy.getImage() != null) {
+            removeImg(acaNum);
+        }
         Image image = imageService.fileToEntity(file, member);
-        imageService.uploadImage(file, image);
         image.setAcademy(academy);
         academy.setImage(image);
+        imageService.uploadImage(file, image);
         imageRepository.save(image);
         academyRepository.save(academy);
-    }
-
-    @Override
-    public void changeImg(MultipartFile file, Long acaNum, Member member) throws IOException {
-        removeImg(acaNum);
-        registerImg(file, acaNum, member);
     }
 
     @Override
@@ -125,6 +128,24 @@ public class AcademyServiceImpl implements AcademyService{
 
     @Override
     public void delete(Long acaNum) {
+        Academy academy = academyRepository.findByAcaNum(acaNum);
+        List<Notice> notices = academy.getNotice();
+        List<Review> reviews = academy.getReview();
+        if (notices != null) {
+            for (Notice notice : notices) {
+                notice.detach();
+                noticeService.delete(notice.getNotNum());
+            }
+            academy.removeNotices();
+        }
+        if (reviews != null) {
+            for (Review review : reviews) {
+                review.detach();
+                reviewService.delete(review.getRevNum());
+            }
+            academy.removeReviews();
+        }
+        removeImg(acaNum);
         academyRepository.deleteById(acaNum);
     }
 

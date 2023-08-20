@@ -2,6 +2,9 @@ package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ImgArrayDTO;
+import com.jtudy.education.config.exception.CustomException;
+import com.jtudy.education.config.exception.ExceptionCode;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.entity.Academy;
 import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
@@ -9,6 +12,8 @@ import com.jtudy.education.repository.AcademyRepository;
 import com.jtudy.education.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
 import org.springframework.stereotype.Service;
@@ -34,10 +39,13 @@ public class ImageServiceImpl implements ImageService {
     private final AcademyRepository academyRepository;
     private final ImageRepository imageRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(ImageServiceImpl.class);
+
     @Value("${upload.dir}")
     private String path;
 
     @Override
+    @Transactional(readOnly = true)
     public void isValidName(String name) throws InvalidFileNameException {
         String[] invalid = {"/", ":"};
         for (String invalidChar : invalid) {
@@ -50,7 +58,11 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public boolean isImage(MultipartFile file) {
         String fileType = file.getContentType();
-        return fileType.contains("image");
+        if (fileType.contains("image")) {
+            return true;
+        } else {
+            throw new CustomException(ExceptionCode.INVALID_EXTENSION);
+        }
     }
 
     @Override
@@ -81,9 +93,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image fileToEntity(MultipartFile file, Member member) throws IOException {
-        if (!isImage(file)) {
-            throw new IOException("유효한 파일 형식이 아닙니다.");
-        }
+        isImage(file);
 
         String originalName = file.getOriginalFilename();
         isValidName(originalName);
@@ -115,17 +125,22 @@ public class ImageServiceImpl implements ImageService {
         String mimeType = Files.probeContentType(file.toPath());
         byte[] bytes = Files.readAllBytes(file.toPath());
         String base64 = Base64Utils.encodeToString(bytes);
-        String textIndex;
+        String textIndex = null;
         Integer arrayIndex = -1;
 
-        if (image.getIndex() != null && image.getIndex().indexOf(",") != -1) {
-            textIndex = image.getIndex().substring(0, image.getIndex().indexOf(","));
-            arrayIndex = Integer.valueOf(image.getIndex().substring(image.getIndex().indexOf(",")+1));
-        } else {
-            textIndex = image.getIndex();
+        if (image.getAcademy() == null) {
+            if (image.getIndex() != null && image.getIndex().indexOf(",") != -1) {
+                textIndex = image.getIndex().substring(0, image.getIndex().indexOf(","));
+                arrayIndex = Integer.valueOf(image.getIndex().substring(image.getIndex().indexOf(",") + 1));
+            } else {
+                textIndex = image.getIndex();
+            }
+            textIndex = (textIndex == null) || (textIndex.equals("")) ? null : textIndex;
+            if (textIndex == null) {
+                deleteImage(image);
+                return null;
+            }
         }
-        textIndex = (textIndex == null) || (textIndex.equals("")) ? null : textIndex;
-        //원래는 index가 null이면 안되긴 하는데..........
 
         ImageDTO imageDTO = ImageDTO.builder()
                 .imageId(image.getImageId())
@@ -152,13 +167,15 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image uploadImage(MultipartFile img, Image image){
-        try (InputStream inputStream = img.getInputStream()) {
+    public Image uploadImage(MultipartFile img, Image image) {
+        try {
+            InputStream inputStream = img.getInputStream();
             Files.copy(inputStream, Paths.get(image.getPath()), StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            e.printStackTrace();
+            inputStream.close();
+            return image;
+        } catch (IOException e) {
+            throw new CustomException(ExceptionCode.FILE_WRITE_EXCEPTION);
         }
-        return image;
     }
 
     @Override
@@ -190,10 +207,14 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ImageDTO getAcademyMain(Long acaNum) throws IOException {
-        Image image = imageRepository.findByAcaNum(acaNum);
-        ImageDTO fileDTO = entityToDTO(image);
-        return fileDTO;
+        if (academyRepository.findByAcaNum(acaNum).getImage() != null) {
+            Image image = imageRepository.findByAcaNum(acaNum);
+            ImageDTO fileDTO = entityToDTO(image);
+            return fileDTO;
+        }
+        return null;
     }
 
     @Override
@@ -202,7 +223,12 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findByAcaNum(acaNum);
         academy.setImage(null);
         academyRepository.save(academy);
-        imageRepository.deleteById(image.getImageId());
+        try {
+            deleteImage(image);
+        } catch (IOException e) {
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+        }
+        //imageRepository.deleteById(image.getImageId());
     }
 
     @Override
@@ -254,17 +280,18 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImage(Image image) throws IOException {
-        if (Files.exists(Paths.get(image.getPath()))) {
-            Files.delete(Paths.get(image.getPath()));
+        if (imageRepository.findByPath(image.getPath()).size() == 1) {
+            if (Files.exists(Paths.get(image.getPath()))) {
+                Files.delete(Paths.get(image.getPath()));
+            }
+
+            String folderPath = image.getPath().substring(0, image.getPath().lastIndexOf("\\"));
+
+            File folder = new File(folderPath);
+            if (folder.isDirectory() && folder.list().length == 0) {
+                folder.delete();
+            }
         }
-
-        String folderPath = image.getPath().substring(0, image.getPath().lastIndexOf("\\"));
-
-        File folder = new File(folderPath);
-        if (folder.isDirectory() && folder.list().length == 0) {
-            folder.delete();
-        }
-
         imageRepository.delete(image);
     }
 
@@ -272,8 +299,8 @@ public class ImageServiceImpl implements ImageService {
     public Image duplicateImage(Image duplicate, ImgArrayDTO imgArrayDTO) {
         String index = imgArrayDTO.getTextIndex()+","+imgArrayDTO.getArrayIndex();
         Image image = Image.builder()
-                .originalName(duplicate.getOriginalName()) //이 부분 다르게 처리해야 할 것 같은데
-                .name(duplicate.getName())
+                .originalName(duplicate.getOriginalName())
+                .name("duplicate")
                 .path(duplicate.getPath())
                 .uploader(duplicate.getUploader())
                 .preText(imgArrayDTO.getPreText())

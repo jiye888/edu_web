@@ -130,21 +130,24 @@
 
         function delete_academy() {
             var number = $('#number').val();
+            var name = document.getElementById("academy_name").innerText;
 
-            $.ajax({
-                url: '/academy/delete',
-                type: 'GET',
-                contentType: "application/json",
-                data: {"number":number},
-                success: function() {
-                    location.href='/academy/main';
-                },
-            });
+            if (confirm(name + '학원을 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: '/academy/delete',
+                    type: 'GET',
+                    contentType: "application/json",
+                    data: {"number":number},
+                    success: function() {
+                        location.href='/academy/main';
+                    },
+                });
+            }
         }
 
         function join() {
             var number = $('#number').val();
-            var name = document.getElementById("academy_name").innerHTML;
+            var name = document.getElementById("academy_name").innerText;
 
             var result = confirm(name + ' 학원에 가입하시겠습니까?');
 

@@ -50,15 +50,18 @@
 
         function delete_info() {
             const number = $('#number').val();
-            $.ajax({
-                url: '/info/delete',
-                type: 'GET',
-                contentType: 'application/json',
-                data: {"number":number},
-                success: function() {
-                    location.href="/info/list";
-                },
-            });
+
+            if (confirm("해당 안내글을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: '/info/delete',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {"number":number},
+                    success: function() {
+                        location.href="/info/list";
+                    },
+                });
+            }
         }
     </script>
 </div>

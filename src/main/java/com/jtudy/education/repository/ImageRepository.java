@@ -44,4 +44,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     @Query("select i from Image i where i.notice.notNum = :notNum and i.originalName = :originalName")
     Image findByNotNumAndOriginalName(Long notNum, String originalName);
 
+    List<Image> findByPath(String path);
+
 }

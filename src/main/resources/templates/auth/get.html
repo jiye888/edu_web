@@ -72,7 +72,14 @@
                     contentType: "application/json",
                     data: JSON.stringify({"authId":authId}),
                     success: function() {
-                        history.back();
+                        $.ajax({
+                            url: '/member/request',
+                            type: 'GET',
+                            contentType: "application/json",
+                        }).then((response) => {
+                            var number = response;
+                            location.href="/member/read?number="+number;
+                        });
                     },
                 });
             }

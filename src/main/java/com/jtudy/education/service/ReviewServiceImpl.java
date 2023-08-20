@@ -4,6 +4,7 @@ import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.AcademyMemberRepository;
@@ -12,6 +13,8 @@ import com.jtudy.education.repository.ImageRepository;
 import com.jtudy.education.repository.ReviewRepository;
 import com.jtudy.education.security.SecurityMember;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ public class ReviewServiceImpl implements ReviewService {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(ReviewServiceImpl.class);
+
     @Override
     @Transactional(readOnly = true)
     public boolean validateMember(Long revNum, SecurityMember member) {
@@ -45,9 +50,10 @@ public class ReviewServiceImpl implements ReviewService {
             boolean modInfo = review.getCreatedBy().equals(member.getUsername());
             return (regInfo || modInfo || member.getMember().getRolesList().contains(Roles.ADMIN));
         } catch (NullPointerException e) {
+            logger.warn(GlobalExceptionHandler.exceptionStackTrace(e));
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
             return false;
         }
     }
@@ -75,9 +81,10 @@ public class ReviewServiceImpl implements ReviewService {
         List<Image> image = imageRepository.findByRevNum(revNum);
         List<ImageDTO> images = image.stream().map(e -> {
             try {
-                return imageService.entityToDTO(e);
+                ImageDTO imageDTO = imageService.entityToDTO(e);
+                return imageDTO;
             } catch (IOException ex) {
-                ex.printStackTrace();
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(ex));
                 return null;
             }
         }).collect(Collectors.toList());
@@ -97,7 +104,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException {
+    public Long register(ReviewFormDTO reviewFormDTO, Member member) {
         Academy academy = academyRepository.findByAcaNum(reviewFormDTO.getAcademy());
         Review review = formToEntity(reviewFormDTO, academy, member);
         reviewRepository.save(review);
@@ -131,12 +138,16 @@ public class ReviewServiceImpl implements ReviewService {
             for (MultipartFile image : images) {
                 ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
                 if (imgArr != null) {
-                    Image img = imageService.fileToEntity(image, member);
-                    img = imageService.setNewName(img, imgArr);
-                    img = setReview(img, revNum, imgArr);
-                    imageService.uploadImage(image, img);
-                    review.addImage(img);
-                    imageRepository.save(img);
+                    if (imgArr.getDuplicate() != null) {
+                        duplicateImage(revNum, imgArr);
+                    } else {
+                        Image img = imageService.fileToEntity(image, member);
+                        img = imageService.setNewName(img, imgArr);
+                        img = setReview(img, revNum, imgArr);
+                        imageService.uploadImage(image, img);
+                        review.addImage(img);
+                        imageRepository.save(img);
+                    }
                 }
             }
             reviewRepository.save(review);
@@ -178,7 +189,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void delete(Long revNum) throws IOException {
+    public void delete(Long revNum){
         removeAllImg(revNum);
         reviewRepository.deleteById(revNum);
     }
@@ -192,10 +203,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void removeAllImg(Long revNum) throws IOException {
+    public void removeAllImg(Long revNum) {
         List<Image> images = imageRepository.findByRevNum(revNum);
         for (Image image : images) {
-            removeImg(image.getImageId(), revNum);
+            try {
+                removeImg(image.getImageId(), revNum);
+            } catch (IOException e) {
+                logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
+                imageRepository.delete(image);
+            }
         }
     }
 

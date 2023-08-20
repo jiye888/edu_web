@@ -137,16 +137,15 @@ a:hover {
 }
 
 .custom-carousel-background1 {
-    background-image: url("/img/blue.jpg");
-    height: 300px;
+    background-image: url("/img/new_member.jpg");
+    height: 265px;
+    background-size: cover;
 }
+
 .custom-carousel-background2 {
-    background-image: url("/img/boat.jpg");
-    height: 300px;
-}
-.custom-carousel-background3 {
-    background-image: url("/img/giftbox.jpg");
-    height: 300px;
+    background-image: url("/img/intro.jpg");
+    height: 265px;
+    background-size: cover;
 }
 
 .custom-background {
@@ -438,6 +437,14 @@ a:hover {
     border-radius: 12px;
     border: none;
     line-height: 36px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.button-myInfo {
+    background-color: transparent;
+    border: #fffcd085 solid;
+    line-height: 30px;
     padding-right: 15px;
     padding-left: 15px;
 }

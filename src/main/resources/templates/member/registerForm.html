@@ -96,7 +96,7 @@
                         try {
                             var errorMessage = JSON.parse(xhr.responseText);
                             checkBindingResult(errorMessage);
-                            if (errorMessage.exceptionCode == "DUPLICATE_USERNAME") {
+                            if (errorMessage.exceptionCode === "DUPLICATE_USERNAME") {
                                 alert(errorMessage.message);
                             }
                         } catch (e) {

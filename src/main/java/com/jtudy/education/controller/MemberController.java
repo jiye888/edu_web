@@ -3,15 +3,15 @@ package com.jtudy.education.controller;
 import com.jtudy.education.DTO.AcademyDTO;
 import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
-import com.jtudy.education.config.exception.CustomException;
-import com.jtudy.education.config.exception.CustomExceptionHandler;
-import com.jtudy.education.config.exception.ExceptionResponseEntity;
+import com.jtudy.education.constant.Roles;
 import com.jtudy.education.security.SecurityMember;
 import com.jtudy.education.service.AcademyService;
 import com.jtudy.education.service.AuthService;
 import com.jtudy.education.service.MemberService;
 import javassist.bytecode.DuplicateMemberException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +41,7 @@ public class MemberController {
     private final AuthService authService;
 
     private final TemplateEngine templateEngine;
+    private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -52,22 +53,20 @@ public class MemberController {
     public ResponseEntity join(Model model, @RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         try {
             memberService.validateEmail(memberFormDTO.getEmail());
-            if (bindingResult.hasErrors()) {
-                Map<String, String> map = new HashMap<>();
-                map.put("BindingResultError", "true");
-                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-                for (FieldError fieldError : fieldErrors) {
-                    map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
-                }
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
-            }
-            memberService.createMember(memberFormDTO);
-            return ResponseEntity.ok().build();
-        } catch (CustomException e) {
-            return ExceptionResponseEntity.toResponseEntity(e.getExceptionCode());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DuplicateMemberException e) {
+            return ResponseEntity.badRequest().build();
         }
+        if (bindingResult.hasErrors()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("BindingResultError", "true");
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(map);
+        }
+        memberService.createMember(memberFormDTO);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/request")
@@ -75,9 +74,8 @@ public class MemberController {
         try {
             Long number = member.getMember().getMemNum();
             return ResponseEntity.ok().body(number);
-        } catch (Exception e) {
-            String error = e.getMessage();
-            return ResponseEntity.badRequest().body(error);
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(500).body("null member info");
         }
     }
 
@@ -88,37 +86,32 @@ public class MemberController {
             model.addAttribute("member", member);
             return ResponseEntity.ok(member.getMemNum());
         } catch (NullPointerException e) {
-            String msg = "해당 이메일을 사용중인 회원이 없습니다."; //*exception
-            model.addAttribute("msg", msg);
+            String msg = "해당 이메일을 사용중인 회원이 없습니다.";
+            //model.addAttribute("msg", msg);
             return ResponseEntity.badRequest().body(msg);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/read")
     public ResponseEntity member(@RequestParam(value = "number") Long memNum, Model model, @AuthenticationPrincipal SecurityMember member) {
-        try {
-            if (memberService.validateMember(memNum, member)) {
-                MemberDTO memberDTO = memberService.getOne(memNum);
-                model.addAttribute("memberDTO", memberDTO);
-                Context context = new Context();
-                context.setVariables(model.asMap());
-                String template = templateEngine.process("member/read", context);
-                return ResponseEntity.ok().body(template);
-            } else {
-                String message = "권한이 없습니다.";
-                model.addAttribute("msg", message);
-                Context context = new Context();
-                context.setVariables(model.asMap());
-                String template = templateEngine.process("/academy/exception", context);
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(template); //*exception
+        if (memberService.validateMember(memNum, member)) {
+            MemberDTO memberDTO = memberService.getOne(memNum);
+            model.addAttribute("memberDTO", memberDTO);
+            Context context = new Context();
+            context.setVariables(model.asMap());
+            if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+                context.setVariable("isAdmin", "true");
             }
-        } catch (Exception e) {
-            String error = e.getMessage();
-            return ResponseEntity.badRequest().body(error);
+            String template = templateEngine.process("member/read", context);
+            return ResponseEntity.ok().body(template);
+        } else {
+            String message = "권한이 없습니다.";
+            model.addAttribute("msg", message);
+            Context context = new Context();
+            context.setVariables(model.asMap());
+            String template = templateEngine.process("/academy/exception", context);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(template);
         }
-
     }
 
     @GetMapping("/modify")
@@ -134,27 +127,24 @@ public class MemberController {
 
     @PostMapping("/modify")
     public ResponseEntity modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
-        try {
-            if (bindingResult.hasErrors()) {
-                Map<String, String> map = new HashMap<>();
-                map.put("BindingResultError", "true");
-                List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-                for (FieldError fieldError : fieldErrors) {
-                    map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
-                }
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> map = new HashMap<>();
+            map.put("BindingResultError", "true");
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : fieldErrors) {
+                map.put(fieldError.getField() + "Error", fieldError.getDefaultMessage());
             }
-            memberService.updateMember(memberFormDTO);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
         }
+        memberService.updateMember(memberFormDTO);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/withdraw")
     @ResponseBody
     public void withdraw(@RequestParam("number") Long memNum) {
         memberService.withdraw(memNum);
+
     }
 
     @GetMapping("/login")
@@ -163,43 +153,30 @@ public class MemberController {
 
     @PostMapping("/loginCheck")
     public ResponseEntity loginCheck(@RequestBody Map<String, String> member) {
-        try {
-            String email = member.get("email");
-            String password = member.get("password");
-            String token = memberService.login(email, password);
-            return ResponseEntity.ok().body(token);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String email = member.get("email");
+        String password = member.get("password");
+        String token = memberService.login(email, password);
+        return ResponseEntity.ok().body(token);
     }
 
     @PostMapping(value = "/logout")
     public ResponseEntity logout(@AuthenticationPrincipal SecurityMember member) {
-        try {
-            memberService.logout(member.getUsername());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        memberService.logout(member.getUsername());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/joined")
     public String getMembers(@RequestParam("number") Long acaNum, @RequestParam(value="page", defaultValue="1") int page, Model model, @AuthenticationPrincipal SecurityMember member){
-        try {
-            if (academyService.isManager(acaNum, member)) {
-                Pageable pageable = PageRequest.of(page - 1, 10);
-                AcademyDTO academyDTO = academyService.getOne(acaNum);
-                model.addAttribute("name", academyDTO.getAcaName());
-                Page<MemberDTO> memberDTO = memberService.getMembers(acaNum, pageable);
-                model.addAttribute("member", memberDTO);
-                return "/member/joined";
-            } else {
-                model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
-                return "/academy/exception";
-            }
-        } catch (Exception e) {
-            return e.getMessage();
+        if (academyService.isManager(acaNum, member)) {
+            Pageable pageable = PageRequest.of(page - 1, 10);
+            AcademyDTO academyDTO = academyService.getOne(acaNum);
+            model.addAttribute("name", academyDTO.getAcaName());
+            Page<MemberDTO> memberDTO = memberService.getMembers(acaNum, pageable);
+            model.addAttribute("member", memberDTO);
+            return "/member/joined";
+        } else {
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
+            return "/academy/exception";
         }
     }
 

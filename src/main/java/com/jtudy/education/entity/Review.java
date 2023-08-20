@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Entity
 @NoArgsConstructor
@@ -38,7 +36,7 @@ public class Review extends BaseEntity {
 
     private Integer grade;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "review")
     @Builder.Default
     private List<Image> image = new ArrayList<>();
 
@@ -54,6 +52,10 @@ public class Review extends BaseEntity {
 
     public void removeImage(Image image) {
         this.image.remove(image);
+    }
+
+    public void detach() {
+        this.academy = null;
     }
 
 }

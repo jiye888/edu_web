@@ -72,7 +72,7 @@
             }
             formData.append("imgArray", new Blob([JSON.stringify(imgArray)], {type:"application/json"}));
 
-            if (title && contentText) {
+            if (title && (contentText || imgList.length > 0)) {
                 $.ajax({
                     url: '/info/register',
                     type: 'POST',

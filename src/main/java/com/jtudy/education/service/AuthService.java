@@ -15,6 +15,7 @@ import java.util.Map;
 
 public interface AuthService {
 
+    @Transactional(readOnly = true)
     boolean validateMember(Long authId, SecurityMember member);
 
     Long requestAuth(Member member, Roles roles, String content);
@@ -23,17 +24,20 @@ public interface AuthService {
 
     void cancelRequest(Long authId);
 
+    @Transactional(readOnly = true)
     AuthDTO getOne(Member member);
 
     @Transactional(readOnly = true)
     AuthDTO getOneByAuthId(Long authId);
 
+    @Transactional(readOnly = true)
     Slice<AuthDTO> requestedAuths(Pageable pageable);
 
     void acceptAuth(String email, Roles roles);
 
     void rejectAuth(String email, Roles roles);
 
+    @Transactional(readOnly = true)
     List<Roles> getRoles(Long memNum);
 
     void removeRoles(Long memNum, Roles roles);
@@ -46,16 +50,15 @@ public interface AuthService {
         rolesMap.put(Roles.MANAGER, "학원 관리자");
         rolesMap.put(Roles.ADMIN, "운영자");
         Map<Roles, String> map = new HashMap<>();
+        if (rolesList == null) {
+            return map;
+        }
         for (Roles roles : rolesList) {
             if (rolesMap.get(roles) != null) {
                 map.put(roles, rolesMap.get(roles));
             }
         }
-        if (map.isEmpty()) {
-            return null;
-        } else {
-            return map;
-        }
+        return map;
     }
 
     default AuthDTO entityToDTO(Auth auth) {

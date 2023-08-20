@@ -4,17 +4,19 @@ import com.jtudy.education.DTO.MemberDTO;
 import com.jtudy.education.DTO.MemberFormDTO;
 import com.jtudy.education.config.exception.CustomException;
 import com.jtudy.education.config.exception.ExceptionCode;
+import com.jtudy.education.config.exception.GlobalExceptionHandler;
 import com.jtudy.education.constant.Roles;
 import com.jtudy.education.entity.*;
 import com.jtudy.education.repository.*;
 import com.jtudy.education.security.JwtTokenProvider;
 import com.jtudy.education.security.SecurityMember;
-import javassist.bytecode.DuplicateMemberException;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.websocket.AuthenticationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +34,12 @@ public class MemberServiceImpl implements MemberService{
     private final UserDetailsServiceImpl userDetailsService;
     private final AcademyRepository academyRepository;
     private final AcademyMemberRepository academyMemberRepository;
+    private final AuthRepository authRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     @Override
     @Transactional(readOnly = true)
@@ -45,7 +50,7 @@ public class MemberServiceImpl implements MemberService{
         } catch (NullPointerException e) {
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(GlobalExceptionHandler.exceptionStackTrace(e));
             return false;
         }
     }
@@ -62,8 +67,12 @@ public class MemberServiceImpl implements MemberService{
     @Transactional(readOnly = true)
     public MemberDTO findByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
-        MemberDTO memberDTO = entityToDTO(member);
-        return memberDTO;
+        if (member != null) {
+            MemberDTO memberDTO = entityToDTO(member);
+            return memberDTO;
+        } else {
+            throw new CustomException(ExceptionCode.INVALID_USERNAME);
+        }
     }
 
     @Override
@@ -96,21 +105,31 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public void withdraw(Long memNum) {
+        Member member = memberRepository.findByMemNum(memNum);
+        Auth auth = authRepository.findByEmail(member.getEmail());
+        if (auth != null) {
+            authRepository.deleteById(auth.getAuthId());
+        }
         memberRepository.deleteById(memNum);
+        SecurityContextHolder.clearContext();
     }
 
     @Override
     public String login(String email, String password) {
-        UserDetails user = userDetailsService.loadUserByUsername(email);
-        Member member = memberRepository.findByEmail(user.getUsername());
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        try {
+            UserDetails user = userDetailsService.loadUserByUsername(email);
+            Member member = memberRepository.findByEmail(user.getUsername());
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                throw new CustomException(ExceptionCode.NOT_MATCHED_LOGIN_INFO);
+            }
+            String accessToken = jwtTokenProvider.createAccessToken(email, member.getRolesList());
+            String refreshToken = jwtTokenProvider.createRefreshToken(email, member.getRolesList());
+            RefreshToken token = new RefreshToken(email, refreshToken);
+            refreshTokenRepository.save(token);
+            return accessToken;
+        } catch (UsernameNotFoundException e) {
             throw new CustomException(ExceptionCode.NOT_MATCHED_LOGIN_INFO);
         }
-        String accessToken = jwtTokenProvider.createAccessToken(email, member.getRolesList());
-        String refreshToken = jwtTokenProvider.createRefreshToken(email, member.getRolesList());
-        RefreshToken token = new RefreshToken(email, refreshToken);
-        refreshTokenRepository.save(token);
-        return accessToken;
     }
 
     @Override

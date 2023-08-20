@@ -17,10 +17,13 @@ import java.util.Map;
 
 public interface AcademyService {
 
+    @Transactional(readOnly = true)
     boolean isManager(Long acaNum, SecurityMember member);
 
+    @Transactional(readOnly = true)
     Page<AcademyDTO> getAll(Pageable pageable);
 
+    @Transactional(readOnly = true)
     AcademyDTO getOne(Long acaNum);
 
     @Transactional(readOnly = true)
@@ -30,16 +33,16 @@ public interface AcademyService {
 
     void registerImg(MultipartFile file, Long acaNum, Member member) throws IOException;
 
-    void changeImg(MultipartFile file, Long acaNum, Member member) throws IOException;
-
     void removeImg(Long acaNum);
 
     Long update(AcademyFormDTO academyFormDTO);
 
     void delete(Long acaNum);
 
+    @Transactional(readOnly = true)
     Page<AcademyDTO> getAcademies(Long memNum, Pageable pageable);
 
+    @Transactional(readOnly = true)
     Page<AcademyDTO> search(Map<String, Object> search, Pageable pageable);
 
     default Academy formToEntity(AcademyFormDTO academyFormDTO, Member member) {

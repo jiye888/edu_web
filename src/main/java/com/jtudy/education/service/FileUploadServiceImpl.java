@@ -1,11 +1,15 @@
 package com.jtudy.education.service;
 
+import com.jtudy.education.config.exception.CustomException;
+import com.jtudy.education.config.exception.ExceptionCode;
 import com.jtudy.education.entity.FileUpload;
 import com.jtudy.education.entity.Member;
 import com.jtudy.education.repository.FileUploadRepository;
 import com.jtudy.education.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.InvalidFileNameException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
@@ -31,13 +35,13 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class FileUploadServiceImpl implements FileUploadService{
 
-    private final NoticeRepository noticeRepository;
-    private final FileUploadRepository fileUploadRepository;
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadServiceImpl.class);
 
     @Value("${upload.dir}")
     private String path;
 
     @Override
+    @Transactional(readOnly = true)
     public void isValidName(String name) throws InvalidFileNameException {
         String[] invalid = {"/", ":"};
         for (String invalidChar : invalid) {
@@ -65,15 +69,14 @@ public class FileUploadServiceImpl implements FileUploadService{
     }
 
     @Override
-    public boolean isValidExtension(String extension) throws IOException {
+    public boolean isValidExtension(String extension) {
         String[] extensions = {".txt", ".hwp", ".pdf", ".xls", ".xlsx", ".doc", ".docx", ".ppt", ".pptx", ".png", ".jpg"};
-        // 확장자명 하나하나 입력해야 하나?
         for (String e : extensions) {
             if (e.equals(extension)) {
                 return true;
             }
         }
-        throw new IOException("유효한 파일 형식이 아닙니다.");
+        throw new CustomException(ExceptionCode.INVALID_EXTENSION);
     }
 
     @Override
@@ -106,6 +109,7 @@ public class FileUploadServiceImpl implements FileUploadService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public File getFile(FileUpload fileUpload) throws FileNotFoundException {
         String filePath = fileUpload.getFilePath();
         File file = new File(filePath);
@@ -116,6 +120,7 @@ public class FileUploadServiceImpl implements FileUploadService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Double getFileSize(FileUpload fileUpload) throws IOException {
         String filePath = fileUpload.getFilePath();
         Resource resource = new PathResource(filePath);
@@ -127,15 +132,15 @@ public class FileUploadServiceImpl implements FileUploadService{
     }
 
     @Override
-    public FileUpload uploadFile(MultipartFile file, Member member) throws IOException {
-        FileUpload fileUpload = fileToEntity(file, member);
-
-        try (InputStream inputStream = file.getInputStream()){
+    public FileUpload uploadFile(MultipartFile file, Member member) {
+        try {
+            FileUpload fileUpload = fileToEntity(file, member);
+            InputStream inputStream = file.getInputStream();
             Files.copy(inputStream, Paths.get(fileUpload.getFilePath()), StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
-            e.printStackTrace();
+            return fileUpload;
+        } catch (IOException e) {
+            throw new CustomException(ExceptionCode.FILE_WRITE_EXCEPTION);
         }
-        return fileUpload;
     }
 
 }

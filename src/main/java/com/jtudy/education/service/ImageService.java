@@ -4,6 +4,7 @@ import com.jtudy.education.DTO.ImageDTO;
 import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.entity.Image;
 import com.jtudy.education.entity.Member;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public interface ImageService {
 
+    @Transactional(readOnly = true)
     void isValidName(String name);
 
     boolean isImage(MultipartFile file);
@@ -27,13 +29,14 @@ public interface ImageService {
 
     ImgArrayDTO matchDTO(String name, List<ImgArrayDTO> imgArray);
 
+    @Transactional(readOnly = true)
     ImageDTO getAcademyMain(Long acaNum) throws IOException;
 
     void deleteAcademyMain(Long acaNum);
 
     Image setInfo(Image image, ImgArrayDTO imgArrayDTO);
 
-    Image uploadImage(MultipartFile img, Image image);
+    Image uploadImage(MultipartFile img, Image image) throws IOException;
 
     boolean isNotNullOrEmpty(MultipartFile[] images, List<ImgArrayDTO> imgArray);
 

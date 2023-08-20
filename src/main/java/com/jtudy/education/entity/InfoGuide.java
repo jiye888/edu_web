@@ -25,7 +25,7 @@ public class InfoGuide extends BaseEntity {
 
     private String content;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "infoGuide")
     @Builder.Default
     private List<Image> image = new ArrayList<>();
 
