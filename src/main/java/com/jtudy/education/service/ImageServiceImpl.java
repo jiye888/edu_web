@@ -84,10 +84,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image setNewName(Image image, ImgArrayDTO imgArrayDTO) {
-        if (imgArrayDTO.getBase64() != null) {
-            String newName = getNewName(image);
-            image.changeOriginalName(newName);
-        }
+        String newName = getNewName(image);
+        image.changeOriginalName(newName);
         return image;
     }
 
@@ -274,6 +272,7 @@ public class ImageServiceImpl implements ImageService {
                     }
                 }
             }
+            return existImages;
         }
         return null;
     }
@@ -293,21 +292,6 @@ public class ImageServiceImpl implements ImageService {
             }
         }
         imageRepository.delete(image);
-    }
-
-    @Override
-    public Image duplicateImage(Image duplicate, ImgArrayDTO imgArrayDTO) {
-        String index = imgArrayDTO.getTextIndex()+","+imgArrayDTO.getArrayIndex();
-        Image image = Image.builder()
-                .originalName(duplicate.getOriginalName())
-                .name("duplicate")
-                .path(duplicate.getPath())
-                .uploader(duplicate.getUploader())
-                .preText(imgArrayDTO.getPreText())
-                .postText(imgArrayDTO.getPostText())
-                .index(index)
-                .build();
-        return image;
     }
 
 }

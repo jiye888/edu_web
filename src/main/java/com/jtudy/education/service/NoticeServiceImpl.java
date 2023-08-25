@@ -171,16 +171,14 @@ public class NoticeServiceImpl implements NoticeService {
             for (MultipartFile image : images) {
                 ImgArrayDTO imgArr = imageService.matchDTO(image.getOriginalFilename(), imgArray);
                 if (imgArr != null) {
-                    if (imgArr.getDuplicate() != null) {
-                        duplicateImage(notNum, imgArr);
-                    } else {
-                        Image img = imageService.fileToEntity(image, member);
+                    Image img = imageService.fileToEntity(image, member);
+                    if (imageRepository.existsByOriginalNameAndNotNum(img.getOriginalName(), notNum)) {
                         img = imageService.setNewName(img, imgArr);
-                        img = setNotice(img, notNum, imgArr);
-                        imageService.uploadImage(image, img);
-                        notice.addImage(img);
-                        imageRepository.save(img);
                     }
+                    img = setNotice(img, notNum, imgArr);
+                    imageService.uploadImage(image, img);
+                    notice.addImage(img);
+                    imageRepository.save(img);
                 }
             }
             noticeRepository.save(notice);
@@ -192,17 +190,15 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = noticeRepository.findByNotNum(notNum);
         Image img = imageService.fileToEntity(image, member);
         ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
-        img = imageService.setNewName(img, imgArr);
+        if (imageRepository.existsByOriginalNameAndNotNum(img.getOriginalName(), notNum)) {
+            img = imageService.setNewName(img, imgArr);
+        }
         if (imgArr != null) {
-            if (imgArr.getDuplicate() != null) {
-                duplicateImage(notNum, imgArr);
-            } else {
-                img = setNotice(img, notNum, imgArr);
-                imageService.uploadImage(image, img);
-                imageRepository.save(img);
-                notice.addImage(img);
-                noticeRepository.save(notice);
-            }
+            img = setNotice(img, notNum, imgArr);
+            imageService.uploadImage(image, img);
+            imageRepository.save(img);
+            notice.addImage(img);
+            noticeRepository.save(notice);
         }
     }
 
@@ -359,15 +355,6 @@ public class NoticeServiceImpl implements NoticeService {
             }
         }
         return imagesData;
-    }
-
-    @Override
-    public void duplicateImage(Long notNum, ImgArrayDTO imgArrayDTO) {
-        Notice notice = noticeRepository.findByNotNum(notNum);
-        Image duplicate = imageRepository.findByNotNumAndOriginalName(notNum, imgArrayDTO.getDuplicate());
-        Image image = imageService.duplicateImage(duplicate, imgArrayDTO);
-        image.setNotice(notice);
-        imageRepository.save(image);
     }
 
 }

@@ -23,6 +23,4 @@ public class ImgArrayDTO {
 
     private Integer arrayIndex;
 
-    private String duplicate;
-
 }

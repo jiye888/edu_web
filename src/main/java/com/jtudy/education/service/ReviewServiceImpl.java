@@ -138,16 +138,14 @@ public class ReviewServiceImpl implements ReviewService {
             for (MultipartFile image : images) {
                 ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
                 if (imgArr != null) {
-                    if (imgArr.getDuplicate() != null) {
-                        duplicateImage(revNum, imgArr);
-                    } else {
-                        Image img = imageService.fileToEntity(image, member);
+                    Image img = imageService.fileToEntity(image, member);
+                    if (imageRepository.existsByOriginalNameAndRevNum(img.getOriginalName(), revNum)) {
                         img = imageService.setNewName(img, imgArr);
-                        img = setReview(img, revNum, imgArr);
-                        imageService.uploadImage(image, img);
-                        review.addImage(img);
-                        imageRepository.save(img);
                     }
+                    img = setReview(img, revNum, imgArr);
+                    imageService.uploadImage(image, img);
+                    review.addImage(img);
+                    imageRepository.save(img);
                 }
             }
             reviewRepository.save(review);
@@ -226,15 +224,6 @@ public class ReviewServiceImpl implements ReviewService {
         } catch (IOException e) {
             throw new IOException();
         }
-    }
-
-    @Override
-    public void duplicateImage(Long revNum, ImgArrayDTO imgArrayDTO) {
-        Review review = reviewRepository.findByRevNum(revNum);
-        Image duplicate = imageRepository.findByRevNumAndOriginalName(revNum, imgArrayDTO.getDuplicate());
-        Image image = imageService.duplicateImage(duplicate, imgArrayDTO);
-        image.setReview(review);
-        imageRepository.save(image);
     }
 
 }

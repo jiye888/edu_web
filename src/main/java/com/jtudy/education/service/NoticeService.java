@@ -62,8 +62,6 @@ public interface NoticeService {
     @Transactional(readOnly = true)
     List<byte[]> getImagesByte(Long notNum) throws IOException;
 
-    void duplicateImage(Long notNum, ImgArrayDTO imgArrayDTO);
-
     default Notice dtoToEntity(NoticeDTO noticeDTO) {
         Academy academy = Academy.builder()
                 .acaNum(noticeDTO.getAcaNum())

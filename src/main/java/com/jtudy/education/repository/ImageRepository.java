@@ -36,13 +36,13 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     boolean existsByOriginalNameAndInfoNum(String originalName, Long infoNum);
 
     @Query("select i from Image i where i.infoGuide.infoNum = :infoNum and i.originalName = :originalName")
-    Image findByInfoNumAndOriginalName(Long infoNum, String originalName);
+    List<Image> findByInfoNumAndOriginalName(Long infoNum, String originalName);
 
     @Query("select i from Image i where i.review.revNum = :revNum and i.originalName = :originalName")
-    Image findByRevNumAndOriginalName(Long revNum, String originalName);
+    List<Image> findByRevNumAndOriginalName(Long revNum, String originalName);
 
     @Query("select i from Image i where i.notice.notNum = :notNum and i.originalName = :originalName")
-    Image findByNotNumAndOriginalName(Long notNum, String originalName);
+    List<Image> findByNotNumAndOriginalName(Long notNum, String originalName);
 
     List<Image> findByPath(String path);
 

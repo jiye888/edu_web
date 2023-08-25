@@ -16,10 +16,9 @@
                 var preTexts = "";
                 var postTexts = "";
                 var imgSeq = -1;
+                var imgSeqEnd = 0;
 
-                console.log(Array.from(content.childNodes));
                 const imgPosition = Array.from(content.childNodes).indexOf(img);
-                console.log("imgPosition" + imgPosition);
                 if (imgPosition > 0) {
                     var base64 = img.getAttribute("data-base64");
                     if (base64 != null) {
@@ -27,35 +26,16 @@
                     }
                     var q = imgPosition-1;
                     if (content.childNodes[q].nodeType === 1 && q > 0) {
-                    var seqCount = 0;
-                    var endProcess = 1;
-                    var endSeq = 0;
-                        /*if (imgIndex[imgIndex.length-1][0] === content.childNodes[q].getAttribute("name")) {
-                            var preText = imgIndex[imgIndex.length-1][1]
-                            var postText = imgIndex[imgIndex.length-1][2];
-                            var textIndex = imgIndex[imgIndex.length-1][3];
-                            var arrayIndex = imgIndex[imgIndex.length-1][4] + 1;
-                            imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: textIndex, arrayIndex: arrayIndex, base64: base64, duplicate: img.getAttribute("data-duplicate")});
-                        } else {
-                            const reversedIndex = imgIndex;
-                            reversedIndex.reverse();
-                            reversedIndex.forEach(one => {
-                                if (one[0] === content.childNodes[q].getAttribute("name")) {
-                                    var preText = one[1];
-                                    var postText = one[2];
-                                    var textIndex = one[3];
-                                    var arrayIndex = one[4] + 1;
-                                    imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: textIndex, arrayIndex: arrayIndex, base64: base64, duplicate: img.getAttribute("data-duplicate")});
-                                }
-                            });
-                        }*/
-                        while (endProcess > 0) {
+                        imgSeq = 0;
+                        var endProcess = 1;
+                        var endSeq = 0;
+                        while (endProcess > 0 && q >= 0) {
                             if (endSeq === 0) {
                                 if (content.childNodes[q].nodeType === 3) {
                                     preTexts += content.childNodes[q].textContent;
                                     endSeq = 1;
                                 } else if (content.childNodes[q].nodeType === 1) {
-                                    seqCount ++;
+                                    imgSeq ++;
                                 } else {
                                     preTexts += content.childNodes[q].innerText;
                                     endSeq = 1;
@@ -64,23 +44,17 @@
                                 if (content.childNodes[q].nodeType === 3) {
                                     preTexts += content.childNodes[q].textContent;
                                 } else if (content.childNodes[q].nodeType === 1) {
-                                    endProcess = 1;
+                                    endProcess = 0;
                                 } else {
                                     preTexts += content.childNodes[q].innerText;
                                 }
                             }
+                            q--;
+                            if (preTexts.length >= 10) {
+                                q = -1;
+                            }
                         }
 
-                        const preText = preTexts.length < 10 ? preTexts.slice(0, preTexts.length) : preTexts.slice(preTexts.length -10, preTexts.length);
-                        const postText = postTexts.length < 10 ? postTexts.slice(0, postTexts.length) : postTexts.slice(0, 10);
-                        var reg = escapeRegExp(preText) + "[\\s\\n]*" + escapeRegExp(postText);
-                        reg = reg + "|" + escapeN(reg);
-                        const regex = new RegExp(reg, 'g');
-                        const prePost = preTexts + postText;
-                        const match = prePost.match(regex);
-                        const index = match.length;
-
-                        imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: index, arrayIndex: endSeq, base64: base64, duplicate: img.getAttribute("data-duplicate")});
                     } else {
                         while (q >= 0) {
                             if (content.childNodes[q].nodeType === 3) {
@@ -95,14 +69,7 @@
                                 q = -1;
                             }
                         }
-
-                    /*for (var i=0; i<imgPosition; i++) {
-                        if (content.childNodes[i].nodeType === 3) {
-                            preTexts += content.childNodes[i].textContent;
-                        } else {
-                            preTexts += content.childNodes[i].innerText;
-                        }
-                    }*/
+/*
                         if ((content.childNodes[imgPosition-1].nodeType !== 3 && content.childNodes[imgPosition-1].nodeName === "IMG") || (imgPosition + 1 < content.childNodes.length && content.childNodes[imgPosition+1].nodeType !== 3 && content.childNodes[imgPosition+1].nodeName === "IMG")) {
                             imgSeq = 0;
                             for (var i=imgPosition; i>=1; i--) {
@@ -113,23 +80,50 @@
                                 }
                             }
                         }
+*/
 
-                    /*for (var i=imgPosition; i<content.childNodes.length; i++) {
-                        if (content.childNodes[i].nodeType === 3) {
-                            postTexts += content.childNodes[i].textContent;
-                        } else {
-                            postTexts += content.childNodes[i].innerText;
+                    }
+
+                    q = imgPosition+1;
+
+                    if (q < content.childNodes.length && content.childNodes[q].nodeType === 1) {
+                        if (imgSeq < 0) {
+                            imgSeq = 0;
                         }
-                    }*/
-                        q = imgPosition+1;
-                        while (q <= content.childNodes.length-1) {
+                        var endProcess = 1;
+                        var endSeq = 0;
+                        while (endProcess > 0 && q < content.childNodes.length) {
+                            if (endSeq === 0) {
+                                if (content.childNodes[q].nodeType === 3) {
+                                    postTexts += content.childNodes[q].textContent;
+                                    endSeq = 1;
+                                } else if (content.childNodes[q].nodeType !== 1) {
+                                    postTexts += content.childNodes[q].innerText;
+                                    endSeq = 1;
+                                }
+                            } else {
+                                if (content.childNodes[q].nodeType === 3) {
+                                    postTexts += content.childNodes[q].textContent;
+                                } else if (content.childNodes[q].nodeType === 1) {
+                                    endProcess = 0;
+                                } else {
+                                    postTexts += content.childNodes[q].innerText;
+                                }
+                            }
+                            q++;
+                            if (postTexts.length >= 10) {
+                                endProcess = 0;
+                            }
+                        }
+
+                    } else {
+                        while (q < content.childNodes.length) {
                             if (content.childNodes[q].nodeType === 3) {
-                                console.log(content.childNodes[q].textContent);
                                 postTexts += content.childNodes[q].textContent;
                             } else if (content.childNodes[q].nodeType === 1) {
+                                imgSeqEnd = 1;
                                 q = content.childNodes.length;
                             } else {
-                                console.log(content.childNodes[q].innerText);
                                 postTexts += content.childNodes[q].innerText;
                             }
                             q++;
@@ -137,19 +131,49 @@
                                 q = content.childNodes.length;
                             }
                         }
+/*
+                        if ((content.childNodes[imgPosition-1].nodeType !== 3 && content.childNodes[imgPosition-1].nodeName === "IMG") || (imgPosition + 1 < content.childNodes.length && content.childNodes[imgPosition+1].nodeType !== 3 && content.childNodes[imgPosition+1].nodeName === "IMG")) {
+                            imgSeq = 0;
+                            for (var i=imgPosition; i>=1; i--) {
+                                if (content.childNodes[i-1].nodeType !== 3 && content.childNodes[i-1].nodeName === "IMG") {
+                                    imgSeq++;
+                                } else if (content.childNodes[i-1].nodeType === 3 || content.childNodes[i-1].nodeName !== "IMG") {
+                                    i = 0;
+                                }
+                            }
+                        }*/
 
-                        const preText = preTexts.length < 10 ? preTexts.slice(0, preTexts.length) : preTexts.slice(preTexts.length -10, preTexts.length);
-                        const postText = postTexts.length < 10 ? postTexts.slice(0, postTexts.length) : postTexts.slice(0, 10);
 
-                        var reg = escapeRegExp(preText) + "[\\s\\n]*" + escapeRegExp(postText);
-                        reg = reg + "|" + escapeN(reg);
-                        const regex = new RegExp(reg, 'g');
-                        const prePost = preTexts + postText;
-                        const match = prePost.match(regex);
-                        const index = match.length;
+                    }
+                    /*
+                    while (q <= content.childNodes.length-1) {
+                        if (content.childNodes[q].nodeType === 3) {
+                            postTexts += content.childNodes[q].textContent;
+                        } else if (content.childNodes[q].nodeType === 1) {
+                            q = content.childNodes.length;
+                        } else {
+                            postTexts += content.childNodes[q].innerText;
+                        }
+                        q++;
+                        if (postTexts.length >= 10) {
+                            q = content.childNodes.length;
+                        }
+                    }*/
 
-                        imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: index, arrayIndex: imgSeq, base64: base64, duplicate: img.getAttribute("data-duplicate")});
+                    const preText = preTexts.length < 10 ? preTexts.slice(0, preTexts.length) : preTexts.slice(preTexts.length -10, preTexts.length);
+                    const postText = postTexts.length < 10 ? postTexts.slice(0, postTexts.length) : postTexts.slice(0, 10);
 
+                    var reg = escapeRegExp(preText) + "[\\s\\n]*" + escapeRegExp(postText);
+                    reg = reg + "|" + escapeN(reg);
+                    const regex = new RegExp(reg, 'g');
+                    const prePost = preTexts + postText;
+                    const match = prePost.match(regex);
+                    const index = match.length;
+
+                    imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: index, arrayIndex: imgSeq, base64: base64/*, duplicate: img.getAttribute("data-duplicate")*/});
+
+                    if (imgSeqEnd === 1) {
+                        imgSeq = -1;
                     }
                 }
             });
@@ -185,7 +209,6 @@
                 var insertImg = '<img name="image_is_included_here"/>';
                 imgTag += insertImg;
             });
-            console.log("imgtag: "+imgTag);
             var imgSeqs = img[0].preText;
             img.forEach(tag => {
                 imgSeqs += '<img src="data:'+tag.mimeType+';base64 ,'+tag.base64+'" data-name='+tag.originalName+' name=\"exist\">';
@@ -202,10 +225,8 @@
             }*/
             reg = reg + "|" + escapeN(reg);
             const regex = new RegExp(reg, 'g');
-            console.log("before: "+regex);
-            /*
+
             var imageContent = contentText.replace(regex, function(match) {
-                console.log("while: "+regex);
                 count++;
                 if (img[0].textIndex === count) {
                     return imgTag;
@@ -216,43 +237,15 @@
                 const content = document.getElementById('content');
                 content.innerHTML = imageContent;
             }
-            var contents = document.getElementById('content').textContent;
-            var imageContent = contents.replace(regex, function(match) {
-                console.log("while: "+regex);
-                count++;
-                if (img[0].textIndex === count) {
-                    return imgTag;
-                }
-                return match;
-            });
-            firstImage = content.getElementById('image');
-            if (imageContent)*/
-            var imageContent = contentText.replace(regex, function(match) {
-                console.log("while: "+regex);
-                count++;
-                if (img[0].textIndex === count) {
-                    return imgTag;
-                }
-                return match;
-            });
-            if (imageContent != false) {
-                const content = document.getElementById('content');
-                content.innerHTML = imageContent;
-            }
-            /*console.log("content innerhtml: "+document.getElementById('content').innerHTML);
-            var wholeReg = escapeRegExp('<div name="image_is_included_here"/>');
-            const wholeRegex = new RegExp(wholeReg, 'g');
-            console.log("imgSeqs:"+imgSeqs);
-            wholeContent = imageContent.replace(regex, imgSeqs);*/
+
+        });
+
+        const flatSeqImg = seqImg.flat();
+        flatSeqImg.forEach(img => {
             const imgIncludes = document.querySelectorAll('img[name="image_is_included_here"]');
-            console.log("imgIncludes.length" + imgIncludes.length);
-            img.forEach(tag => {
-                imgIncludes.forEach (one => {
-                    one.setAttribute("src", "data: "+tag.mimeType+';base64, '+tag.base64);
-                    one.setAttribute("data-name", tag.originalName);
-                    one.setAttribute("name", "exist");
-                });
-            });
+            imgIncludes[0].setAttribute("src", "data: "+img.mimeType+';base64, '+img.base64);
+            imgIncludes[0].setAttribute("data-name", img.originalName);
+            imgIncludes[0].setAttribute("name", "exist");
         });
 
     }
@@ -274,12 +267,13 @@
         reader.onload = () => {
             const dataURL = reader.result;
             var checkList = {};
-            if (images.length === 0) {
+            setImgElement(image, dataURL);
+            /*if (images.length === 0) {
                 setImgElement(image, dataURL);
             } else {
                 images.forEach(img => {
                     if (image.name === img.getAttribute("data-name")) {
-                        const imgSrc = img.src.slice(img.src.indexOf(",")+1);
+                        const imgSrc = img.src.slice(img.src.indexOf(",")+2);
                         const dataSrc = dataURL.slice(dataURL.indexOf(",")+1);
                         if (dataSrc !== imgSrc) {
                             checkList.base64 = "";
@@ -295,7 +289,7 @@
                 } else if ("duplicate" in checkList) {
                     newImg.setAttribute("data-duplicate", checkList.duplicate);
                 }
-            }
+            }*/
             imgList.push(image);
             const imgLabel = document.getElementById('imageLabel');
             const imgTags = document.querySelectorAll('img');

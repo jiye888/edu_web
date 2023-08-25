@@ -126,17 +126,15 @@ public class InfoGuideServiceImpl implements InfoGuideService{
             for (MultipartFile image : images) {
                 ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
                 if (imgArr != null) {
-                    if (imgArr.getDuplicate() != null) {
-                        duplicateImage(infoNum, imgArr);
-                    } else {
-                        Image img = imageService.fileToEntity(image, member);
+                    Image img = imageService.fileToEntity(image, member);
+                    if (imageRepository.existsByOriginalNameAndInfoNum(img.getOriginalName(), infoNum)) {
                         img = imageService.setNewName(img, imgArr);
-                        img = setInfoGuide(img, infoNum, imgArr);
-                        imageService.uploadImage(image, img);
-                        infoGuide.addImage(img);
-                        imageRepository.save(img);
-                        imgArray.remove(imgArr);
                     }
+                    img = setInfoGuide(img, infoNum, imgArr);
+                    imageService.uploadImage(image, img);
+                    infoGuide.addImage(img);
+                    imageRepository.save(img);
+                    imgArray.remove(imgArr);
                 }
             }
             infoGuideRepository.save(infoGuide);
@@ -220,15 +218,6 @@ public class InfoGuideServiceImpl implements InfoGuideService{
         Page<InfoGuide> info = infoGuideRepository.findAll(spec, pageable);
         Page<InfoGuideDTO> infoDTO = info.map(e -> entityToDTO(e));
         return infoDTO;
-    }
-
-    @Override
-    public void duplicateImage(Long infoNum, ImgArrayDTO imgArrayDTO) {
-        InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
-        Image duplicate = imageRepository.findByInfoNumAndOriginalName(infoNum, imgArrayDTO.getDuplicate());
-        Image image = imageService.duplicateImage(duplicate, imgArrayDTO);
-        image.setInfoGuide(infoGuide);
-        imageRepository.save(image);
     }
 
 }

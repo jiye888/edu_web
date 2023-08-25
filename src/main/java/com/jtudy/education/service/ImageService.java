@@ -46,5 +46,4 @@ public interface ImageService {
 
     void deleteImage(Image image) throws IOException;
 
-    Image duplicateImage(Image duplicate, ImgArrayDTO imgArrayDTO);
 }

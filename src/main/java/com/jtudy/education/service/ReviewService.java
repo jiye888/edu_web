@@ -55,8 +55,6 @@ public interface ReviewService {
 
     void removeImg(Long imageId, Long revNum) throws IOException;
 
-    void duplicateImage(Long revNum, ImgArrayDTO imgArrayDTO);
-
     default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy, Member member) {
         Review review = Review.builder()
                 .title(reviewFormDTO.getTitle())
