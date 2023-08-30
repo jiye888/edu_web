@@ -123,7 +123,7 @@ public class ReviewServiceImpl implements ReviewService {
     public Image setReview(Image image, Long revNum, ImgArrayDTO imgArray) {
         if (image != null && revNum != null && imgArray != null) {
             Review review = reviewRepository.findByRevNum(revNum);
-            imageService.setInfo(image, imgArray); //*
+            imageService.setInfo(image, imgArray);
             image.setReview(review);
             checkImageName(revNum, image);
             return image;

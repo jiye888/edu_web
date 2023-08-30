@@ -55,12 +55,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             const noticeContentText = [[${notice.content}]];
             const noticeContent = document.getElementById('content');
-            noticeContent.innerHTML = noticeContentText;
+            noticeContent.textContent = noticeContentText;
             setImgTag(existImages);
 
             setFileNames();
 
-            //showImages(existImages);
             if (existFiles.length !== 0) {
                 const fileLabel = document.getElementById('fileLabel');
                 fileLabel.innerText = "파일 추가 ("+existFiles.length+"/10)";

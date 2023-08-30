@@ -58,7 +58,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const reviewContentText = [[${review.content}]];
             const reviewContent = document.getElementById('content');
-            reviewContent.innerHTML = reviewContentText;
+            reviewContent.textContent = reviewContentText;
+            alert(document.getElementById('content').textContent);
             setImgTag(existImages);
 
             const size = existImages.length;
