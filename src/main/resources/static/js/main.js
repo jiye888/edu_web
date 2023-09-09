@@ -13,39 +13,70 @@
         if (images.length !== 0) {
             images.forEach(img => {
                 const dataName = img.getAttribute('data-name');
+                console.log(dataName);
                 var preTexts = "";
                 var postTexts = "";
                 var imgSeq = -1;
                 var imgSeqEnd = 0;
 
-                const imgPosition = Array.from(content.childNodes).indexOf(img);
+                var imgPosition = Array.from(content.childNodes).indexOf(img);
+                if (imgPosition < 0) {
+                    imgPosition = Array.from(content.childNodes).indexOf(img.parentNode);
+                }
                 if (imgPosition > 0) {
-                    var base64 = img.getAttribute("data-base64");
-                    if (base64 != null) {
-                        base64 = base64.substring(base64.indexOf(",")+1);
-                    }
                     var q = imgPosition-1;
-                    console.log(content.childNodes);
+                    console.log(content.childNodes[q]);
                     if (q > 0 && content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
                         imgSeq = 0;
                         var endProcess = 1;
-                        var endSeq = 0;
+                        var endSeq = "";
                         while (endProcess > 0 && q >= 0) {
-                            if (endSeq === 0) {
+                            if (endSeq.length === 0) {
                                 if (content.childNodes[q].nodeType === 3) {
                                     preTexts = escapeTagSymbol(content.childNodes[q].textContent) + preTexts;
-                                    endSeq = 1;
+                                    endSeq = "true";
                                 } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
                                     imgSeq ++;
+                                } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'DIV') {
+                                    var divArray = Array.from(content.childNodes[q].childNodes);
+                                    if (divArray.length > 0) {
+                                        for (var i=divArray.length-1; i>=0; i--) {
+                                            if (divArray[i] === "IMG") {
+                                                imgSeq ++;
+                                            } else {
+                                                endSeq = i;
+                                            }
+                                        }
+                                    }
                                 } else {
                                     preTexts = escapeTagSymbol(content.childNodes[q].innerText) + preTexts;
-                                    endSeq = 1;
+                                    endSeq = "true";
                                 }
                             } else {
+                                if (endSeq !== "true") {
+                                    for (var i=parseInt(endSeq); i>=0; i--) {
+                                        if (!(content.childNodes[q].childNodes[i].nodeType === 1 && content.childNodes[q].childNodes[i].nodeName === 'IMG')) {
+                                            preTexts = escapeTagSymbol(content.childNodes[q].childNodes[i].textContent) + preTexts;
+                                        } else {
+                                            endProcess = 0;
+                                        }
+                                    }
+                                }
                                 if (content.childNodes[q].nodeType === 3) {
                                     preTexts = escapeTagSymbol(content.childNodes[q].textContent) + preTexts;
                                 } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
                                     endProcess = 0;
+                                } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'DIV') {
+                                    var divArray = Array.from(content.childNodes[q].childNodes);
+                                    if (divArray.length > 0) {
+                                        for (var i=divArray.length-1; i>=0; i--) {
+                                            if (divArray[i] === "IMG") {
+                                                endProcess = 0;
+                                            } else {
+                                                preTexts = escapeTagSymbol(content.childNodes[q].childNodes[i].textContent) + preTexts;
+                                            }
+                                        }
+                                    }
                                 } else {
                                     preTexts = escapeTagSymbol(content.childNodes[q].innerText) + preTexts;
                                 }
@@ -62,6 +93,15 @@
                                 preTexts = escapeTagSymbol(content.childNodes[q].textContent) + preTexts;
                             } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
                                 q = -1;
+                            } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'DIV') {
+                                var divArray = Array.from(content.childNodes[q].childNodes);
+                                for (var i=divArray.length-1; i>=0; i--) {
+                                    if (divArray[i] !== "IMG") {
+                                        preTexts = escapeTagSymbol(content.childNodes[q].childNodes[i].textContent) + preTexts;
+                                    } else {
+                                        q = -1;
+                                    }
+                                }
                             } else {
                                 preTexts = escapeTagSymbol(content.childNodes[q].innerText) + preTexts;
                             }
@@ -70,18 +110,6 @@
                                 q = -1;
                             }
                         }
-/*
-                        if ((content.childNodes[imgPosition-1].nodeType !== 3 && content.childNodes[imgPosition-1].nodeName === "IMG") || (imgPosition + 1 < content.childNodes.length && content.childNodes[imgPosition+1].nodeType !== 3 && content.childNodes[imgPosition+1].nodeName === "IMG")) {
-                            imgSeq = 0;
-                            for (var i=imgPosition; i>=1; i--) {
-                                if (content.childNodes[i-1].nodeType !== 3 && content.childNodes[i-1].nodeName === "IMG") {
-                                    imgSeq++;
-                                } else if (content.childNodes[i-1].nodeType === 3 || content.childNodes[i-1].nodeName !== "IMG") {
-                                    i = 0;
-                                }
-                            }
-                        }
-*/
 
                     }
 
@@ -92,24 +120,53 @@
                             imgSeq = 0;
                         }
                         var endProcess = 1;
-                        var endSeq = 0;
+                        var endSeq = "";
                         while (endProcess > 0 && q < content.childNodes.length) {
-                            if (endSeq === 0) {
+                            if (endSeq.length === 0) {
                                 if (content.childNodes[q].nodeType === 3) {
                                     postTexts += escapeTagSymbol(content.childNodes[q].textContent);
-                                    endSeq = 1;
+                                    endSeq = "true";
                                 } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
+                                } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'DIV') {
+                                    var divArray = Array.from(content.childNodes[q].childNodes);
+                                    if (divArray.length > 0) {
+                                        for (var i=0; i<divArray.length; i++) {
+                                            if (divArray[i] !== "IMG") {
+                                                endSeq = i;
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    postTexts += escapeTagSymbol(content.childNodes[q].innerText);
-                                    endSeq = 1;
+                                    postTexts += escapeTagSymbol(content.childNodes[q].textContent);
+                                    endSeq = "true";
                                 }
                             } else {
+                                if (endSeq !== "true") {
+                                    for (var i=parseInt(endSeq); i<content.childNodes[q].childNodes.length; i++) {
+                                        if (!(content.childNodes[q].childNodes[i].nodeType === 1 && content.childNodes[q].childNodes[i].nodeName === 'IMG')) {
+                                            postTexts += escapeTagSymbol(content.childNodes[q].childNodes[i].textContent);
+                                        } else {
+                                            endProcess = 0;
+                                        }
+                                    }
+                                }
                                 if (content.childNodes[q].nodeType === 3) {
                                     postTexts += escapeTagSymbol(content.childNodes[q].textContent);
                                 } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
                                     endProcess = 0;
+                                } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'DIV') {
+                                    var divArray = Array.from(content.childNodes[q].childNodes);
+                                    if (divArray.length > 0) {
+                                        for (var i=0; i<divArray.length; i++) {
+                                            if (divArray[i] === "IMG") {
+                                                endProcess = 0;
+                                            } else {
+                                                postTexts += escapeTagSymbol(content.childNodes[q].childNodes[i].textContent);
+                                            }
+                                        }
+                                    }
                                 } else {
-                                    postTexts += escapeTagSymbol(content.childNodes[q].innerText);
+                                    postTexts += escapeTagSymbol(content.childNodes[q].textContent);
                                 }
                             }
                             q++;
@@ -125,6 +182,15 @@
                             } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'IMG') {
                                 imgSeqEnd = 1;
                                 q = content.childNodes.length;
+                            } else if (content.childNodes[q].nodeType === 1 && content.childNodes[q].nodeName === 'DIV') {
+                                var divArray = Array.from(content.childNodes[q].childNodes);
+                                for (var i=0; i<divArray.length; i++) {
+                                    if (divArray[i] !== "IMG") {
+                                        postTexts += escapeTagSymbol(content.childNodes[q].childNodes[i].textContent);
+                                    } else {
+                                         q = content.childNodes.length;
+                                    }
+                                }
                             } else {
                                 postTexts += escapeTagSymbol(content.childNodes[q].innerText);
                             }
@@ -133,34 +199,8 @@
                                 q = content.childNodes.length;
                             }
                         }
-/*
-                        if ((content.childNodes[imgPosition-1].nodeType !== 3 && content.childNodes[imgPosition-1].nodeName === "IMG") || (imgPosition + 1 < content.childNodes.length && content.childNodes[imgPosition+1].nodeType !== 3 && content.childNodes[imgPosition+1].nodeName === "IMG")) {
-                            imgSeq = 0;
-                            for (var i=imgPosition; i>=1; i--) {
-                                if (content.childNodes[i-1].nodeType !== 3 && content.childNodes[i-1].nodeName === "IMG") {
-                                    imgSeq++;
-                                } else if (content.childNodes[i-1].nodeType === 3 || content.childNodes[i-1].nodeName !== "IMG") {
-                                    i = 0;
-                                }
-                            }
-                        }*/
-
 
                     }
-                    /*
-                    while (q <= content.childNodes.length-1) {
-                        if (content.childNodes[q].nodeType === 3) {
-                            postTexts += content.childNodes[q].textContent;
-                        } else if (content.childNodes[q].nodeType === 1) {
-                            q = content.childNodes.length;
-                        } else {
-                            postTexts += content.childNodes[q].innerText;
-                        }
-                        q++;
-                        if (postTexts.length >= 10) {
-                            q = content.childNodes.length;
-                        }
-                    }*/
                     preTexts += "\n";
 
                     const preText = preTexts.length < 10 ? preTexts.slice(0, preTexts.length) : preTexts.slice(preTexts.length -10, preTexts.length);
@@ -173,7 +213,8 @@
                     const match = prePost.match(regex);
                     const index = match.length;
 
-                    imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: index, arrayIndex: imgSeq, base64: base64});
+                    console.log(preText, postText);
+                    imgIndex.push({name: dataName, preText: preText, postText: postText, textIndex: index, arrayIndex: imgSeq/*, base64base64*/});
                     if (imgSeqEnd === 1) {
 
                         imgSeq = -1;
@@ -181,34 +222,87 @@
                 }
             });
         }
-        alert("finish");
         return imgIndex;
     }
 
     function preventDiv(event) {
-        const select = window.getSelection();
-        const selectArea = select.getRangeAt(0);
-        if (selectArea) {
-            const afterSelect = selectArea.commonAncestorContainer.nextSibling;
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        if (range) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                //const brTag = document.createElement('br');
-                //afterSelect.parentNode.insertBefore(brTag, afterSelect);
+                console.log(range);
+                const startContainer = range.startContainer;
+                const endContainer = range.endContainer;
+                if (startContainer !== endContainer) {
+                    var node = startContainer;
+                    var removeAll = true;
+                    while (node) {
+                        if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "IMG") {
+                            removeAll = false;
+                        }
+                        node = node.nextSibling;
+                    }
+                    if (!removeAll) {
+                        if (confirm("이미지를 삭제하시겠습니까?")) {
+                            node = startContainer;
+                            while (node) {
+                                if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "IMG") {
+                                    var newOrExist = node.getAttribute("name");
+                                    var tagName = node.getAttribute("data-name");
+                                    if (newOrExist === "new") {
+                                        for (var i=0; i<imgList.length; i++) {
+                                            if (imgList[i].name === tagName) {
+                                                imgList.splice(i, 1);
+                                            }
+                                        }
+                                    }
+                                    node.parentNode.removeChild(node);
+                                }
+                                node = node.nextSibling;
+                            }
+                            range.deleteContents();
+                        }
+                    }
+                } else if (endContainer.lastElementChild === undefined) {
+                } else if (endContainer.lastElementChild.nodeType === Node.ELEMENT_NODE && endContainer.lastElementChild.nodeName === "IMG") {
+                    /*var nextNode = endContainer.lastElementChild.nextSibling;
+                    var newRange = document.createRange();
+                    newRange.setStart(nextNode, 0);
+                    selection.removeAllRanges();
+                    selection.addRange(newRange);*/
+                    const imgNode = endContainer.lastElementChild;
+                    const lineBreakText = document.createTextNode("\n");
+                    var newRange = document.createRange();
+                    newRange.setStartAfter(imgNode);
+                    newRange.setEndAfter(imgNode);
+                    newRange.insertNode(lineBreakText);
+                    //endContainer.lastElementChild.parentNode.insertBefore(lineBreakText, endContainer.lastElementChild.nextSibling);
+                    /*range.endContainer.lastElementChild.insertNode(lineBreakText);
+                    range.setStartAfter(lineBreakText);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);*/
+                    return;
+                }
                 const lineBreakText = document.createTextNode('\n');
-                selectArea.insertNode(lineBreakText);
-                selectArea.setStartAfter(lineBreakText);
-                selectArea.collapse(true);
-                select.removeAllRanges();
-                select.addRange(selectArea);
-                //afterSelect.parentNode.insertBefore(lineBreakText, afterSelect);
-                /*if (selectArea.endOffset > 0) {
-                    selectArea.setEnd(selectArea.endContainer, selectArea.endOffset +1);
-                    select.removeAllRanges();
-                    select.addRange(selectArea);
-                }*/
+                range.insertNode(lineBreakText);
+                range.setStartAfter(lineBreakText);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
 
         }
+    }
+
+    function defineDiv(event) {
+        var divs = document.querySelectorAll('div');
+        divs.forEach(divTag => {
+            if (!divTag.className.includes('divForm')) {
+                divTag.classList.add('divForm');
+            }
+        });
     }
 
     function setImgTag(imgObjects) {
@@ -238,30 +332,23 @@
                 var insertImg = '<img name="image_is_included_here"/>';
                 imgTag += insertImg;
             });
-            var imgSeqs = img[0].preText;
-            img.forEach(tag => {
-                imgSeqs += '<img src="data:'+tag.mimeType+';base64 ,'+tag.base64+'" data-name='+tag.originalName+' name=\"exist\">';
-            });
             imgTag += img[0].postText;
             var contentText = document.getElementById('content').innerHTML;
-            let count = 0;
-            var reg = escapeRegExp(img[0].preText) + "[\\s\\n]*" + escapeRegExp(img[0].postText);
-            /*if (img[0].preText.length < 10) {
-                reg = "^" + reg;
-            }
-            if (img[0].postText.length < 10) {
-                reg = reg + "$";
-            }*/
+            contentText = contentText.replace(/&nbsp;|&#160;/g, ' ');
+            let count = 1;
+            var reg = escapeRegExp(img[0].preText.trim()) + "[\\s\\n]*" + escapeRegExp(img[0].postText.trim());
             reg = reg + "|" + escapeN(reg);
             const regex = new RegExp(reg, 'g');
+            var newReg = new RegExp(escapeRegExp(img[0].preText.trim()), 'g');
 
             var imageContent = contentText.replace(regex, function(match) {
-                count++;
                 if (img[0].textIndex === count) {
                     return imgTag;
                 }
+                count++;
                 return match;
             });
+
             if (imageContent != false) {
                 const content = document.getElementById('content');
                 content.innerHTML = imageContent;
@@ -346,7 +433,7 @@
                 const lastElementTag = lastElement == null ? "" : lastElement.tagName;
 
                 if (firstElementTag === "IMG" || lastElementTag === "IMG") {
-                    if (confirm("사진을 삭제하시겠습니까?")) {
+                    if (confirm("이미지를 삭제하시겠습니까?")) {
                         for (var i=0; i<imgList.length; i++) {
 
                             if (imgList[i].name === event.target.getAttribute('data-name')) {

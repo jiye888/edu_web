@@ -52,6 +52,7 @@
 
         const contentDiv = document.getElementById('content');
         contentDiv.addEventListener('keydown', deleteImage);
+        contentDiv.addEventListener('input', defineDiv);
 
         function register() {
             clearText(["titleError", "contentError"]);

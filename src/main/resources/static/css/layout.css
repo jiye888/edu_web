@@ -127,10 +127,7 @@ a:hover {
 }
 
 .custom-card-background {
-    background-image: url("/img/catalog.jpg");
-    /*backgroundrmage: url("/img/yellow.jpg");*/
-    /*background-image: url("/img/desk.jpg");*/
-    /*background-image: url("/img/floor.jpg");*/
+    background-image: url("/img/catalog.jpg");\
     background-size: cover;
     background-position: top;
     height: 600px;
@@ -519,4 +516,9 @@ a:hover {
     flex-direction: column;
     white-space: pre-line;
     overflow-wrap: break-word;
+}
+
+.divForm img {
+    max-height: 700px;
+    max-width: 600px;
 }
