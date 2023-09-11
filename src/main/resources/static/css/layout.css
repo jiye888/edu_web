@@ -275,6 +275,11 @@ a:hover {
     overflow: auto;
 }
 
+.input-content img {
+    max-height: 700px;
+    max-width: 600px;
+}
+
 .input-group-append {
     align-items: center;
 }
@@ -516,9 +521,4 @@ a:hover {
     flex-direction: column;
     white-space: pre-line;
     overflow-wrap: break-word;
-}
-
-.divForm img {
-    max-height: 700px;
-    max-width: 600px;
 }
