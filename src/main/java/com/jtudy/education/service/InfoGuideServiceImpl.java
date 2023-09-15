@@ -124,7 +124,7 @@ public class InfoGuideServiceImpl implements InfoGuideService{
         InfoGuide infoGuide = infoGuideRepository.findByInfoNum(infoNum);
         if (images != null && images.length > 0) {
             for (MultipartFile image : images) {
-                ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
+                ImgArrayDTO imgArr = imageService.matchDTO(image.getOriginalFilename(), imgArray);
                 if (imgArr != null) {
                     Image img = imageService.fileToEntity(image, member);
                     if (imageRepository.existsByOriginalNameAndInfoNum(img.getOriginalName(), infoNum)) {

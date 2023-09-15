@@ -189,7 +189,7 @@ public class NoticeServiceImpl implements NoticeService {
     public void registerImg(MultipartFile image, List<ImgArrayDTO> imgArray, Long notNum, Member member) throws IOException {
         Notice notice = noticeRepository.findByNotNum(notNum);
         Image img = imageService.fileToEntity(image, member);
-        ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
+        ImgArrayDTO imgArr = imageService.matchDTO(image.getOriginalFilename(), imgArray);
         if (imageRepository.existsByOriginalNameAndNotNum(img.getOriginalName(), notNum)) {
             img = imageService.setNewName(img, imgArr);
         }

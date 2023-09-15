@@ -175,7 +175,7 @@ public class ImageServiceImpl implements ImageService {
             throw new CustomException(ExceptionCode.FILE_WRITE_EXCEPTION);
         }
     }
-
+/*
     @Override
     public ImgArrayDTO matchDTO(MultipartFile image, List<ImgArrayDTO> arrayList) throws IOException {
         for (ImgArrayDTO imgArrayDTO : arrayList) {
@@ -193,7 +193,7 @@ public class ImageServiceImpl implements ImageService {
         }
         return null;
     }
-
+*/
     @Override
     public ImgArrayDTO matchDTO(String name, List<ImgArrayDTO> imgArray) {
         for (ImgArrayDTO imgArrayDTO : imgArray) {

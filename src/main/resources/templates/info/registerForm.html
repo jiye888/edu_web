@@ -57,7 +57,7 @@
             clearText(["titleError", "contentError"]);
             const title = $('#title').val();
             const imgArray = findImgPosition("new");
-            const contentText = document.getElementById('content').textContent;
+            const contentText = contentText();
             const json = {
                 "title":title,
                 "content":contentText,

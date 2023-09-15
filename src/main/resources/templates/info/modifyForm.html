@@ -47,6 +47,7 @@
             setImgTag(existImages);
 
             const size = existImages.length;
+            imageLabel.innerText = "이미지 추가 ("+size+"/10)";
 
             var contentText = infoContent.textContent;
         });
@@ -73,7 +74,7 @@
             const title = $('#title').val();
             const imgArray = findImgPosition("new");
             const existImgArray = findImgPosition("exist");
-            const contentText = document.getElementById('content').textContent;
+            const contentText = contentText();
             const json = {
                 "number":number,
                 "title":title,

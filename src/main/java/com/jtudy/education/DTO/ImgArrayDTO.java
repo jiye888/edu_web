@@ -13,8 +13,6 @@ public class ImgArrayDTO {
 
     private String name;
 
-    private String base64;
-
     private String preText;
 
     private String postText;

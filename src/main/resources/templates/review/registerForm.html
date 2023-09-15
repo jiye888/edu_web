@@ -76,7 +76,7 @@
         var grade = $('input[type=radio][name=grade]:checked').val();
 
         const imgArray = findImgPosition("new");
-        const contentText = document.getElementById('content').textContent;
+        const contentText = contentText();
         const json = {
             "academy":academy,
             "title":title,

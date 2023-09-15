@@ -25,7 +25,7 @@ public interface ImageService {
 
     ImageDTO entityToDTO(Image image) throws IOException;
 
-    ImgArrayDTO matchDTO(MultipartFile image, List<ImgArrayDTO> arrayList) throws IOException;
+    //ImgArrayDTO matchDTO(MultipartFile image, List<ImgArrayDTO> arrayList) throws IOException;
 
     ImgArrayDTO matchDTO(String name, List<ImgArrayDTO> imgArray);
 

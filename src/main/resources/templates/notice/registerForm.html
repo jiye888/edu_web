@@ -113,7 +113,7 @@
             var academy = Number($('#academy').val());
             var title = $('#title').val();
             const imgArray = findImgPosition("new");
-            const contentText = document.getElementById('content').textContent;
+            const contentText = contentText();
             const json = {
                 "academy": academy,
                 "title": title,

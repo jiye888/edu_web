@@ -136,7 +136,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findByRevNum(revNum);
         if (images != null && images.length > 0) {
             for (MultipartFile image : images) {
-                ImgArrayDTO imgArr = imageService.matchDTO(image, imgArray);
+                ImgArrayDTO imgArr = imageService.matchDTO(image.getOriginalFilename(), imgArray);
                 if (imgArr != null) {
                     Image img = imageService.fileToEntity(image, member);
                     if (imageRepository.existsByOriginalNameAndRevNum(img.getOriginalName(), revNum)) {
