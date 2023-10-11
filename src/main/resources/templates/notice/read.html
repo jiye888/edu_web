@@ -14,7 +14,7 @@
             </div>
             <div class="content-box">
                 <div th:text="${notice.content}" class="scroll" id="content"></div><br>
-                <div class="file-box" th:if="${files != null and not #lists.isEmpty(files)}">
+                <div class="file-box" style="border-radius: 0.25rem;" th:if="${files != null and not #lists.isEmpty(files)}">
                     <div th:each="file : ${files}" class="file-info">
                         <a href="${file.filePath}" class="file-name" download>[[${file.originalName}]]</a>
                         <p th:text="${file.fileSize}" class="file-size"></p>
@@ -50,7 +50,10 @@
 
 
         const images = [[${image}]];
-        document.addEventListener('DOMContentLoaded', setImgTag(images));
+        document.addEventListener('DOMContentLoaded', function() {
+            setImgTag(images);
+            replaceN();
+        });
 
         function modify() {
             var number = [[${notice.notNum}]];

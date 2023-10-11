@@ -30,26 +30,30 @@
             <span class="custom-span">기존 주소</span>
             <input type="text" class="custom-form-control" style="width:500px;" th:value="*{location}" id="ex_location" readonly><br>
 
-            <span class="custom-span">수강 과목</span>
+            <span class="custom-span">수강 과목</span><br>
             <div class="custom-control custom-radio custom-control-inline">
                 <div th:each="sub : ${subject}" class="custom-checkbox">
-                    <input type="checkbox" th:field="*{subject}" th:value="${sub}" class="custom-check-input" th:checked="${sub} == ${academy.subject}">
+                    <input type="checkbox" th:field="*{subject}" th:name="subject_list" th:value="${sub}" class="custom-check-input">
                     <label th:for="${#ids.prev('subject')}" th:text="${sub.description}"></label>
                 </div>
             </div>
-            <p id="subjectError"></p><br>
+            <p id="subjectError"></p>
 
-            <span class="custom-span">대표 이미지</span>
+            <div>
+                <span class="custom-span">학원 소개</span>
+                <input type="text" id="academyIntro" class="custom-form-control">
+            </div>
+            <br>
+            <span class="custom-span" style="margin-bottom:15px;">대표 이미지</span>
             <div style="display:flex;">
                 <input type="file" id="inputFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
                 <div class="custom-form-control file-name" id="selectedFile"></div>
-                <input type="button" id="deleteFile" class="select-file" value="x">
-                <input type="button" id="deletePrevFile" class="custom-button-mint select-file" value="기존 파일 삭제">
+                <input type="button" id="deleteFile" class="custom-button-mint select-file" value="파일 삭제">
             </div>
 
             <div class="button-distance">
-                <button type="button" class="custom-button-yellow" id="modifyBtn">수정</button>
+                <button type="button" class="custom-button-yellow" id="modifyBtn">등록</button>
                 <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
             </div>
         </form>
@@ -129,11 +133,14 @@
                 location = $('#ex_location').val();
             }
 
+            var intro = $('#academyIntro').val();
+
             const formDTO = {
                 number:parseInt(number),
                 acaName:acaName,
                 location:location,
-                subject:subject
+                subject:subject,
+                intro:intro
             };
 
             var file = $('#inputFile').prop('files')[0];

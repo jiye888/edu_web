@@ -8,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.thymeleaf.exceptions.TemplateInputException;
 
+import javax.naming.SizeLimitExceededException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
@@ -51,6 +53,11 @@ public class GlobalExceptionHandler {
     protected ResponseEntity handleTemplateInputException(TemplateInputException e) {
         logger.warn(exceptionStackTrace(e));
         return ResponseEntity.status(303).header(HttpHeaders.LOCATION, "/academy/main").body("template input exception");
+    }
+
+    @ExceptionHandler({MaxUploadSizeExceededException.class, SizeLimitExceededException.class})
+    protected ResponseEntity handleMaxUploadSizeExceededException(Exception e) {
+        return ResponseEntity.status(413).body("{\"error\": \"MaxUploadSizeExceededException\", \"message\":\"파일 및 이미지의 크기가 8MB를 초과했습니다.\"}");
     }
 
     @ExceptionHandler(Exception.class)

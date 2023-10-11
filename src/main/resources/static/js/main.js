@@ -77,9 +77,7 @@
                         if (nodeList[q].nodeName !== "IMG" && nodeList[q].nodeName !== "BR") {
                             preTexts = escapeTagSymbol(nodeList[q].textContent) + preTexts;
                         } else if (nodeList[q].nodeName === "BR") {
-                            console.log("br");
                             preTexts = escapeTagSymbol('\n') + preTexts;
-                            console.log(preTexts);
                         } else {
                             q = -1;
                         }
@@ -92,7 +90,7 @@
                 q = position + 1;
                 if (position !== nodeList.length -1) {
                     var endProcess = 0;
-                    while (q < nodeList.length -1) {
+                    while (q <= nodeList.length -1) {
                         if (endProcess < 1) {
                             if (nodeList[q].nodeName !== "IMG" && nodeList[q].nodeName !== "BR") {
                                 postTexts += escapeTagSymbol(nodeList[q].textContent);
@@ -175,30 +173,59 @@
         let wholeContent;
         seqImg = getSeqImg(seqImg);
         seqImg.forEach(img => {
-            var imgTag = img[0].preText;
+            var imgTag = "";
+            var reg = "";
+            var addPreText = 1;
+            if (!Array.isArray(img[0])) {
+                addPrePost = 0;
+            }
+            for (var i=0; i<img.length-1; i++) {
+                if (!Array.isArray(img[i]) && Array.isArray(img[i+1])) {
+                    img[i].last = true;
+                }
+                if (i > 0 && !Array.isArray(img[i]) && Array.isArray(img[i-1])) {
+                    img[i].first = true;
+                }
+            }
+            if (!Array.isArray(img[0])) {
+                img[0].first = true;
+            }
             img.forEach(tag => {
                 if (Array.isArray(tag)) {
-                    imgTag += tag[0].preText;
-                    for (var i=0; i<tag.length; i++) {
-                        imgTag += '<img name="image_is_included_here"/>';
+                    if (addPreText > 0) {
+                        imgTag += tag[0].preText;
+                        for (var i=0; i<tag.length; i++) {
+                            imgTag += '<img name="image_is_included_here"/>';
+                        }
+                        reg += escapeRegExp(tag[0].preText.replace(new RegExp(String.fromCharCode(160), 'g'), '\u0020')) + "[\\s\\n]*";
+                    } else {
+                        for (var i=0; i<tag.length; i++) {
+                            imgTag += '<img name="image_is_included_here"/>';
+                        }
+                        imgTag += tag[0].postText;
+                        reg += escapeRegExp(tag[0].postText.replace(new RegExp(String.fromCharCode(160), 'g'), '\u0020')) + "[\\s\\n]*";
                     }
                 } else {
-                    imgTag += '<img name="image_is_included_here"/>';
+                    addPreText = 0;
+                    if (tag.last !== undefined) {
+                        imgTag += '<img name="image_is_included_here"/>';
+                        imgTag += tag.postText;
+                        reg += escapeRegExp(tag.postText.replace(new RegExp(String.fromCharCode(160), 'g'), '\u0020')) + "[\\s\\n]*";
+                    } else if (tag.first !== undefined) {
+                        imgTag += tag.preText;
+                        reg += escapeRegExp(tag.preText.replace(new RegExp(String.fromCharCode(160), 'g'), '\u0020')) + "[\\s\\n]*";
+                        imgTag += '<img name="image_is_included_here"/>';
+                    } else {
+                        imgTag += '<img name="image_is_included_here"/>';
+                    }
                 }
             });
-            if (Array.isArray(img[img.length - 1])) {
-                imgTag += img[img.length - 1][0].postText;
-            } else {
-                imgTag += img[0][0].postText;
-            }
 
             var contentText = document.getElementById('content').innerHTML;
-            contentText = contentText.replace(/&nbsp;|&#160;/g, ' ');
+            contentText = contentText.replace(/&nbsp;|&#160;/g, '\u0020');
             let count = 1;
-            var reg = escapeRegExp(img[0].preText.trim()) + "[\\s\\n]*" + escapeRegExp(img[0].postText.trim());
             reg = reg + "|" + escapeN(reg);
             const regex = new RegExp(reg, 'g');
-            var newReg = new RegExp(escapeRegExp(img[0].preText.trim()), 'g');
 
             var imageContent = contentText.replace(regex, function(match) {
                 if (img[0].textIndex === count) {
@@ -208,10 +235,8 @@
                 return match;
             });
 
-            if (imageContent != false) {
-                const content = document.getElementById('content');
-                content.innerHTML = imageContent;
-            }
+            const content = document.getElementById('content');
+            content.innerHTML = imageContent;
         });
 
         const flatSeqImg = seqImg.flat();
@@ -231,50 +256,6 @@
             }
         });
 
-        /*
-        seqImg.forEach(img => {
-            if (img[0].arrayIndex >= 0) {
-                img.sort((a, b) => {
-                    return parseInt(a.arrayIndex, 10) - parseInt(b.arrayIndex, 10);
-                });
-            }
-            var imgTag = img[0].preText;
-            img.forEach(tag => {
-                var insertImg = '<img name="image_is_included_here"/>';
-                imgTag += insertImg;
-            });
-            imgTag += img[0].postText;
-            var contentText = document.getElementById('content').innerHTML;
-            contentText = contentText.replace(/&nbsp;|&#160;/g, ' ');
-            let count = 1;
-            var reg = escapeRegExp(img[0].preText.trim()) + "[\\s\\n]*" + escapeRegExp(img[0].postText.trim());
-            reg = reg + "|" + escapeN(reg);
-            const regex = new RegExp(reg, 'g');
-            var newReg = new RegExp(escapeRegExp(img[0].preText.trim()), 'g');
-
-            var imageContent = contentText.replace(regex, function(match) {
-                if (img[0].textIndex === count) {
-                    return imgTag;
-                }
-                count++;
-                return match;
-            });
-
-            if (imageContent != false) {
-                const content = document.getElementById('content');
-                content.innerHTML = imageContent;
-            }
-
-        });
-
-        const flatSeqImg = seqImg.flat();
-        flatSeqImg.forEach(img => {
-            const imgIncludes = document.querySelectorAll('img[name="image_is_included_here"]');
-            imgIncludes[0].setAttribute("src", "data: "+img.mimeType+';base64, '+img.base64);
-            imgIncludes[0].setAttribute("data-name", img.originalName);
-            imgIncludes[0].setAttribute("name", "exist");
-        });*/
-
     }
 
     function escapeRegExp(string) {
@@ -283,6 +264,11 @@
 
     function escapeN(string) {
         return string.replace(/\n/g, "");
+    }
+
+    function uniteSpace(string) {
+        string = string.replace(/\s/g, ' ');
+        return string;
     }
 
     function setDataURL(image, imgList) {
@@ -398,7 +384,7 @@
         return content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    function contentText() {
+    function getContentText() {
         const content = document.getElementById('content');
         const contentCopy = content.innerHTML;
         const copiedDiv = document.createElement('div');
@@ -411,17 +397,19 @@
         return copiedDiv.textContent;
     }
 
-    function replaceN(content) {
+    function replaceN() {
         var nodeList = getNodeList();
         nodeList.forEach(node => {
             if (node.nodeName === '#text') {
                 if (node.data.slice(0, 2) === "\n") {
                     var brTag = document.createElement('br');
                     node.parentNode.insertBefore(brTag, node);
+                    node.data = node.data.slice(2);
                 }
                 if (node.data.slice(-2) === "\n") {
                     var brTag = document.createElement('br');
                     node.parentNode.insertBefore(brTag, node.nextSibling);
+                    node.data = node.data.slice(0, -2);
                 }
             }
         });

@@ -33,14 +33,14 @@
                     <label th:for="${#ids.prev('subject')}" th:text="${sub.description}"></label>
                 </div>
             </div>
-            <p id="subjectError"></p><br>
+            <p id="subjectError"></p>
 
             <div>
                 <span class="custom-span">학원 소개</span>
-                <input type="text" id="academyIntro">
+                <input type="text" id="academyIntro" class="custom-form-control">
             </div>
-
-            <span class="custom-span">대표 이미지</span>
+            <br>
+            <span class="custom-span" style="margin-bottom:15px;">대표 이미지</span>
             <div style="display:flex;">
                 <input type="file" id="inputFile" style="display:none;">
                 <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
@@ -99,11 +99,13 @@
             });
             location = $.trim(location);
             var subject = getSubject();
+            var intro = $('#academyIntro').val();
 
             const formDTO = {
                 acaName:acaName,
                 location:location,
-                subject:subject
+                subject:subject,
+                intro:intro
             };
 
             var file = $('#inputFile').prop('files')[0];

@@ -84,7 +84,9 @@ public class AcademyServiceImpl implements AcademyService{
     @Override
     @Transactional(readOnly = true)
     public Page<AcademyDTO> manageAcademies(Member member, Pageable pageable) {
-        Page<AcademyDTO> academy = academyRepository.findByMember(member, pageable);
+        List<Academy> academyList = academyRepository.findByMember(member);
+        List<AcademyDTO> academyDTOList = academyList.stream().map(e -> academyRepository.getOneAcademyWithReviewInfo(e.getAcaNum())).collect(Collectors.toList());
+        Page<AcademyDTO> academy = new PageImpl<>(academyDTOList, pageable, academyDTOList.size());
         return academy;
     }
 
@@ -121,7 +123,7 @@ public class AcademyServiceImpl implements AcademyService{
     public Long update(AcademyFormDTO academyFormDTO) {
         Academy academy = academyRepository.findByAcaNum(academyFormDTO.getAcaNum());
         academy.changeAcademy(academyFormDTO.getAcaName(), academyFormDTO.getSubject(),
-                academyFormDTO.getLocation());
+                academyFormDTO.getLocation(), academyFormDTO.getIntro());
         academyRepository.save(academy);
         return academy.getAcaNum();
     }

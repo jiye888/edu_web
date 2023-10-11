@@ -115,6 +115,23 @@ a:hover {
     color: #f8f886;
 }
 
+.custom-button-mint-border {
+    border-radius: 12px;
+    background: white;
+    line-height: 25px;
+    border: #06d7bb5c 1px solid;
+    position: relative;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: #06d7bbfc;
+    height: 30px;
+}
+
+.custom-button-mint-border:hover {
+    color: #a1e954;
+    border: #a1e954 1px solid;
+}
+
 .button-distance{
     display: flex;
     justify-content: space-evenly;
@@ -521,4 +538,9 @@ a:hover {
     flex-direction: column;
     white-space: pre-line;
     overflow-wrap: break-word;
+}
+
+.nav-margin {
+    margin-right: 5px;
+    margin-left: 5px;
 }

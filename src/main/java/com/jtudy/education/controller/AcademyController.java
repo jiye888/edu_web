@@ -119,9 +119,6 @@ public class AcademyController {
             String msg = "학원의 대표 이미지 등록에 실패했습니다.";
             return ResponseEntity.internalServerError().body(msg);
         }
-        //HttpHeaders headers = new HttpHeaders();
-        //headers.setContentType(MediaType.APPLICATION_JSON);
-        //return ResponseEntity.status(HttpStatus.OK).headers(headers).body(number);
         return ResponseEntity.ok().body(number);
     }
 
@@ -225,18 +222,11 @@ public class AcademyController {
             model.addAttribute("name", name);
         } catch (NullPointerException e) {
             String msg = "로그인이 필요한 서비스입니다.";
-            //HttpHeaders headers = new HttpHeaders();
-            //headers.set(HttpHeaders.LOCATION, "/member/login");
-            //return ResponseEntity.status(302).headers(headers).body(msg);
             return msg;
         }
         Long memNum = member.getMember().getMemNum();
         Page<AcademyDTO> academyDTO = academyService.getAcademies(memNum, pageable);
         model.addAttribute("academy", academyDTO);
-        //Context context = new Context();
-        //context.setVariables(model.asMap());
-        //String template = templateEngine.process("/academy/joined", context);
-        //return ResponseEntity.ok().body(template);
         return "/academy/joined";
     }
 

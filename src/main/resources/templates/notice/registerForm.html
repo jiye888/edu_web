@@ -50,7 +50,7 @@
         inputFile.addEventListener('change', function() {
             for (const file of event.target.files) {
                 const fileDiv = document.createElement("div");
-                fileDiv.setAttribute("style", "display:flex;");
+                fileDiv.setAttribute("style", "display:flex;align-items: baseline;");
                 selectedFile.appendChild(fileDiv);
                 const fileName = document.createElement("p");
                 fileName.innerHTML = file.name;
@@ -62,6 +62,7 @@
                 deleteButton.setAttribute("name", "deleteFile");
                 deleteButton.setAttribute("type", "button");
                 deleteButton.setAttribute("data-name", file.name);
+                deleteButton.setAttribute("class", "custom-button-mint-border");
                 fileDiv.appendChild(deleteButton);
                 fileList.push(file);
                 fileLabel.innerText = "파일 추가 ("+fileList.length+"/10)";
@@ -80,6 +81,7 @@
                         document.getElementById(deleteName).remove();
                         event.target.remove();
                         deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+                        fileLabel.innerText = "파일 추가 ("+fileList.length+"/10)";
                     });
                 }
             }
@@ -113,7 +115,7 @@
             var academy = Number($('#academy').val());
             var title = $('#title').val();
             const imgArray = findImgPosition("new");
-            const contentText = contentText();
+            const contentText = getContentText();
             const json = {
                 "academy": academy,
                 "title": title,

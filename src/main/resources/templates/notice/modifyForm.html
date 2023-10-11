@@ -57,6 +57,7 @@
             const noticeContent = document.getElementById('content');
             noticeContent.textContent = noticeContentText;
             setImgTag(existImages);
+            replaceN();
 
             setFileNames();
 
@@ -84,21 +85,29 @@
                 fileDiv.appendChild(fileName);
                 var deleteExist = document.createElement("button");
                 deleteExist.textContent = "X";
-                deleteExist.setAttribute("name", "deleteFile");
+                deleteExist.setAttribute("name", "deleteExist");
                 deleteExist.setAttribute("type", "button");
                 deleteExist.setAttribute("data-name", existFile.originalName);
+                deleteExist.setAttribute("class", "custom-button-mint-border");
                 fileDiv.appendChild(deleteExist);
 
-                deleteExist.addEventListener('click', function(event) {
-                    for (var i=0; i<fileNames.length; i++) {
-                        const deleteName = deleteExist.getAttribute("data-name");
-                        if (fileNames[i] === deleteName) {
-                            fileNames.splice(i, 1);
-                            document.getElementById(deleteName).remove();
-                            event.target.remove();
-                        }
+                var deleteFiles = document.querySelectorAll('button[name="deleteExist"]');
+                if (deleteFiles.length != 0) {
+                    for (var i=0; i<deleteFiles.length; i++) {
+                        const deleteName = deleteFiles[i].getAttribute("data-name");
+                        deleteFiles[i].addEventListener('click', function() {
+                            for (var j=0; j<existFiles.length; j++) {
+                                if (existFiles.length > 0 && existFiles[j].originalName === deleteName) {
+                                    existFiles.splice(j, 1);
+                                }
+                            }
+                            event.target.parentElement.remove();
+                            deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+                            var fileLength = fileList.length + existFiles.length;
+                            fileLabel.innerText = "파일 추가 ("+fileLength+"/10)";
+                        });
                     }
-                });
+                }
             });
 
         }
@@ -118,9 +127,10 @@
                 deleteButton.setAttribute("name", "deleteFile");
                 deleteButton.setAttribute("type", "button");
                 deleteButton.setAttribute("data-name", file.name);
+                deleteButton.setAttribute("class", "custom-button-mint-border");
                 fileDiv.appendChild(deleteButton);
                 fileList.push(file);
-                const fileLength = fileList.length + fileNames.length;
+                var fileLength = fileList.length + existFiles.length;
                 fileLabel.innerText = "파일 추가 ("+fileLength+"/10)";
             }
 
@@ -136,9 +146,10 @@
                                 existFiles.splice(j, 1);
                             }
                         }
-                        document.getElementById(deleteName).remove();
-                        event.target.remove();
+                        event.target.parentElement.remove();
                         deleteFiles = document.querySelectorAll('button[name="deleteFile"]');
+                        var fileLength = fileList.length + existFiles.length;
+                        fileLabel.innerText = "파일 추가 ("+fileLength+"/10)";
                     });
                 }
             }
@@ -175,7 +186,7 @@
 
             const imgArray = findImgPosition("new");
             const existImgArray = findImgPosition("exist");
-            const contentText = contentText();
+            const contentText = getContentText();
             const json = {
                 "academy": academy,
                 "number": number,
@@ -218,6 +229,9 @@
                         try {
                             var errorMessage = JSON.parse(xhr.responseText);
                             checkBindingResult(errorMessage);
+                            if (errorMessage.error === "MaxUploadSizeExceededException") {
+                                alert("파일 및 이미지의 크기가 8MB를 초과했습니다.");
+                            }
                             console.error(xhr.responseText);
                         } catch (e) {
                             console.log(xhr.responseText);

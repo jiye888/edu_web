@@ -40,7 +40,10 @@
         });
 
         const images = [[${image}]];
-        document.addEventListener('DOMContentLoaded', setImgTag(images));
+        document.addEventListener('DOMContentLoaded', function() {
+            setImgTag(images);
+            replaceN();
+        });
 
         function modify() {
             const academy = $('#academy').val();

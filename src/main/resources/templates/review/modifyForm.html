@@ -59,8 +59,8 @@
             const reviewContentText = [[${review.content}]];
             const reviewContent = document.getElementById('content');
             reviewContent.textContent = reviewContentText;
-            alert(document.getElementById('content').textContent);
             setImgTag(existImages);
+            replaceN();
 
             const size = existImages.length;
             if (size !== 0) {
@@ -94,7 +94,7 @@
 
             const imgArray = findImgPosition("new");
             const existImgArray = findImgPosition("exist");
-            const contentText = contentText();
+            const contentText = getContentText();
             const json = {
                 "number":number,
                 "academy":academy,

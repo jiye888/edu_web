@@ -29,8 +29,11 @@ public interface AcademyRepository extends JpaRepository<Academy, Long>, JpaSpec
     @Query("select new com.jtudy.education.DTO.AcademyDTO(a, avg(r.grade), count(r)) from Academy a left outer join Review r on r.academy = a where a.acaNum = :acaNum")
     AcademyDTO getOneAcademyWithReviewInfo(Long acaNum);
 
-    @Query(value="select new com.jtudy.education.DTO.AcademyDTO(a, avg(r.grade), count(r)) from Academy a left outer join Review r on r.academy = a where a.manager = :member")
-    Page<AcademyDTO> findByMember(Member member, Pageable pageable);
+    //@Query("select new com.jtudy.education.DTO.AcademyDTO(a, avg(r.grade), count(r)) from Academy a left outer join Review r on r.academy = a where a.manager = :member")
+    //Page<AcademyDTO> findByMember(Member member, Pageable pageable);
+
+    @Query("select a from Academy a where a.manager = :member")
+    List<Academy> findByMember(Member member);
 
     @Query(value = "SELECT * FROM academy WHERE FIND_IN_SET(:subject, subject)", nativeQuery = true)
     List<Academy> findBySubjectContaining(@Param("subject") String subject);

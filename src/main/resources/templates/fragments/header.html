@@ -4,20 +4,20 @@
     <div th:fragment="header">
         <nav class="navbar navbar-expand-lg custom-background">
             <div class="container-fluid">
-                <a class="navbar-brand custom-a-orange font-bold" href="/academy/main">EduWeb 에듀웹</a>
+                <a class="navbar-brand custom-a-orange font-bold nav-margin" href="/academy/main" style="margin-right: 20px;">EduWeb 에듀웹</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-wrap: wrap;">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
+                        <li class="nav-item nav-margin">
                             <a class="nav-link custom-a-orange font-bold" href="/academy/list">학원 목록</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item nav-margin">
                             <a class="nav-link custom-a-orange font-bold" href="/info/list" id="infoGuide">안내 사항</a>
                         </li>
-                        <li class="dropdown" id="dropdownNav" style="display:none;">
-                            <a class="nav-link font-bold" href="#" id="academyDropdown" data-toggle="dropdown" aria-haspopup="true">나의 학원</a>
+                        <li class="dropdown nav-margin" id="dropdownNav" style="display:none;">
+                            <a class="nav-link font-bold" href="#" id="academyDropdown" data-toggle="dropdown" style="margin-right: 17px;" aria-haspopup="true">나의 학원</a>
                             <ul class="dropdown-menu" aria-labelledby="academyDropdown">
                                 <li><a class="dropdown-item" id="student">가입한 학원</a></li>
                                 <li><a class="dropdown-item" id="manager">관리중인 학원</a></li>

@@ -52,10 +52,11 @@ public class Academy extends BaseEntity {
     @OneToOne
     private Image image;
 
-    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
+    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location, String introduction) {
         this.acaName = acaName;
         this.subject = subject;
         this.location = location;
+        this.introduction = introduction;
     }
 
     public void removeNotices() {
