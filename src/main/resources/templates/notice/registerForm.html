@@ -151,11 +151,14 @@
                         try {
                             var errorMessage = JSON.parse(xhr.responseText);
                             checkBindingResult(errorMessage);
-                            console.log(xhr.responseText);
+                            if (errorMessage.message) {
+                                alert(errorMessage.message);
+                            }
+                            console.error(xhr.responseText);
                         } catch (e) {
                             console.log(xhr.responseText);
                         }
-                    },
+                    }
                 });
             } else {
                 alert('모든 항목을 작성해주세요.');
