@@ -74,7 +74,7 @@ public class AuthController {
             return "auth/get";
         } else {
             model.addAttribute("msg", "접근 권한이 없습니다.");
-            return "/academy/exception";
+            return "academy/exception";
         }
     }
 

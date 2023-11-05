@@ -120,9 +120,9 @@ public class ReviewController {
             model.addAttribute("image", image);
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
-            return "/academy/exception";
+            return "academy/exception";
         }
-        return "/review/modifyForm";
+        return "review/modifyForm";
     }
 
     @PostMapping("/modify")

@@ -106,9 +106,9 @@ public class infoGuideController {
             model.addAttribute("info", infoGuideDTO);
         } else {
             model.addAttribute("msg", "관리자 권한이 없습니다.");
-            return "/academy/exception";
+            return "academy/exception";
         }
-        return "/info/modifyForm";
+        return "info/modifyForm";
     }
 
     @PostMapping("/modify")
@@ -160,11 +160,11 @@ public class infoGuideController {
             map.put("content", content);
             Page<InfoGuideDTO> info = infoGuideService.search(map, pageable);
             model.addAttribute("info", info);
-            return "/info/search";
+            return "info/search";
         } catch (Exception e) {
             String msg = e.getMessage();
             model.addAttribute("msg", msg);
-            return "/academy/exception";
+            return "academy/exception";
         }
     }
 }
