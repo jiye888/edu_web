@@ -63,7 +63,7 @@ public class NoticeController {
     @GetMapping("/register")
     public String register(@RequestParam("academy") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
         if (!noticeService.validateMember(acaNum, member)) {
-            model.addAttribute("msg", "관리자 권한이 없습니다."); //*exception
+            model.addAttribute("msg", "관리자 권한이 없습니다.");
             return "academy/exception";
         } else {
             model.addAttribute("academy", acaNum);

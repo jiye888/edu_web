@@ -172,6 +172,16 @@
 
         let wholeContent;
         seqImg = getSeqImg(seqImg);
+        if (seqImg[0].length === 1 && seqImg[0][0].preText.length < 5) {
+            const firstImg = document.createElement('img');
+            firstImg.setAttribute("src", "data: "+seqImg[0][0].mimeType+';base64, '+seqImg[0][0].base64);
+            firstImg.setAttribute("data-name", seqImg[0][0].originalName);
+            firstImg.setAttribute("name", "exist");
+            const content = document.getElementById('content');
+            content.insertBefore(firstImg, content.firstChild);
+            seqImg.shift();
+        }
+
         seqImg.forEach(img => {
             var imgTag = "";
             var reg = "";
@@ -179,7 +189,8 @@
             if (!Array.isArray(img[0])) {
                 addPrePost = 0;
             }
-            for (var i=0; i<img.length-1; i++) {
+            for (var i=0; i<img.length; i++) {
+            Array.isArray("isarray" + img[i]);
                 if (!Array.isArray(img[i]) && Array.isArray(img[i+1])) {
                     img[i].last = true;
                 }
@@ -190,6 +201,7 @@
             if (!Array.isArray(img[0])) {
                 img[0].first = true;
             }
+
             img.forEach(tag => {
                 if (Array.isArray(tag)) {
                     if (addPreText > 0) {
@@ -234,6 +246,7 @@
                 count++;
                 return match;
             });
+
 
             const content = document.getElementById('content');
             content.innerHTML = imageContent;
