@@ -110,7 +110,7 @@ public class AuthController {
             Map<String, String> map = new HashMap<>();
             map.put("number", authId.toString());
             return ResponseEntity.ok().body(map);
-            }
+        }
     }
 
     @PostMapping("/request")

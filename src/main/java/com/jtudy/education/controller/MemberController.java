@@ -87,7 +87,7 @@ public class MemberController {
             return ResponseEntity.ok(member.getMemNum());
         } catch (NullPointerException e) {
             String msg = "해당 이메일을 사용중인 회원이 없습니다.";
-            //model.addAttribute("msg", msg);
+            model.addAttribute("msg", msg);
             return ResponseEntity.badRequest().body(msg);
         }
     }
