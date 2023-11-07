@@ -36,14 +36,26 @@ public class Review extends BaseEntity {
 
     private Integer grade;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "review")
     @Builder.Default
-    private List<FileUpload> files = new ArrayList<>();
+    private List<Image> image = new ArrayList<>();
 
     public void changeReview(String title, String content, Integer grade) {
         this.title = title;
         this.content = content;
         this.grade = grade;
+    }
+
+    public void addImage(Image image) {
+        this.image.add(image);
+    }
+
+    public void removeImage(Image image) {
+        this.image.remove(image);
+    }
+
+    public void detach() {
+        this.academy = null;
     }
 
 }

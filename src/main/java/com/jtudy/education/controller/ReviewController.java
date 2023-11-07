@@ -44,7 +44,6 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private final AcademyMemberService academyMemberService;
-    private final ImageService imageService;
     private final TemplateEngine templateEngine;
 
     private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
@@ -79,8 +78,8 @@ public class ReviewController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart MultipartFile[] images, @RequestPart List<ImgArrayDTO> imgArray,
-                                   @AuthenticationPrincipal SecurityMember member) {
+    public ResponseEntity register(@RequestPart @Valid ReviewFormDTO reviewFormDTO, BindingResult bindingResult, @RequestPart(value = "images", required = false) MultipartFile[] images,
+                                   @RequestPart(value = "imgArray", required = false) List<ImgArrayDTO> imgArray, @AuthenticationPrincipal SecurityMember member) {
         if (bindingResult.hasErrors()) {
             Map<String, String> map = new HashMap<>();
             map.put("BindingResultError", "true");

@@ -24,6 +24,8 @@ public class AcademyDTO {
 
     private String location;
 
+    private String intro;
+
     private String shortLocation;
 
     private String managerEmail;
@@ -34,8 +36,6 @@ public class AcademyDTO {
 
     private Long reviewCount;
 
-    private String imgUrl;
-
     public AcademyDTO(Academy academy, Double grade, Long count) {
         this.acaNum = academy.getAcaNum();
         this.acaName = academy.getAcaName();
@@ -45,14 +45,11 @@ public class AcademyDTO {
         if(locationSplit.length > 2) {
             this.shortLocation = locationSplit[1]+" "+locationSplit[2];
         }
+        this.intro = academy.getIntroduction();
         this.managerEmail = academy.getManager().getEmail();
         this.managerName = academy.getManager().getName();
         this.grade = grade;
         this.reviewCount = count;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
     }
 
 }

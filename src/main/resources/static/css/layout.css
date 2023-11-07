@@ -52,14 +52,7 @@ a:hover {
     color: #f58b0a;
     text-align: center;
 }
-/*
-.custom-button-yellow {
-    border-radius: 12px;
-    border: 1px double;
-    border-color: #FDCE5E;
-    color: #FAC431;
-    background: white;
-}*/
+
 .custom-form-control {
     height: 38px;
     padding: 0.375rem 0.75rem;
@@ -122,6 +115,23 @@ a:hover {
     color: #f8f886;
 }
 
+.custom-button-mint-border {
+    border-radius: 12px;
+    background: white;
+    line-height: 25px;
+    border: #06d7bb5c 1px solid;
+    position: relative;
+    padding-right: 10px;
+    padding-left: 10px;
+    color: #06d7bbfc;
+    height: 30px;
+}
+
+.custom-button-mint-border:hover {
+    color: #a1e954;
+    border: #a1e954 1px solid;
+}
+
 .button-distance{
     display: flex;
     justify-content: space-evenly;
@@ -134,26 +144,22 @@ a:hover {
 }
 
 .custom-card-background {
-    background-image: url("/img/catalog.jpg");
-    /*backgroundrmage: url("/img/yellow.jpg");*/
-    /*background-image: url("/img/desk.jpg");*/
-    /*background-image: url("/img/floor.jpg");*/
+    background-image: url("/img/catalog.jpg");\
     background-size: cover;
     background-position: top;
     height: 600px;
 }
 
 .custom-carousel-background1 {
-    background-image: url("/img/blue.jpg");
-    height: 300px;
+    background-image: url("/img/new_member.jpg");
+    height: 265px;
+    background-size: cover;
 }
+
 .custom-carousel-background2 {
-    background-image: url("/img/boat.jpg");
-    height: 300px;
-}
-.custom-carousel-background3 {
-    background-image: url("/img/giftbox.jpg");
-    height: 300px;
+    background-image: url("/img/intro.jpg");
+    height: 265px;
+    background-size: cover;
 }
 
 .custom-background {
@@ -286,6 +292,11 @@ a:hover {
     overflow: auto;
 }
 
+.input-content img {
+    max-height: 700px;
+    max-width: 600px;
+}
+
 .input-group-append {
     align-items: center;
 }
@@ -314,7 +325,7 @@ a:hover {
 .border-tb{
     padding: 10px 20px 10px 20px;
     border-top: 2px solid #4bd9c761;
-    border-bottom: 2px solid #1f7c707a;
+    border-bottom: 2px solid #6cbbb17a;
     margin-bottom: 30px;
 }
 
@@ -340,7 +351,6 @@ a:hover {
     display: flex;
     font-size: smaller;
     flex-direction: row-reverse;
-    margin-bottom: -20px;
 }
 
 .content-box {
@@ -365,7 +375,7 @@ a:hover {
 }
 
 .read-box-white {
-     margin: 5% 10% 5% 10%;
+     margin: 2% 10% 5% 10%;
      padding: 5px 20px 5px 20px;
      font-size: large;
 }
@@ -450,6 +460,14 @@ a:hover {
     padding-left: 15px;
 }
 
+.button-myInfo {
+    background-color: transparent;
+    border: #fffcd085 solid;
+    line-height: 30px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
 .flex-start {
     display: flex;
     align-items: flex-start;
@@ -484,11 +502,19 @@ a:hover {
     min-height:32px;
 }
 
+.file-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: stretch;
+    margin: 50px 10px 20px 10px;
+    padding: 10px 10px 10px 10px;
+    border: solid 1px #bad7d3bd;
+}
+
 .file-info {
     display: flex;
-    justify-content: space-evenly;
     align-items: flex-start;
-    margin: 50px 30px 20px 10px;
 }
 
 .file-size {
@@ -512,4 +538,9 @@ a:hover {
     flex-direction: column;
     white-space: pre-line;
     overflow-wrap: break-word;
+}
+
+.nav-margin {
+    margin-right: 5px;
+    margin-left: 5px;
 }

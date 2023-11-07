@@ -134,45 +134,59 @@ public class AuthController {
     @PostMapping("/accept")
     @ResponseBody
     public void acceptAuth(@RequestBody Map<String,Long> map, @AuthenticationPrincipal SecurityMember member) {
-        Long authId = map.get("authId");
-        AuthDTO authDTO = authService.getOneByAuthId(authId);
-        authService.acceptAuth(authDTO.getEmail(), authDTO.getRoles());
+        if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+            Long authId = map.get("authId");
+            AuthDTO authDTO = authService.getOneByAuthId(authId);
+            authService.acceptAuth(authDTO.getEmail(), authDTO.getRoles());
+        }
     }
 
     @PostMapping("/reject")
     @ResponseBody
     public void rejectRequest(@RequestBody Map<String,Long> map, @AuthenticationPrincipal SecurityMember member) {
-        Long authId = map.get("authId");
-        AuthDTO authDTO = authService.getOneByAuthId(authId);
-        authService.rejectAuth(authDTO.getEmail(), authDTO.getRoles());
+        if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+            Long authId = map.get("authId");
+            AuthDTO authDTO = authService.getOneByAuthId(authId);
+            authService.rejectAuth(authDTO.getEmail(), authDTO.getRoles());
+        }
     }
 
     @GetMapping("/change")
     public String changeAuth(@RequestParam Long number, Model model, @AuthenticationPrincipal SecurityMember member) {
-        MemberDTO memberDTO = memberService.getOne(number);
-        model.addAttribute("member", memberDTO);
-        Map<Roles, String> koreanRoles = roles();
-        koreanRoles.put(Roles.ADMIN, "운영자");
-        model.addAttribute("koreanRoles", koreanRoles);
+        if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+            MemberDTO memberDTO = memberService.getOne(number);
+            model.addAttribute("member", memberDTO);
+            Map<Roles, String> koreanRoles = roles();
+            koreanRoles.put(Roles.ADMIN, "운영자");
+            model.addAttribute("koreanRoles", koreanRoles);
 
-        Map<Roles, String> currentRoles = authService.rolesMap(memberDTO.getRolesList());
-        model.addAttribute("currentRoles", currentRoles);
-        return "auth/change";
+            Map<Roles, String> currentRoles = authService.rolesMap(memberDTO.getRolesList());
+            model.addAttribute("currentRoles", currentRoles);
+            return "auth/change";
+        } else {
+            String msg = "권한이 없습니다.";
+            model.addAttribute("msg", msg);
+            return "academy/exception";
+        }
     }
 
     @PostMapping("/remove_role")
     @ResponseBody
     public void removeRoles(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
-        Long number = Long.parseLong(map.get("number").toString());
-        Roles roles = Roles.valueOf(map.get("roles").toString());
-        authService.removeRoles(number, roles);
+        if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+            Long number = Long.parseLong(map.get("number").toString());
+            Roles roles = Roles.valueOf(map.get("roles").toString());
+            authService.removeRoles(number, roles);
+        }
     }
 
     @PostMapping("/add_role")
     @ResponseBody
     public void addRoles(@RequestBody Map<String, Object> map, @AuthenticationPrincipal SecurityMember member) {
-        Long number  = Long.parseLong(map.get("number").toString());
-        Roles roles = Roles.valueOf(map.get("roles").toString());
-        authService.addRoles(number, roles);
+        if (member.getMember().getRolesList().contains(Roles.ADMIN)) {
+            Long number = Long.parseLong(map.get("number").toString());
+            Roles roles = Roles.valueOf(map.get("roles").toString());
+            authService.addRoles(number, roles);
+        }
     }
 }

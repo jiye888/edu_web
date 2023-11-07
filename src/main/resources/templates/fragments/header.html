@@ -2,42 +2,188 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
     <div th:fragment="header">
-        <nav class="navbar navbar-expand-lg bg-light">
+        <nav class="navbar navbar-expand-lg custom-background">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand custom-a-orange font-bold nav-margin" href="/academy/main" style="margin-right: 20px;">EduWeb 에듀웹</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-wrap: wrap;">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <li class="nav-item nav-margin">
+                            <a class="nav-link custom-a-orange font-bold" href="/academy/list">학원 목록</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
+                        <li class="nav-item nav-margin">
+                            <a class="nav-link custom-a-orange font-bold" href="/info/list" id="infoGuide">안내 사항</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li class="dropdown nav-margin" id="dropdownNav" style="display:none;">
+                            <a class="nav-link font-bold" href="#" id="academyDropdown" data-toggle="dropdown" style="margin-right: 17px;" aria-haspopup="true">나의 학원</a>
+                            <ul class="dropdown-menu" aria-labelledby="academyDropdown">
+                                <li><a class="dropdown-item" id="student">가입한 학원</a></li>
+                                <li><a class="dropdown-item" id="manager">관리중인 학원</a></li>
+                                <li><a class="dropdown-item" id="reviews">작성한 수강 후기</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled">Disabled</a>
-                        </li>
                     </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+
+                    <div class="input-group w-auto">
+                        <div class="input-group-prepend">
+                            <select name="category" class="custom-select select-prepend">
+                                <option name="category" value="name">학원명</option>
+                                <option name="category" value="location">학원 위치</option>
+                                <option name="category" value="name&location">학원명+위치</option>
+                            </select>
+                            <input class="custom-form-control" type="search" placeholder="Search" aria-label="Search" id="keyword">
+                            <button class="custom-button-mint" type="button" id="searchBtn" style="width:50%;">Search</button>
+                        </div>
+                    </div>
+                    <button align="right" class="custom-button-yellow" type="button" id="loginBtn_nav">Login</button>
                 </div>
             </div>
         </nav>
+        <script th:inline="javascript">
+            $(function() {
+                member();
+                $('#loginBtn_nav').on("click", function() {
+                    location.href = '/member/login';
+                });
+                $('#searchBtn').on("click", function() {
+                    searchAcademy();
+                });
+                $('#manager').on("click", function() {
+                    manager();
+                });
+                $('#student').on("click", function() {
+                    student();
+                });
+                $('#reviews').on("click", function() {
+                    reviews();
+                });
+
+            });
+
+
+            function member() {
+                const token = localStorage.getItem("jwt");
+
+                if(token) {
+                    $('#dropdownNav').css("display", "list-item");
+                    $('#loginBtn_nav').replaceWith("<button align='right' class='custom-button-yellow' type='button' id='logoutBtn' href='/member/logout'>Logout</button>");
+
+                    $('#logoutBtn').click(function() {
+
+                        $.ajax({
+                            url: '/member/logout',
+                            type: 'POST',
+                            contentType: "application/json",
+                            success: function() {
+                                localStorage.removeItem("jwt");
+                                alert("로그아웃이 완료되었습니다.");
+                                location.href = "/academy/main";
+                            },
+                            error: function(xhr) {
+                                console.log(xhr.responseText);
+                            }
+                        });
+
+                    });
+
+                    $('#logoutBtn').before("<button type='button' class='custom-button-yellow' id='memberBtn' href='/member/read'>회원 정보</button>");
+
+                    $('#memberBtn').on("click", function() {
+                        $.ajax({
+                            url: '/member/request',
+                            type: 'GET',
+                            contentType: "application/json",
+                        }).then((response) => {
+                            var number = response;
+                            location.href="/member/read?number="+number;
+                        });
+                    });
+
+                }
+            }
+
+            function searchAcademy() {
+                var category = $("option[name=category]:selected").val();
+                var keyword = $('#keyword').val();
+                var searchData = {};
+                var urlString = "";
+
+                if (keyword === "") {
+                    alert("검색어를 입력해주세요.");
+                }
+
+                if (category == "name") {
+                    searchData.name = keyword;
+                } else if (category == "location") {
+                    searchData.location = keyword;
+                } else if (category == "name&location") {
+                    searchData.name = keyword;
+                    searchData.location = keyword;
+                }
+
+                for (var property in searchData) {
+                    if (searchData[property] !== undefined && searchData[property] !== "") {
+                        urlString += property + "=" + searchData[property] + "&";
+                    }
+
+                }
+
+                if (urlString !== "") {
+                    urlString = urlString.slice(0,-1);
+                }
+
+                $.ajax({
+                    url: '/academy/search',
+                    type: 'GET',
+                    contentType: "application/json",
+                    data: {
+                        "name":searchData.name,
+                        "location":searchData.location,
+                        },
+                    success: function() {
+                        location.href='/academy/search?'+urlString;
+                    },
+                });
+
+            }
+
+            function manager() {
+                $.ajax({
+                    url: '/academy/manage',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function() {
+                        window.location.href = "/academy/manage";
+                    },
+                });
+            }
+
+            function student() {
+                $.ajax({
+                    url: '/academy/joined',
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function() {
+                        window.location.href = "/academy/joined";
+                    },
+                });
+            }
+
+            function reviews() {
+                $.ajax({
+                    url: '/review/by',
+                    type: 'GET',
+                    contentType: "application/json",
+                    success: function() {
+                        location.href='/review/by';
+                    },
+
+                });
+            }
+
+        </script>
     </div>
 
 </html>

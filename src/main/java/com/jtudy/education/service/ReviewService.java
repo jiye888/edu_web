@@ -1,6 +1,7 @@
 package com.jtudy.education.service;
 
 import com.jtudy.education.DTO.ImageDTO;
+import com.jtudy.education.DTO.ImgArrayDTO;
 import com.jtudy.education.DTO.ReviewDTO;
 import com.jtudy.education.DTO.ReviewFormDTO;
 import com.jtudy.education.entity.Academy;
@@ -18,28 +19,41 @@ import java.util.List;
 
 public interface ReviewService {
 
+    @Transactional(readOnly = true)
     boolean validateMember(Long revNum, SecurityMember member);
 
+    @Transactional(readOnly = true)
     Page<ReviewDTO> getAll(Long acaNum, Pageable pageable);
 
+    @Transactional(readOnly = true)
     ReviewDTO getOne(Long revNum);
 
     @Transactional(readOnly = true)
     List<ImageDTO> getAllImages(Long revNum);
 
+    @Transactional(readOnly = true)
     ReviewDTO getByAcademy(Long acaNum, String email);
 
-    Long register(ReviewFormDTO reviewFormDTO, Member member) throws IOException;
+    Long register(ReviewFormDTO reviewFormDTO, Member member);
 
-    void registerImg(MultipartFile[] images, List<List<String>> imgArray, Long revNum, Member member) throws IOException;
+    void checkImageName(Long revNum, Image image);
+
+    Image setReview(Image image, Long revNum, ImgArrayDTO imgArray);
+
+    void registerImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, Long revNum, Member member) throws IOException;
 
     Long update(ReviewFormDTO reviewFormDTO);
 
-    void updateImg(MultipartFile[] images, List<List<String>> imgArray, List<List<String>> existImgArray, Long revNum, Member member) throws IOException;
+    void updateImg(MultipartFile[] images, List<ImgArrayDTO> imgArray, List<ImgArrayDTO> existImgArray, Long revNum, Member member) throws IOException;
 
-    void delete(Long revNum) throws IOException;
+    void delete(Long revNum);
 
+    @Transactional(readOnly = true)
     Page<ReviewDTO> getReviews(Member member, Pageable pageable);
+
+    void removeAllImg(Long revNum) throws IOException;
+
+    void removeImg(Long imageId, Long revNum) throws IOException;
 
     default Review formToEntity(ReviewFormDTO reviewFormDTO, Academy academy, Member member) {
         Review review = Review.builder()
@@ -68,7 +82,4 @@ public interface ReviewService {
                 .build();
         return reviewDTO;
     }
-
-
-    void removeAllImg(Long revNum) throws IOException;
 }

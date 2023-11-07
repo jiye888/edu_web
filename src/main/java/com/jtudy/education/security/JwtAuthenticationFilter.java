@@ -1,5 +1,7 @@
 package com.jtudy.education.security;
 
+import com.jtudy.education.repository.RefreshTokenRepository;
+import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,26 +19,43 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-// extends UsernamePasswordAuthenticationFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    //private final AuthenticationManagerImpl authenticationManager;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        //String token = jwtTokenProvider.resolveToken(request);
-        String token = jwtTokenProvider.resolveToken(request.getSession());
+        String accessToken = jwtTokenProvider.resolveToken(request);
 
-        if(token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        if(accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else if(accessToken != null && !jwtTokenProvider.validateToken(accessToken)){
+            try {
+                String email = jwtTokenProvider.getEmail(accessToken);
+                Optional refreshToken = refreshTokenRepository.findById(email);
+                if (refreshToken.isPresent()) {
+                    String reIssued = jwtTokenProvider.issueAccessToken(email);
+                    Authentication authentication = jwtTokenProvider.getAuthentication(reIssued);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch(SignatureException e) {
+                System.out.println("JWT couldn't be matched. "+e.getMessage());
+                Cookie cookie = new Cookie("Matched_Token", "not_matched");
+                cookie.setMaxAge(60*60*6);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
+
         }
 
         filterChain.doFilter(request, response);

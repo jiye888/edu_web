@@ -70,7 +70,7 @@ public class MemberController {
     }
 
     @GetMapping("/request")
-    public ResponseEntity requestInfo(@AuthenticationPrincipal SecurityMember member, Model model) {
+    public ResponseEntity requestInfo(@AuthenticationPrincipal SecurityMember member) {
         try {
             Long number = member.getMember().getMemNum();
             return ResponseEntity.ok().body(number);
@@ -109,7 +109,7 @@ public class MemberController {
             model.addAttribute("msg", message);
             Context context = new Context();
             context.setVariables(model.asMap());
-            String template = templateEngine.process("/academy/exception", context);
+            String template = templateEngine.process("academy/exception", context);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(template);
         }
     }
@@ -126,7 +126,7 @@ public class MemberController {
     }
 
     @PostMapping("/modify")
-    public ResponseEntity modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult,Model model) {
+    public ResponseEntity modify(@RequestBody @Valid MemberFormDTO memberFormDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> map = new HashMap<>();
             map.put("BindingResultError", "true");

@@ -33,28 +33,42 @@ public class Academy extends BaseEntity {
     @ManyToOne
     private Member manager;
 
-    @Column
     private String location;
+
+    private String introduction;
 
     @OneToMany(mappedBy = "academy", orphanRemoval = true)
     @Builder.Default
     private List<AcademyMember> academyMember = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "academy")
     @Builder.Default
     private List<Review> review = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "academy")
     @Builder.Default
     private List<Notice> notice = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
-    private FileUpload file;
+    @OneToOne
+    private Image image;
 
-    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location) {
+    public void changeAcademy(String acaName, EnumSet<Subject> subject, String location, String introduction) {
         this.acaName = acaName;
         this.subject = subject;
         this.location = location;
+        this.introduction = introduction;
+    }
+
+    public void removeNotices() {
+        this.notice = null;
+    }
+
+    public void removeReviews() {
+        this.review = null;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
 }

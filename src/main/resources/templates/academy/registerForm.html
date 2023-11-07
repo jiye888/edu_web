@@ -33,18 +33,36 @@
                     <label th:for="${#ids.prev('subject')}" th:text="${sub.description}"></label>
                 </div>
             </div>
-            <p id="subjectError"></p><br>
+            <p id="subjectError"></p>
+
+            <div>
+                <span class="custom-span">학원 소개</span>
+                <input type="text" id="academyIntro" class="custom-form-control">
+            </div>
+            <br>
+            <span class="custom-span" style="margin-bottom:15px;">대표 이미지</span>
+            <div style="display:flex;">
+                <input type="file" id="inputFile" style="display:none;">
+                <label class="custom-button-mint select-file" for="inputFile">파일 선택</label>
+                <div class="custom-form-control file-name" id="selectedFile"></div>
+                <input type="button" id="deleteFile" class="custom-button-mint select-file" value="파일 삭제">
+            </div>
+
             <div class="button-distance">
                 <button type="button" class="custom-button-yellow" id="registerBtn">등록</button>
                 <button type="button" class="custom-button-yellow" id="cancelBtn">취소</button>
             </div>
 
-            <span class="custom-span">대표 이미지</span>
-            <input type="file" class="custom-form-control w70" id="inputFile">
         </form>
         <script th:inline="javascript">
 
         $(function() {
+
+            $('#deleteFile').on("click", function() {
+                $('#inputFile').val(null);
+                $('#selectedFile').val(null);
+            });
+
             $('#registerBtn').on("click", function() {
                 register();
             });
@@ -53,15 +71,12 @@
             });
         });
 
-        function clearText() {
-            var pTag = ["acaNameError", "locationError", "subjectError"];
-            for (var tag in pTag) {
-                var pElement = document.getElementById(tag);
-                if (pElement != null) {
-                    pElement.textContent="";
-                }
-            }
-        }
+        const inputFile = document.getElementById('inputFile');
+        const selectedFile = document.getElementById('selectedFile');
+
+        inputFile.addEventListener('change', function() {
+            selectedFile.textContent = inputFile.files[0].name;
+        });
 
         function getSubject() {
             var subject = [];
@@ -75,7 +90,7 @@
         }
 
         function register() {
-            clearText();
+            clearText(["acaNameError", "locationError", "subjectError"]);
             var acaName = $('#acaName').val();
             var location = '';
             $('input[name=location]:lt(3)').map(function(){
@@ -84,10 +99,13 @@
             });
             location = $.trim(location);
             var subject = getSubject();
-            var formDTO = {
-                "acaName":acaName,
-                "location":location,
-                "subject":subject
+            var intro = $('#academyIntro').val();
+
+            const formDTO = {
+                acaName:acaName,
+                location:location,
+                subject:subject,
+                intro:intro
             };
 
             var file = $('#inputFile').prop('files')[0];
@@ -109,21 +127,11 @@
                     },
                     error: function(xhr, response) {
                         jwtFilter();
-                        try {
+                        if (xhr.status === 422) {
                             var errorMessage = JSON.parse(xhr.responseText);
-                            if (errorMessage.BindingResultError) {
-                                for (var err in errorMessage) {
-                                    if (document.getElementById(err)) {
-                                        var errElement = document.getElementById(err);
-                                        errElement.textContent = errorMessage[err];
-                                        errElement.classList.add("alert", "alert-warning");
-                                    }
-                                }
-                            } else {
-                                console.log(xhr.responseText);
-                            }
-                        } catch (e) {
-                            console.error(e.message);
+                            checkBindingResult(errorMessage);
+                        } else {
+                            console.log(xhr.responseText);
                         }
                     },
                 });

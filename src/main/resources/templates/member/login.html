@@ -1,93 +1,88 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 <meta charset="UTF-8">
-<body>
+
     <div layout:fragment="content">
 
-        <form role="form" method="post" action="/member/loginCheck">
-            <div>
-                <label th:for="email">이메일 주소</label>
-                <input type="email" id="email" name="email" class="form-control">
+        <div class="login-box1">
+            <div class="login-box2">
+                <h3 class="custom-text font-bold login-logo">Login</h3>
+                <label class="custom-text" th:for="email">이메일 주소</label>
+                <input type="email" class="form-control" id="email" name="email">
+
+                <label class="custom-text" th:for="password">비밀번호</label>
+                <input type="password" class="form-control" name="password" id="password">
+
+                <div class="margin-top20">
+                    <button type="button" class="btn custom-button-mint" id="loginBtn">로그인</button>
+                    <button type="button" class="btn custom-button-mint" onclick="location.href='/member/join';">회원 가입</button>
+                </div>
             </div>
-            <div>
-                <label th:for="password">비밀번호</label>
-                <input type="password" name="password" id="password" class="form-control">
-            </div>
-            <p th:if="${msg}" class="error" th:text="${msg}"></p>
-            <button type="button" class="btn btn-primary" id="loginBtn">로그인</button>
-            <button type="button" class="btn btn-primary" onclick="location.href='/member/join';">회원 가입</button>
-            <input type="hidden" th:name="${token}" th:value="${token}">
-            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
-        </form>
-    </div>
+        </div>
 
-    <script type="text/javascript">
-    function login_check() {
-        var email = $('input[name="email"]).val();
-        var password = $('input[name="password"]).val();
-        var token = $('#token').val();
+        <script th:inline="javascript">
 
-        $.ajax({
-            type = "POST",
-            url = "http://localhost:8088/member/loginCheck",
-            contentType : "application/json",
-            data: JSON.stringify({"email":email, "password":password}),
-            success: localStorage.setItem("jwt", token),
-            error: function(jqXHR, status, error) {
-                alert(error);
-            }
-        });
-    }
-    function test() {
-        console.log('test!!');
-    }
-
-    $(document).ready(function() {
-        $('.loginBtn').click(function() {
-            console.log('test is completed!');
-        });
-    });
-
-        $(function () {
-            $('.log').click((e) => {
-                var email = $('#email').val();
-                var password = $('#password').val();
-
-                if (id == '') {
-                    alert('아이디를 입력해주세요');
-                    e.preventDefault();
-                }
-                if (password == '') {
-                    alert('패스워드를 입력해주세요');
-                    e.preventDefault();
-                }
-
-                if (id != '' && password !='') {
-                    const path = 'http://localhost:8088/member/loginCheck';
-                    const json = JSON.stringify({
-                        'email': email,
-                        'password': password,
-                    });
-                    $.ajax({
-                        url: path,
-                        type: 'POST',
-                        contentType: "application/json",
-                        data: json,
-                    }).done((response) => {
-                        if (response == 'success') {
-                            alert('로그인 성공')
-                            localStorage.setItem('email', email);
-                            location.href = "http://localhost:8088/academy/main"
-                        } else {
-                            alert(response);
-                        }
-                    });
-                }
+        $(function() {
+            $('#loginBtn').on('click', function() {
+                login();
             });
-        })
+        });
+
+        function login() {
+            var email = $('#email').val();
+            var password = $('#password').val();
+
+            if (validate(email, password) == true){
+                const path = '/member/loginCheck';
+                const json = {
+                    "email": email,
+                    "password": password,
+                };
+                $.ajax({
+                    url: path,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(json),
+                    success: function(response) {
+                        var token = response;
+                        if (token != null) {
+                            localStorage.setItem("jwt", token);
+                            $.ajax({
+                                url: "/academy/main",
+                                type: "GET",
+                                success: function() {
+                                    history.back();
+                                },
+                                error: function(xhr) {
+                                    jwtFilter();
+                                    console.log(xhr.responseText);
+                                }
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        jwtFilter();
+                        alert("아이디나 비밀번호를 다시 확인해주세요.");
+                        console.log(xhr.responseText);
+                    },
+                });
+            }
+        }
+
+        function validate(email, password){
+            if (!email) {
+                alert('아이디를 입력해주세요');
+                return false;
+            }
+            if (!password ) {
+                alert('패스워드를 입력해주세요');
+                return false;
+            }
+            return true;
+        }
+
     </script>
-</body>
+    </div>
 
 </html>

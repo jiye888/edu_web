@@ -16,15 +16,9 @@ public class NoticeDTO {
 
     private Long notNum;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private String content;
-
-    private Long managerNum;
-
-    private String managerName;
 
     private String managerEmail;
 

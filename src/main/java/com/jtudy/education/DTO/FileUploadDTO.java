@@ -21,10 +21,12 @@ public class FileUploadDTO {
 
     private String fileType;
 
-    private Path uploadPath;
+    private String filePath;
 
-    private Path filePath;
+    private String fileSize;
 
-    private byte[] fileData;
+    private String uploaderName;
+
+    private String uploaderEmail;
 
 }

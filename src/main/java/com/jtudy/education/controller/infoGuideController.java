@@ -59,7 +59,7 @@ public class infoGuideController {
             model.addAttribute("info", new InfoGuideFormDTO());
             Context context = new Context();
             context.setVariables(model.asMap());
-            String template = templateEngine.process("/info/registerForm", context);
+            String template = templateEngine.process("info/registerForm", context);
             return ResponseEntity.ok().body(template);
         } else {
             return ResponseEntity.status(401).body("관리자 권한이 없습니다.");
@@ -135,7 +135,7 @@ public class infoGuideController {
     }
 
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity delete(@RequestParam("number") Long infoNum, Model model, @AuthenticationPrincipal SecurityMember member) {
+    public ResponseEntity delete(@RequestParam("number") Long infoNum, @AuthenticationPrincipal SecurityMember member) {
         InfoGuideDTO infoGuideDTO = infoGuideService.getOne(infoNum);
         if (infoGuideService.validateMember(member)) {
             try {

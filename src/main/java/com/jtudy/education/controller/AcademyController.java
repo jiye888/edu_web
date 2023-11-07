@@ -98,7 +98,7 @@ public class AcademyController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestPart @Valid AcademyFormDTO academyFormDTO, BindingResult bindingResult, @RequestPart(required = false) MultipartFile file,
-                                   @AuthenticationPrincipal SecurityMember member, Model model, HttpServletRequest request) {
+                                   @AuthenticationPrincipal SecurityMember member, Model model) {
         if (bindingResult.hasErrors()) {
             Map<String, String> map = new HashMap<>();
             map.put("BindingResultError", "true");
@@ -203,14 +203,14 @@ public class AcademyController {
 
     @RequestMapping(value = "/join", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void join(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
         Long memNum = member.getMember().getMemNum();
         academyMemberService.join(memNum, acaNum);
     }
 
     @RequestMapping(value = "/withdraw", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public void withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member, Model model) {
+    public void withdraw(@RequestParam(value = "number") Long acaNum, @AuthenticationPrincipal SecurityMember member) {
         Long memNum = member.getMember().getMemNum();
         academyMemberService.withdraw(memNum, acaNum);
     }
